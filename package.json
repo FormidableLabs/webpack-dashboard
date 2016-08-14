@@ -1,0 +1,32 @@
+{
+  "name": "webpack-dashboard",
+  "version": "0.0.1-alpha.1",
+  "description": "a CLI dashboard for webpack dev server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FormidableLabs/webpack-dashboard.git"
+  },
+  "keywords": [
+    "webpack",
+    "cli",
+    "plugin",
+    "dashboard"
+  ],
+  "author": "Ken Wheeler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FormidableLabs/webpack-dashboard/issues"
+  },
+  "homepage": "https://github.com/FormidableLabs/webpack-dashboard#readme",
+  "peerDependencies": {
+    "webpack": "*"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "filesize": "^3.3.0"
+  }
+}
