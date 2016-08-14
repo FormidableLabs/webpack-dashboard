@@ -16,7 +16,7 @@ _Note: This project is in super alpha. This is literally the first release, and 
 
 ### Install
 
-`npm install webpack-dashboard@next`
+`npm install webpack-dashboard@*`
 
 ### Use
 
