@@ -14,6 +14,8 @@ That's cool, but its mostly noisy and scrolly and not super helpful. This plugin
 
 _Note: This project is in super alpha. This is literally the first release, and it's been very lightly tested._
 
+_Another Note: Seeing issues with Hyperterm, I recommend using this with iTerm2 for the time being._
+
 ### Install
 
 `npm install webpack-dashboard@* --save-dev`
