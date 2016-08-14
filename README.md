@@ -61,3 +61,9 @@ compiler.apply(new DashboardPlugin(dashboard.setData));
 Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something alone those lines.
 
 Then, sit back and pretend you're an astronaut.
+
+#### Credits
+
+Module output deeply inspired by: [https://github.com/robertknight/webpack-bundle-size-analyzer](https://github.com/robertknight/webpack-bundle-size-analyzer)
+
+Error output deeply inspired by: [https://github.com/facebookincubator/create-react-app](https://github.com/facebookincubator/create-react-app)
