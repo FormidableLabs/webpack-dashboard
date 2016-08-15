@@ -14,7 +14,7 @@ That's cool, but its mostly noisy and scrolly and not super helpful. This plugin
 
 ### Install
 
-`npm install webpack-dashboard@* --save-dev`
+`npm install webpack-dashboard --save-dev`
 
 ### Use
 
