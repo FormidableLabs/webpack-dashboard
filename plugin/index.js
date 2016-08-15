@@ -7,11 +7,11 @@ function noop() {}
 
 function DashboardPlugin(options) {
   if (typeof options === "function") {
-		options = {
-			handler: options
-		};
-	}
-	options = options || {};
+    options = {
+      handler: options
+    };
+  }
+  options = options || {};
   this.handler = options.handler;
 }
 
