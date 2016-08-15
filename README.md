@@ -58,7 +58,7 @@ If you are running the dev server without an express server, you'll have to init
 
 First, import the dashboard and plugin, and create a new instance of the dashboard:
 
-```
+```js
 var Dashboard = require('webpack-dashboard');
 var DashboardPlugin = require('webpack-dashboard/plugin');
 var dashboard = new Dashboard();
@@ -66,7 +66,7 @@ var dashboard = new Dashboard();
 
 Then, in your config under `plugins`, add:
 
-```
+```js
 new DashboardPlugin(dashboard.setData)
 ```
 
