@@ -72,7 +72,7 @@ new DashboardPlugin(dashboard.setData)
 
 #### Run it
 
-Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something alone those lines.
+Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something along those lines.
 
 Then, sit back and pretend you're an astronaut.
 
