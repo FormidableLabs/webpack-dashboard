@@ -70,7 +70,7 @@ Then, in your config under `plugins`, add:
 new DashboardPlugin(dashboard.setData)
 ```
 
-Finally, make sure you've set `quiet: true` in your WebpackDevServer constructor::
+Ensure you've set `quiet: true` in your WebpackDevServer constructor:
 
 ```js
 new WebpackDevServer(
