@@ -49,6 +49,9 @@ DashboardPlugin.prototype.apply = function(compiler) {
       type: "operations",
       value: "idle"
     });
+    handler.call(null, {
+      type: "clear"
+    });
   });
 
   compiler.plugin("done", function(stats) {

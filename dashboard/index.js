@@ -2,9 +2,11 @@
 'use strict';
 
 var blessed = require('blessed');
+
 var formatOutput = require('../utils/format-output.js');
 var formatModules = require('../utils/format-modules.js');
 var formatAssets = require('../utils/format-assets.js');
+var mockConsole = require('../utils/mock-console.js');
 
 function Dashboard(options) {
   this.color = options && options.color || "green";
@@ -22,6 +24,16 @@ function Dashboard(options) {
   this.layoutStatus.call(this);
   this.layoutModules.call(this);
   this.layoutAssets.call(this);
+
+  var self = this;
+  Object.defineProperty(global, 'console', {
+    value: mockConsole(function(value) {
+      self.setData({
+        type: 'log',
+        value: value
+      });
+    })
+  });
 
   this.screen.key(['escape', 'q', 'C-c'], function() {
     process.exit(0);
@@ -67,11 +79,23 @@ Dashboard.prototype.setData = function(data) {
       if (stats.hasErrors()) {
         this.status.setContent('{red-fg}{bold}Failed{/}');
       }
-      this.logText.setContent(formatOutput(stats));
+      this.logText.log(formatOutput(stats));
       this.moduleTable.setData(formatModules(stats));
       this.assetTable.setData(formatAssets(stats));
       this.screen.render();
 
+      break;
+    }
+    case 'log': {
+      this.logText.log(data.value);
+
+      this.screen.render();
+      break;
+    }
+    case 'clear': {
+      this.logText.setContent('');
+
+      this.screen.render();
       break;
     }
     default: {
@@ -99,7 +123,7 @@ Dashboard.prototype.layoutLog = function() {
     },
   });
 
-  this.logText = blessed.text({
+  this.logText = blessed.log({
     parent: this.log,
     tags: true,
     width: "100%-5",
