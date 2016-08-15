@@ -44,7 +44,7 @@ Dashboard.prototype.setData = function(data) {
       break;
     }
     case 'status': {
-      let content;
+      var content;
 
       switch(data.value) {
         case 'Success':

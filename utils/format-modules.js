@@ -48,7 +48,7 @@ function printDependencySizeTree(node, depth, outputFn) {
   for (var child of childrenBySize) {
     ++includedCount;
     var percentage = ((child.size/totalSize) * 100).toPrecision(3);
-    outputFn([`${prefix}${child.packageName}`, `${prefix}${filesize(child.size)}`, `${prefix}${percentage}%`]);
+    outputFn([prefix + child.packageName, prefix + filesize(child.size), prefix + percentage + "%"]);
 
     printDependencySizeTree(child, depth + 1, outputFn);
 
@@ -61,7 +61,7 @@ function printDependencySizeTree(node, depth, outputFn) {
 
   if (depth === 0 || remainder !== totalSize) {
     var percentage = ((remainder/totalSize) * 100).toPrecision(3);
-    outputFn([`${prefix}<self>`, `${prefix}${filesize(remainder)}`, `${prefix}${percentage}%`]);
+    outputFn([prefix + "<self>", prefix + filesize(remainder), prefix + percentage + "%"]);
   }
 }
 
