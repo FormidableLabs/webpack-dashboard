@@ -70,6 +70,20 @@ Then, in your config under `plugins`, add:
 new DashboardPlugin(dashboard.setData)
 ```
 
+Ensure you've set `quiet: true` in your WebpackDevServer constructor:
+
+```js
+new WebpackDevServer(
+  Webpack(settings),
+  {
+    publicPath: settings.output.publicPath,
+    hot: true,
+    quiet: true, // lets WebpackDashboard do its thing
+    historyApiFallback: true,
+  }
+).listen(
+```
+
 #### Run it
 
 Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something along those lines.
