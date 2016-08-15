@@ -12,10 +12,6 @@ That's cool, but its mostly noisy and scrolly and not super helpful. This plugin
 
 ![http://i.imgur.com/5BWa1hB.png](http://i.imgur.com/5BWa1hB.png)
 
-_Note: This project is in super alpha. This is literally the first release, and it's been very lightly tested._
-
-_Another Note: Seeing issues with Hyperterm, I recommend using this with iTerm2 for the time being._
-
 ### Install
 
 `npm install webpack-dashboard@* --save-dev`
@@ -24,7 +20,7 @@ _Another Note: Seeing issues with Hyperterm, I recommend using this with iTerm2 
 
 You have to use webpack-dev-server programmatically, via something like express, for this to work properly.
 
-You can see a great example of how that's done here: 
+You can see a great example of how that's done here:
 
 [https://github.com/gaearon/react-transform-boilerplate/blob/master/devServer.js](https://github.com/gaearon/react-transform-boilerplate/blob/master/devServer.js)
 
