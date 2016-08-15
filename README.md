@@ -18,13 +18,9 @@ That's cool, but its mostly noisy and scrolly and not super helpful. This plugin
 
 ### Use
 
-You have to use webpack-dev-server programmatically, via something like express, for this to work properly.
+#### Turn off errors
 
-You can see a great example of how that's done here:
-
-[https://github.com/gaearon/react-transform-boilerplate/blob/master/devServer.js](https://github.com/gaearon/react-transform-boilerplate/blob/master/devServer.js)
-
-You also need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending upon your setup:
+You need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending upon your setup:
 
 ```js
 app.use(require('webpack-dev-middleware')(compiler, {
@@ -37,7 +33,7 @@ app.use(require('webpack-hot-middleware')(compiler, {
 }));
 ```
 
-Once you have the above in place, get this going by:
+#### webpack-dev-middleware
 
 First, import the dashboard and webpack plugin:
 
@@ -55,6 +51,26 @@ var dashboard = new Dashboard();
 
 compiler.apply(new DashboardPlugin(dashboard.setData));
 ```
+
+#### webpack-dev-server
+
+If you are running the dev server without an express server, you'll have to initialize the dashboard in your `webpack.config.js`.
+
+First, import the dashboard and plugin, and create a new instance of the dashboard:
+
+```
+var Dashboard = require('webpack-dashboard');
+var DashboardPlugin = require('webpack-dashboard/plugin');
+var dashboard = new Dashboard();
+```
+
+Then, in your config under `plugins`, add:
+
+```
+new DashboardPlugin(dashboard.setData)
+```
+
+#### Run it
 
 Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something alone those lines.
 
