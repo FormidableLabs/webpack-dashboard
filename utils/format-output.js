@@ -38,12 +38,12 @@ function formatOutput(stats) {
   }
 
   var json = stats.toJson();
-  var formattedErrors = json.errors.map(message =>
-    'Error in ' + formatMessage(message)
-  );
-  var formattedWarnings = json.warnings.map(message =>
-    'Warning in ' + formatMessage(message)
-  );
+  var formattedErrors = json.errors.map(function(message) {
+    return 'Error in ' + formatMessage(message);
+  });
+  var formattedWarnings = json.warnings.map(function(message) {
+    return 'Warning in ' + formatMessage(message);
+  });
 
   if (hasErrors) {
     output.push('{red-fg}Failed to compile.{/}');
@@ -51,7 +51,7 @@ function formatOutput(stats) {
     if (formattedErrors.some(isLikelyASyntaxError)) {
       formattedErrors = formattedErrors.filter(isLikelyASyntaxError);
     }
-    formattedErrors.forEach(function (message) {
+    formattedErrors.forEach(function(message) {
       output.push(message);
       output.push('');
     });
@@ -61,7 +61,7 @@ function formatOutput(stats) {
   if (hasWarnings) {
     output.push('{yellow-fg}Compiled with warnings.{/yellow-fg}');
     output.push('');
-    formattedWarnings.forEach(function (message) {
+    formattedWarnings.forEach(function(message) {
       output.push(message);
       output.push('');
     });

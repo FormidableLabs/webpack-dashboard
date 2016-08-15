@@ -40,8 +40,8 @@ function printDependencySizeTree(node, depth, outputFn) {
   var remainder = totalSize;
   var includedCount = 0;
 
-  let prefix = '';
-  for (let i=0; i < depth; i++) {
+  var prefix = '';
+  for (var i=0; i < depth; i++) {
     prefix += '  ';
   }
 
@@ -60,7 +60,7 @@ function printDependencySizeTree(node, depth, outputFn) {
   }
 
   if (depth === 0 || remainder !== totalSize) {
-    const percentage = ((remainder/totalSize) * 100).toPrecision(3);
+    var percentage = ((remainder/totalSize) * 100).toPrecision(3);
     outputFn([`${prefix}<self>`, `${filesize(remainder)}`, `${percentage}%`]);
   }
 }
@@ -114,7 +114,7 @@ function bundleSizeTree(stats) {
         existing[0].size += mod.size;
         parent = existing[0];
       } else {
-        let newChild = {
+        var newChild = {
           packageName: pkg,
           size: mod.size,
           children: []

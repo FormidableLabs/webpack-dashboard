@@ -10,14 +10,23 @@ function Dashboard(options) {
   this.color = options && options.color || "green";
   this.setData = this.setData.bind(this);
 
-  this.screen = blessed.screen({ smartCSR: true });
+  this.screen = blessed.screen({
+    smartCSR: true,
+    title: 'reactotron',
+    dockBorders: false,
+    fullUnicode: true,
+    autoPadding: true
+  });
 
   this.layoutLog.call(this);
   this.layoutStatus.call(this);
   this.layoutModules.call(this);
   this.layoutAssets.call(this);
 
-  this.screen.key(['escape', 'q', 'C-c'], () => process.exit(0));
+  this.screen.key(['escape', 'q', 'C-c'], function() {
+    process.exit(0);
+  });
+
   this.screen.render();
 }
 
@@ -58,7 +67,7 @@ Dashboard.prototype.setData = function(data) {
       if (stats.hasErrors()) {
         this.status.setContent('{red-fg}{bold}Failed{/}');
       }
-      this.server.setContent(formatOutput(stats));
+      this.logText.setContent(formatOutput(stats));
       this.moduleTable.setData(formatModules(stats));
       this.assetTable.setData(formatAssets(stats));
       this.screen.render();
@@ -72,21 +81,11 @@ Dashboard.prototype.setData = function(data) {
 };
 
 Dashboard.prototype.layoutLog = function() {
-  this.server = blessed.box({
+  this.log = blessed.box({
     label: 'Log',
-    tags: true,
-    scrollable: true,
-    alwaysScroll: true,
-    scrollbar: {
-      ch: ' ',
-      inverse: true
-    },
-    keys: true,
-    vi: true,
-    mouse: true,
     padding: 1,
     width: '75%',
-    height: '40%',
+    height: '42%',
     left: '0%',
     top: '0%',
     border: {
@@ -100,7 +99,22 @@ Dashboard.prototype.layoutLog = function() {
     },
   });
 
-  this.screen.append(this.server);
+  this.logText = blessed.text({
+    parent: this.log,
+    tags: true,
+    width: "100%-5",
+    scrollable: true,
+    alwaysScroll: true,
+    scrollbar: {
+      ch: ' ',
+      inverse: true
+    },
+    keys: true,
+    vi: true,
+    mouse: true
+  });
+
+  this.screen.append(this.log);
 };
 
 Dashboard.prototype.layoutModules = function() {
@@ -109,9 +123,9 @@ Dashboard.prototype.layoutModules = function() {
     tags: true,
     padding: 1,
     width: '50%',
-    height: '61%',
+    height: '58%',
     left: '0%',
-    top: '40%',
+    top: '42%',
     border: {
       type: 'line',
     },
@@ -126,7 +140,7 @@ Dashboard.prototype.layoutModules = function() {
   this.moduleTable = blessed.table({
     parent: this.modules,
     height: "100%",
-    width: "93%",
+    width: "100%-5",
     align: "left",
     pad: 1,
     scrollable: true,
@@ -150,9 +164,9 @@ Dashboard.prototype.layoutAssets = function() {
     tags: true,
     padding: 1,
     width: '50%',
-    height: '61%',
-    left: '51%',
-    top: '40%',
+    height: '58%',
+    left: '50%',
+    top: '42%',
     border: {
       type: 'line',
     },
@@ -167,7 +181,7 @@ Dashboard.prototype.layoutAssets = function() {
   this.assetTable = blessed.table({
     parent: this.assets,
     height: "100%",
-    width: "93%",
+    width: "100%-5",
     align: "left",
     pad: 1,
     scrollable: true,
@@ -186,14 +200,23 @@ Dashboard.prototype.layoutAssets = function() {
 };
 
 Dashboard.prototype.layoutStatus = function() {
+
+  this.wrapper = blessed.layout({
+    width: "25%",
+    height: "42%",
+    top: "0%",
+    left: "75%",
+    layout: "grid"
+  });
+
   this.status = blessed.box({
+    parent: this.wrapper,
     label: 'Status',
     tags: true,
     padding: 1,
-    width: '25%',
-    height: '15%',
-    left: '76%',
-    top: '0%',
+    width: '100%',
+    height: '34%',
+    valign: "middle",
     border: {
       type: 'line',
     },
@@ -206,13 +229,13 @@ Dashboard.prototype.layoutStatus = function() {
   });
 
   this.operations = blessed.box({
+    parent: this.wrapper,
     label: 'Operation',
     tags: true,
     padding: 1,
-    width: '25%',
-    height: '15%',
-    left: '76%',
-    top: '15%',
+    width: '100%',
+    height: '34%',
+    valign: "middle",
     border: {
       type: 'line',
     },
@@ -225,13 +248,13 @@ Dashboard.prototype.layoutStatus = function() {
   });
 
   this.progress = blessed.box({
+    parent: this.wrapper,
     label: 'Progress',
     tags: true,
     padding: 1,
-    width: '25%',
-    height: '15%',
-    left: '76%',
-    top: '28%',
+    width: '100%',
+    height: '34%',
+    valign: "middle",
     border: {
       type: 'line',
     },
@@ -254,10 +277,7 @@ Dashboard.prototype.layoutStatus = function() {
     }
   });
 
-  this.screen.append(this.progress);
-  this.screen.append(this.operations);
-  this.screen.append(this.status);
+  this.screen.append(this.wrapper);
 };
 
 module.exports = Dashboard;
-
