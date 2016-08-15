@@ -30,7 +30,7 @@ You can see a great example of how that's done here:
 
 You also need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending upon your setup:
 
-```
+```js
 app.use(require('webpack-dev-middleware')(compiler, {
   quiet: true,
   publicPath: config.output.publicPath,
@@ -45,14 +45,14 @@ Once you have the above in place, get this going by:
 
 First, import the dashboard and webpack plugin:
 
-```
+```js
 var Dashboard = require('webpack-dashboard');
 var DashboardPlugin = require('webpack-dashboard/plugin');
 ```
 
 Next, right after you create your compiler, create an instance of the dashboard and apply the plugin, like so:
 
-```
+```js
 var compiler = webpack(config);
 
 var dashboard = new Dashboard();
