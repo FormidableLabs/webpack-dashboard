@@ -90,6 +90,8 @@ Finally, start your server using whatever command you have set up. Either you ha
 
 Then, sit back and pretend you're an astronaut.
 
+Note that terminal mouse events are not currently supported by the default OSX Terminal.app. While the rest of the dashboard works correctly, if you wish to scroll through the logs and modules, you may want to use an alternative such as [iTerm2](https://www.iterm2.com/index.html)
+
 #### Credits
 
 Module output deeply inspired by: [https://github.com/robertknight/webpack-bundle-size-analyzer](https://github.com/robertknight/webpack-bundle-size-analyzer)
