@@ -213,7 +213,9 @@ Dashboard.prototype.layoutStatus = function() {
     parent: this.wrapper,
     label: 'Status',
     tags: true,
-    padding: 1,
+    padding: {
+      left: 1,
+    },
     width: '100%',
     height: '34%',
     valign: "middle",
@@ -232,7 +234,9 @@ Dashboard.prototype.layoutStatus = function() {
     parent: this.wrapper,
     label: 'Operation',
     tags: true,
-    padding: 1,
+    padding: {
+      left: 1,
+    },
     width: '100%',
     height: '34%',
     valign: "middle",
