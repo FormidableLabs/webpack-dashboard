@@ -17,6 +17,7 @@ function DashboardPlugin(options) {
 
 DashboardPlugin.prototype.apply = function(compiler) {
   var handler = this.handler || noop;
+  handler = process.send || handler;
 
   compiler.apply(new webpack.ProgressPlugin(function (percent, msg) {
     handler.call(null, {
