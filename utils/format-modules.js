@@ -3,6 +3,10 @@
 var filesize = require('filesize');
 var path = require('path');
 
+function getPosition(string, needle, i) {
+  return string.split(needle, i).join(needle).length;
+}
+
 function modulePath(identifier) {
   var loaderRegex = /.*!/;
   return identifier.replace(loaderRegex, '');
@@ -96,7 +100,14 @@ function bundleSizeTree(stats) {
     var filename = '';
     if (packages.length > 1) {
       var lastSegment = packages.pop();
-      var lastPackageName = lastSegment.slice(0, lastSegment.search(new RegExp('\\' + path.sep + '|$')));
+      
+      var lastPackageName = ''
+      if (lastSegment.indexOf('@')) {
+        lastPackageName = lastSegment.slice(0, lastSegment.search(new RegExp('\\' + path.sep + '|$')));
+      } else {
+        lastPackageName = lastSegment.slice(0, getPosition(lastSegment, path.sep, 2));
+      }
+      
       packages.push(lastPackageName);
       filename = lastSegment.slice(lastPackageName.length + 1);
     } else {
