@@ -37,16 +37,20 @@ app.use(require('webpack-hot-middleware')(compiler, {
 
 After the initial release, it was decided that running a separate process and communicating via sockets would be more efficient and solves a lot of problems with stdout.
 
-The new way to run the dashbaord is to add the plugin, and then call the provided binary.
+The new way to run the dashboard is to add the plugin, and then call the provided binary.
 
-First, import add the plugin to your webpack config, or apply it to your compiler:
+First, import the plugin and add it to your webpack config, or apply it to your compiler:
 
 ```js
-// In your webpack config:
+// Import the plugin:
+var DashboardPlugin = require('webpack-dashboard/plugin');
+
+// If you aren't using express, add it to your webpack configs plugins section:
 plugins: [
 	new DashboardPlugin();
 ]
-// Applying to compiler
+
+// If you are using an express based dev server, add it with compiler.apply
 compiler.apply(new DashboardPlugin());
 ```
 Note, in the new version you don't pass the handler function to the `DashboardPlugin` constructor. Because sockets use a port, the constructor now supports passing an options object that can include a custom port (if the default is giving you problems). See how below:
@@ -70,6 +74,14 @@ You would change that to:
 ```js
 "scripts": {
 	"dev": "webpack-dashboard -- node index.js"
+}
+```
+
+If you are using the webpack-dev-server binary, you can do something like:
+
+```js
+"scripts": {
+	"dev": "webpack-dashboard -- webpack-dev-server --config ./webpack.dev.js"
 }
 ```
 
@@ -145,6 +157,27 @@ new WebpackDevServer(
 Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something along those lines.
 
 Then, sit back and pretend you're an astronaut.
+
+### API
+
+#### webpack-dashboard (CLI)
+##### Options
+
+ - `-c, --color [color]` - Custom ANSI color for your dashboard
+ - `-m, --minimal` - Runs the dashboard in minimal mode
+ - `-p, --port [port]` - Custom port for socket communication
+
+##### Arguments
+
+`[command]` - The command you want to run, i.e. `webpack-dashboard -- node index.js`
+
+#### Webpack plugin
+#### Options
+ 
+ - `port` - Custom port for socket communication
+ - `handler` - Plugin handler method, i.e. `dashboard.setData`
+
+*Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`*
 
 #### Credits
 

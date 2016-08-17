@@ -71,18 +71,18 @@ DashboardPlugin.prototype.apply = function(compiler) {
       type: "status",
       value: "Success"
     }, {
+      type: "progress",
+      value: 0
+    }, {
+      type: "operations",
+      value: "idle"
+    }, {
       type: "stats",
       value: {
         errors: stats.hasErrors(),
         warnings: stats.hasWarnings(),
         data: stats.toJson()
       }
-    }, {
-      type: "progress",
-      value: 0
-    }, {
-      type: "operations",
-      value: "idle"
     }]);
   });
 
