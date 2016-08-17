@@ -33,7 +33,63 @@ app.use(require('webpack-hot-middleware')(compiler, {
 }));
 ```
 
-#### webpack-dev-middleware
+#### package.json (recommended)
+
+After the initial release, it was decided that running a separate process and communicating via sockets would be more efficient and solves a lot of problems with stdout.
+
+The new way to run the dashbaord is to add the plugin, and then call the provided binary.
+
+First, import add the plugin to your webpack config, or apply it to your compiler:
+
+```js
+// In your webpack config:
+plugins: [
+	new DashboardPlugin();
+]
+// Applying to compiler
+compiler.apply(new DashboardPlugin());
+```
+Note, in the new version you don't pass the handler function to the `DashboardPlugin` constructor. Because sockets use a port, the constructor now supports passing an options object that can include a custom port (if the default is giving you problems). See how below:
+
+```js
+plugins: [
+	new DashboardPlugin({ port: 3001 });
+]
+```
+
+The next step, is to call webpack-dashboard from your `package.json`. So if your dev server start script previously looked like:
+
+```js
+"scripts": {
+	"dev": "node index.js"
+}
+```
+
+You would change that to:
+
+```js
+"scripts": {
+	"dev": "webpack-dashboard -- node index.js"
+}
+```
+
+Again, the new version uses sockets, so if you want to use a custom port you can use the `-p` option to pass that:
+
+```js
+"scripts": {
+	"dev": "webpack-dashboard -p 3001 -- node index.js"
+}
+```
+You can also pass a supported ANSI color using the `-c` flag to custom colorize your dashboard:
+
+```js
+"scripts": {
+	"dev": "webpack-dashboard -c magenta -- node index.js"
+}
+```
+Now you can just run your start script like normal, except now, you are awesome. Not that you weren't before. I'm just saying. More so.
+
+#### webpack-dev-middleware (the old way)
 
 First, import the dashboard and webpack plugin:
 
@@ -52,7 +108,7 @@ var dashboard = new Dashboard();
 compiler.apply(new DashboardPlugin(dashboard.setData));
 ```
 
-#### webpack-dev-server
+#### webpack-dev-server (the old way)
 
 If you are running the dev server without an express server, you'll have to initialize the dashboard in your `webpack.config.js`.
 

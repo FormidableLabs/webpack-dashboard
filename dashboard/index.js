@@ -31,72 +31,72 @@ function Dashboard(options) {
   this.screen.render();
 }
 
-Dashboard.prototype.setData = function(data) {
-  switch (data.type) {
-    case 'progress': {
-      var percent = parseInt(data.value * 100);
-      this.progressbar.setProgress(percent);
-      this.screen.render();
-      break;
-    }
-    case 'operations': {
-      this.operations.setContent(data.value);
-      this.screen.render();
-      break;
-    }
-    case 'status': {
-      var content;
+Dashboard.prototype.setData = function(dataArr) {
+  var self = this;
 
-      switch(data.value) {
-        case 'Success':
-          content = '{green-fg}{bold}' + data.value + '{/}';
-          break;
-        case 'Failed':
-          content = '{red-fg}{bold}' + data.value + '{/}';
-          break;
-        default:
-          content = '{white-fg}{bold}' + data.value + '{/}';
+  dataArr.forEach(function(data) {
+    switch (data.type) {
+      case 'progress': {
+        var percent = parseInt(data.value * 100);
+        self.progressbar.setProgress(percent);
+        break;
       }
-
-      this.status.setContent(content);
-      this.screen.render();
-
-      break;
-    }
-    case 'stats': {
-      var stats = data.value;
-      if (stats.hasErrors()) {
-        this.status.setContent('{red-fg}{bold}Failed{/}');
+      case 'operations': {
+        self.operations.setContent(data.value);
+        break;
       }
-      this.logText.log(formatOutput(stats));
-      this.moduleTable.setData(formatModules(stats));
-      this.assetTable.setData(formatAssets(stats));
-      this.screen.render();
+      case 'status': {
+        var content;
 
-      break;
+        switch(data.value) {
+          case 'Success':
+            content = '{green-fg}{bold}' + data.value + '{/}';
+            break;
+          case 'Failed':
+            content = '{red-fg}{bold}' + data.value + '{/}';
+            break;
+          default:
+            content = '{white-fg}{bold}' + data.value + '{/}';
+        }
+        self.status.setContent(content);
+        break;
+      }
+      case 'stats': {
+        var stats = {
+          hasErrors: function() {
+            return data.value.errors;
+          },
+          hasWarnings: function() {
+            return data.value.warnings;
+          },
+          toJson: function() {
+            return data.value.data;
+          }
+        };
+        if (stats.hasErrors()) {
+          self.status.setContent('{red-fg}{bold}Failed{/}');
+        }
+        self.logText.log(formatOutput(stats));
+        self.moduleTable.setData(formatModules(stats));
+        self.assetTable.setData(formatAssets(stats));
+        break;
+      }
+      case 'log': {
+        self.logText.log(data.value);
+        break;
+      }
+      case 'error': {
+        self.logText.log("{red-fg}" + data.value + "{/}");
+        break;
+      }
+      case 'clear': {
+        self.logText.setContent('');
+        break;
+      }
     }
-    case 'log': {
-      this.logText.log(data.value);
+  });
 
-      this.screen.render();
-      break;
-    }
-    case 'error': {
-      this.logText.log("{red-fg}" + data.value + "{/}");
-
-      this.screen.render();
-      break;
-    }
-    case 'clear': {
-      this.logText.setContent('');
-
-      this.screen.render();
-      break;
-    }
-    default: {
-      break;
-    }
-  }
+  this.screen.render();
 };
 
 Dashboard.prototype.layoutLog = function() {
@@ -123,6 +123,7 @@ Dashboard.prototype.layoutLog = function() {
     tags: true,
     width: "100%-5",
     scrollable: true,
+    input: true,
     alwaysScroll: true,
     scrollbar: {
       ch: ' ',
@@ -162,6 +163,7 @@ Dashboard.prototype.layoutModules = function() {
     width: "100%-5",
     align: "left",
     pad: 1,
+    shrink: true,
     scrollable: true,
     alwaysScroll: true,
     scrollbar: {
@@ -291,7 +293,7 @@ Dashboard.prototype.layoutStatus = function() {
 
   this.progressbar = blessed.ProgressBar({
     parent: this.progress,
-    height: 1,
+    height: "25%",
     orientation: "horizontal",
     style: {
       bar: {

@@ -2,87 +2,98 @@
 "use strict";
 
 var webpack = require("webpack");
+var net = require("net");
+var JsonSocket = require("json-socket");
 
 function noop() {}
 
 function DashboardPlugin(options) {
   if (typeof options === "function") {
-    options = {
-      handler: options
-    };
+    this.handler = options;
+  } else {
+    options = options || {};
+    this.port = options.port || 9838;
+    this.handler = options.handler || null;
   }
-  options = options || {};
-  this.handler = options.handler;
 }
 
 DashboardPlugin.prototype.apply = function(compiler) {
-  var handler = this.handler || noop;
-  handler = process.send || handler;
+  var handler = this.handler;
+
+  if (!handler) {
+    handler = noop;
+    var port = this.port;
+    var host = '127.0.0.1';
+    var socket = new JsonSocket(new net.Socket());
+    socket.connect(port, host);
+    socket.on('connect', function() {
+      handler = socket.sendMessage.bind(socket);
+    });
+  }
 
   compiler.apply(new webpack.ProgressPlugin(function (percent, msg) {
-    handler.call(null, {
+    handler.call(null, [{
+      type: "status",
+      value: "Compiling"
+    }, {
       type: "progress",
       value: percent
-    });
-    handler.call(null, {
+    }, {
       type: "operations",
       value: msg
-    });
+    }]);
   }));
 
   compiler.plugin("compile", function() {
-    handler.call(null, {
+    handler.call(null, [{
       type: "status",
       value: "Compiling"
-    });
+    }]);
   });
 
   compiler.plugin("invalid", function() {
-    handler.call(null, {
+    handler.call(null, [{
       type: "status",
       value: "Invalidated"
-    });
-    handler.call(null, {
+    }, {
       type: "progress",
       value: 0
-    });
-    handler.call(null, {
+    }, {
       type: "operations",
       value: "idle"
-    });
-    handler.call(null, {
+    }, {
       type: "clear"
-    });
+    }]);
   });
 
   compiler.plugin("done", function(stats) {
-    handler.call(null, {
+    handler.call(null, [{
       type: "status",
       value: "Success"
-    });
-    handler.call(null, {
+    }, {
       type: "stats",
-      value: stats
-    });
-    handler.call(null, {
+      value: {
+        errors: stats.hasErrors(),
+        warnings: stats.hasWarnings(),
+        data: stats.toJson()
+      }
+    }, {
       type: "progress",
       value: 0
-    });
-    handler.call(null, {
+    }, {
       type: "operations",
       value: "idle"
-    });
+    }]);
   });
 
   compiler.plugin("failed", function() {
-    handler.call(null, {
+    handler.call(null, [{
       type: "status",
       value: "Failed"
-    });
-    handler.call(null, {
+    }, {
       type: "operations",
       value: "idle"
-    });
+    }]);
   });
 
 }

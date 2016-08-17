@@ -2,15 +2,18 @@
 "use strict";
 
 var commander = require("commander");
-var spawn = require('child_process').spawn;
-var path = require('path');
-var Dashboard = require('../dashboard/index.js');
+var spawn = require("child_process").spawn;
+var Dashboard = require("../dashboard/index.js");
+var net = require("net");
+var JsonSocket = require("json-socket");
 
 var program = new commander.Command("webpack-dashboard");
 
 var pkg = require("../package.json");
 program.version(pkg.version);
-program.usage("[script] [arguments]");
+program.option('-c, --color [color]', 'Dashboard color');
+program.option('-p, --port [port]', 'Socket listener port');
+program.usage("[options] -- [script] [arguments]");
 program.parse(process.argv);
 
 if (!program.args.length) {
@@ -27,24 +30,36 @@ try {
     stdio: [null, null, null, 'ipc']
   });
 
-  var dashboard = new Dashboard();
+  var dashboard = new Dashboard({
+    color: program.color || "green"
+  });
 
-  child.on("message", function (data) {
-    data.type && dashboard.setData(data);
+  var port = program.port || 9838;
+  var server = net.createServer();
+  server.listen(port);
+  server.on('connection', function(socket) {
+    socket = new JsonSocket(socket);
+    socket.on('message', function(message) {
+      dashboard.setData(message);
+    });
+  });
+
+  server.on('error', function(err) {
+    console.log(err);
   });
 
   child.stdout.on('data', function (data) {
-    dashboard.setData({
+    dashboard.setData([{
       type: 'log',
       value: data.toString("utf8")
-    });
+    }]);
   });
 
   child.stderr.on('data', function (data) {
-    dashboard.setData({
+    dashboard.setData([{
       type: 'error',
       value: data.toString("utf8")
-    });
+    }]);
   });
 
 } catch (e) {
