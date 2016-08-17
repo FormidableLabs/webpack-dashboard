@@ -50,6 +50,8 @@ Dashboard.prototype.setData = function(data) {
 
       if (percent && percent > 0 && percent < 100) {
         this.progress.setContent(percent.toString() + '%');
+      } else {
+        this.progress.setContent('');
       }
 
       this.screen.render();
