@@ -47,6 +47,11 @@ Dashboard.prototype.setData = function(data) {
     case 'progress': {
       var percent = parseInt(data.value * 100);
       this.progressbar.setProgress(percent);
+
+      if (percent && percent > 0 && percent < 100) {
+        this.progress.setContent(percent.toString() + '%');
+      }
+
       this.screen.render();
       break;
     }
