@@ -2,7 +2,7 @@
 "use strict";
 
 var commander = require("commander");
-var spawn = require("child_process").spawn;
+var spawn = require("cross-spawn");
 var Dashboard = require("../dashboard/index.js");
 var net = require("net");
 var JsonSocket = require("json-socket");
@@ -26,7 +26,8 @@ var command = program.args[0];
 var args = program.args.slice(1);
 
 var child = spawn(command, args, {
-  stdio: [null, null, null, 'ipc']
+  stdio: [null, null, null, 'ipc'],
+  detached: true
 });
 
 var dashboard = new Dashboard({
@@ -63,5 +64,5 @@ child.stderr.on('data', function (data) {
 });
 
 process.on('exit', function () {
-  child.kill();
+  process.kill(-child.pid);
 });
