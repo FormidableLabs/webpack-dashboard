@@ -18,7 +18,7 @@ That's cool, but its mostly noisy and scrolly and not super helpful. This plugin
 
 ### Use
 
-*Note that terminal mouse events are not currently supported by the default OSX Terminal.app. While the rest of the dashboard works correctly, if you wish to scroll through the logs and modules, you may want to use an alternative such as [iTerm2](https://www.iterm2.com/index.html)*
+***OS X Terminal.app users:*** Make sure that **View → Allow Mouse Reporting** is enabled, otherwise scrolling through logs and modules won't work. If your version of Terminal.app doesn't have this feature, you may want to check out an alternative such as [iTerm2](https://www.iterm2.com/index.html).
 
 #### Turn off errors
 
