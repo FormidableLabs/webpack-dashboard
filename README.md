@@ -18,6 +18,8 @@ That's cool, but its mostly noisy and scrolly and not super helpful. This plugin
 
 ### Use
 
+*Note that terminal mouse events are not currently supported by the default OSX Terminal.app. While the rest of the dashboard works correctly, if you wish to scroll through the logs and modules, you may want to use an alternative such as [iTerm2](https://www.iterm2.com/index.html)*
+
 #### Turn off errors
 
 You need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending upon your setup:
@@ -173,7 +175,7 @@ Then, sit back and pretend you're an astronaut.
 
 #### Webpack plugin
 #### Options
- 
+
  - `port` - Custom port for socket communication
  - `handler` - Plugin handler method, i.e. `dashboard.setData`
 

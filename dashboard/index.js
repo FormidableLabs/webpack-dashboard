@@ -14,7 +14,7 @@ function Dashboard(options) {
 
   this.screen = blessed.screen({
     smartCSR: true,
-    title: 'reactotron',
+    title: 'webpack-dashboard',
     dockBorders: false,
     fullUnicode: true,
     autoPadding: true
