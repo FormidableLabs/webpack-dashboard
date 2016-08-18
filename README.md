@@ -55,7 +55,7 @@ plugins: [
 // If you are using an express based dev server, add it with compiler.apply
 compiler.apply(new DashboardPlugin());
 ```
-Note, in the new version you don't pass the handler function to the `DashboardPlugin` constructor. Because sockets use a port, the constructor now supports passing an options object that can include a custom port (if the default is giving you problems). See how below:
+Note, in the new version you don't pass the handler function to the `DashboardPlugin` constructor. Because sockets use a port, the constructor now supports passing an options object that can include a custom port (if the default is giving you problems). If using a custom port, the port number must be included in the options object here, as well as passed using the -p flag in the call to webpack-dashboard. See how below:
 
 ```js
 plugins: [
@@ -87,7 +87,7 @@ If you are using the webpack-dev-server binary, you can do something like:
 }
 ```
 
-Again, the new version uses sockets, so if you want to use a custom port you can use the `-p` option to pass that:
+Again, the new version uses sockets, so if you want to use a custom port you must use the `-p` option to pass that:
 
 ```js
 "scripts": {
