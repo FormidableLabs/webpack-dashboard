@@ -49,7 +49,7 @@ var DashboardPlugin = require('webpack-dashboard/plugin');
 
 // If you aren't using express, add it to your webpack configs plugins section:
 plugins: [
-	new DashboardPlugin();
+	new DashboardPlugin()
 ]
 
 // If you are using an express based dev server, add it with compiler.apply
@@ -59,7 +59,7 @@ Note, in the new version you don't pass the handler function to the `DashboardPl
 
 ```js
 plugins: [
-	new DashboardPlugin({ port: 3001 });
+	new DashboardPlugin({ port: 3001 })
 ]
 ```
 
