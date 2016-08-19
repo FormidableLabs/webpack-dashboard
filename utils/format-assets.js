@@ -18,14 +18,18 @@ function getAssets(stats) {
 }
 
 function printAssets(tree) {
+  var total = 0;
   var output = [
     ['Name', 'Size']
   ];
   tree.forEach(function(assets) {
     assets.forEach(function(asset) {
+      total += asset.size;
       output.push([asset.name, filesize(asset.size)]);
     });
   });
+
+  output.push(['Total', filesize(total)]);
 
   return output;
 }
