@@ -28,7 +28,7 @@ var args = program.args.slice(1);
 var env = {};
 
 if (supportsColor) {
-  args.push("--color");
+  //args.push("--color");
 }
 
 var child = spawn(command, args, {
