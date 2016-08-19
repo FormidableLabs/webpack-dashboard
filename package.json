@@ -31,7 +31,7 @@
     "commander": "^2.9.0",
     "cross-spawn": "^4.0.0",
     "filesize": "^3.3.0",
-    "json-socket": "^0.1.2",
+    "socket.io": "^1.4.8",
     "supports-color": "^3.1.2",
     "webpack": "^1.13.1"
   }
