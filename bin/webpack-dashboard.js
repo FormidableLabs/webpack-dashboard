@@ -2,7 +2,7 @@
 "use strict";
 
 var commander = require("commander");
-var spawn = require("child_process").spawn;
+var spawn = require("cross-spawn");
 var Dashboard = require("../dashboard/index.js");
 var net = require("net");
 var JsonSocket = require("json-socket");
@@ -11,9 +11,9 @@ var program = new commander.Command("webpack-dashboard");
 
 var pkg = require("../package.json");
 program.version(pkg.version);
-program.option('-c, --color [color]', 'Dashboard color');
-program.option('-m, --minimal', 'Minimal mode');
-program.option('-p, --port [port]', 'Socket listener port');
+program.option("-c, --color [color]", "Dashboard color");
+program.option("-m, --minimal", "Minimal mode");
+program.option("-p, --port [port]", "Socket listener port");
 program.usage("[options] -- [script] [arguments]");
 program.parse(process.argv);
 
@@ -25,8 +25,11 @@ if (!program.args.length) {
 var command = program.args[0];
 var args = program.args.slice(1);
 
+args.push("--color");
+
 var child = spawn(command, args, {
-  stdio: [null, null, null, 'ipc']
+  stdio: [null, null, null, "ipc"],
+  detached: true
 });
 
 var dashboard = new Dashboard({
@@ -37,31 +40,31 @@ var dashboard = new Dashboard({
 var port = program.port || 9838;
 var server = net.createServer();
 server.listen(port);
-server.on('connection', function(socket) {
+server.on("connection", function(socket) {
   socket = new JsonSocket(socket);
-  socket.on('message', function(message) {
+  socket.on("message", function(message) {
     dashboard.setData(message);
   });
 });
 
-server.on('error', function(err) {
+server.on("error", function(err) {
   console.log(err);
 });
 
-child.stdout.on('data', function (data) {
+child.stdout.on("data", function (data) {
   dashboard.setData([{
-    type: 'log',
+    type: "log",
     value: data.toString("utf8")
   }]);
 });
 
-child.stderr.on('data', function (data) {
+child.stderr.on("data", function (data) {
   dashboard.setData([{
-    type: 'error',
+    type: "error",
     value: data.toString("utf8")
   }]);
 });
 
-process.on('exit', function () {
-  child.kill();
+process.on("exit", function () {
+  process.kill(-child.pid);
 });
