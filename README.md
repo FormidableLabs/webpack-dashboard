@@ -20,21 +20,6 @@ That's cool, but its mostly noisy and scrolly and not super helpful. This plugin
 
 ***OS X Terminal.app users:*** Make sure that **View → Allow Mouse Reporting** is enabled, otherwise scrolling through logs and modules won't work. If your version of Terminal.app doesn't have this feature, you may want to check out an alternative such as [iTerm2](https://www.iterm2.com/index.html).
 
-#### Turn off errors
-
-You need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending upon your setup:
-
-```js
-app.use(require('webpack-dev-middleware')(compiler, {
-  quiet: true,
-  publicPath: config.output.publicPath,
-}));
-
-app.use(require('webpack-hot-middleware')(compiler, {
-  log: () => {}
-}));
-```
-
 #### package.json (recommended)
 
 After the initial release, it was decided that running a separate process and communicating via sockets would be more efficient and solves a lot of problems with stdout.
@@ -55,7 +40,7 @@ plugins: [
 // If you are using an express based dev server, add it with compiler.apply
 compiler.apply(new DashboardPlugin());
 ```
-Note, in the new version you don't pass the handler function to the `DashboardPlugin` constructor. Because sockets use a port, the constructor now supports passing an options object that can include a custom port (if the default is giving you problems). See how below:
+Note, in the new version you don't pass the handler function to the `DashboardPlugin` constructor. Because sockets use a port, the constructor now supports passing an options object that can include a custom port (if the default is giving you problems). If using a custom port, the port number must be included in the options object here, as well as passed using the -p flag in the call to webpack-dashboard. See how below:
 
 ```js
 plugins: [
@@ -87,7 +72,7 @@ If you are using the webpack-dev-server binary, you can do something like:
 }
 ```
 
-Again, the new version uses sockets, so if you want to use a custom port you can use the `-p` option to pass that:
+Again, the new version uses sockets, so if you want to use a custom port you must use the `-p` option to pass that:
 
 ```js
 "scripts": {
@@ -103,7 +88,24 @@ You can also pass a supported ANSI color using the `-c` flag to custom colorize 
 ```
 Now you can just run your start script like normal, except now, you are awesome. Not that you weren't before. I'm just saying. More so.
 
-#### webpack-dev-middleware (the old way)
+### Use (The Old Way)
+
+#### Turn off errors
+
+You need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending upon your setup:
+
+```js
+app.use(require('webpack-dev-middleware')(compiler, {
+  quiet: true,
+  publicPath: config.output.publicPath,
+}));
+
+app.use(require('webpack-hot-middleware')(compiler, {
+  log: () => {}
+}));
+```
+
+#### webpack-dev-middleware
 
 First, import the dashboard and webpack plugin:
 
@@ -122,7 +124,7 @@ var dashboard = new Dashboard();
 compiler.apply(new DashboardPlugin(dashboard.setData));
 ```
 
-#### webpack-dev-server (the old way)
+#### webpack-dev-server
 
 If you are running the dev server without an express server, you'll have to initialize the dashboard in your `webpack.config.js`.
 

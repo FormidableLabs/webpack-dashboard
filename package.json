@@ -1,6 +1,6 @@
 {
   "name": "webpack-dashboard",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "a CLI dashboard for webpack dev server",
   "bin": "bin/webpack-dashboard.js",
   "main": "index.js",
@@ -29,6 +29,7 @@
   "dependencies": {
     "blessed": "^0.1.81",
     "commander": "^2.9.0",
+    "cross-spawn": "^4.0.0",
     "filesize": "^3.3.0",
     "json-socket": "^0.1.2",
     "webpack": "^1.13.1"

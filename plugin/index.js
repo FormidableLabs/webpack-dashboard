@@ -23,10 +23,10 @@ DashboardPlugin.prototype.apply = function(compiler) {
   if (!handler) {
     handler = noop;
     var port = this.port;
-    var host = '127.0.0.1';
+    var host = "127.0.0.1";
     var socket = new JsonSocket(new net.Socket());
     socket.connect(port, host);
-    socket.on('connect', function() {
+    socket.on("connect", function() {
       handler = socket.sendMessage.bind(socket);
     });
   }
