@@ -5,8 +5,7 @@ var commander = require("commander");
 var spawn = require("cross-spawn");
 var supportsColor = require("supports-color");
 var Dashboard = require("../dashboard/index.js");
-var net = require("net");
-var JsonSocket = require("json-socket");
+var SocketIO = require("socket.io");
 
 var program = new commander.Command("webpack-dashboard");
 
@@ -42,10 +41,8 @@ var dashboard = new Dashboard({
 });
 
 var port = program.port || 9838;
-var server = net.createServer();
-server.listen(port);
+var server = SocketIO(port);
 server.on("connection", function(socket) {
-  socket = new JsonSocket(socket);
   socket.on("message", function(message) {
     dashboard.setData(message);
   });
