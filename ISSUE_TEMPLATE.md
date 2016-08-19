@@ -5,29 +5,13 @@
 
 ###### If the issue is visual, please provide screenshots here
 
-...
+====================================================================
+
+###### Steps to reproduce the problem
 
 ====================================================================
 
-#### Steps to reproduce the problem
-
-...
-
-====================================================================
-
-#### What is the expected behaviour?
-
-...
-
-====================================================================
-
-#### What is observed behavior?
-
-...
-
-====================================================================
-
-#### Please provide a gist of relevant files
+###### Please provide a gist of relevant files
 
 1. package.json (specifically the script you are using to start the dashboard)
 2. webpack.config.js
@@ -35,7 +19,7 @@
 
 ====================================================================
 
-#### More Details
+###### More Details
 
 - What operating system are you on?
 - What terminal application are you using?
