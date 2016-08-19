@@ -25,6 +25,8 @@ if (!program.args.length) {
 var command = program.args[0];
 var args = program.args.slice(1);
 
+args.push("--color");
+
 var child = spawn(command, args, {
   stdio: [null, null, null, "ipc"],
   detached: true
