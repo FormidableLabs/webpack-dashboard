@@ -3,7 +3,6 @@
 
 var commander = require("commander");
 var spawn = require("cross-spawn");
-var supportsColor = require("supports-color");
 var Dashboard = require("../dashboard/index.js");
 var SocketIO = require("socket.io");
 
@@ -24,13 +23,12 @@ if (!program.args.length) {
 
 var command = program.args[0];
 var args = program.args.slice(1);
-var env = {};
+var env = process.env;
 
-if (supportsColor) {
-  //args.push("--color");
-}
+env.FORCE_COLOR = true;
 
 var child = spawn(command, args, {
+  env: env,
   stdio: [null, null, null, "ipc"],
   detached: true
 });
@@ -61,7 +59,7 @@ child.stdout.on("data", function (data) {
 
 child.stderr.on("data", function (data) {
   dashboard.setData([{
-    type: "error",
+    type: "log",
     value: data.toString("utf8")
   }]);
 });

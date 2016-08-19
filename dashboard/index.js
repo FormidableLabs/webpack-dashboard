@@ -91,10 +91,6 @@ Dashboard.prototype.setData = function(dataArr) {
         self.logText.log(data.value);
         break;
       }
-      case "error": {
-        self.logText.log("{red-fg}" + data.value + "{/}");
-        break;
-      }
       case "clear": {
         self.logText.setContent("");
         break;
