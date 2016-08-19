@@ -3,6 +3,7 @@
 
 var commander = require("commander");
 var spawn = require("cross-spawn");
+var supportsColor = require("supports-color");
 var Dashboard = require("../dashboard/index.js");
 var net = require("net");
 var JsonSocket = require("json-socket");
@@ -24,8 +25,11 @@ if (!program.args.length) {
 
 var command = program.args[0];
 var args = program.args.slice(1);
+var env = {};
 
-args.push("--color");
+if (supportsColor) {
+  args.push("--color");
+}
 
 var child = spawn(command, args, {
   stdio: [null, null, null, "ipc"],
