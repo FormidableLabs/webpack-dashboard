@@ -27,8 +27,8 @@ var command = program.args[0];
 var args = program.args.slice(1);
 var env = {};
 
-if (supportsColor) {
-  //args.push("--color");
+if (supportsColor && command === 'webpack') {
+  args.push("--color");
 }
 
 var child = spawn(command, args, {
