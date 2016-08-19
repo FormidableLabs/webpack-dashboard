@@ -24,8 +24,10 @@ function printAssets(tree) {
   ];
   tree.forEach(function(assets) {
     assets.forEach(function(asset) {
-      total += asset.size;
-      output.push([asset.name, filesize(asset.size)]);
+      if ( asset.name.indexOf('hot-update') < 0 ) {
+        total += asset.size;
+        output.push([asset.name, filesize(asset.size)]);
+      }
     });
   });
 
