@@ -42,6 +42,7 @@ Dashboard.prototype.setData = function(dataArr) {
         if (self.minimal) {
           percent && self.progress.setContent(percent.toString() + "%");
         } else {
+          percent && self.progressbar.setContent(percent.toString() + "%");
           self.progressbar.setProgress(percent);
         }
         break;
