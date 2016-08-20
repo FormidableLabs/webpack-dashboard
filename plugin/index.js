@@ -3,7 +3,7 @@
 
 var webpack = require("webpack");
 var net = require("net");
-var JsonSocket = require("json-socket");
+var SocketIOClient = require("socket.io-client");
 
 function noop() {}
 
@@ -23,11 +23,10 @@ DashboardPlugin.prototype.apply = function(compiler) {
   if (!handler) {
     handler = noop;
     var port = this.port;
-    var host = '127.0.0.1';
-    var socket = new JsonSocket(new net.Socket());
-    socket.connect(port, host);
-    socket.on('connect', function() {
-      handler = socket.sendMessage.bind(socket);
+    var host = "127.0.0.1";
+    var socket = SocketIOClient("http://" + host + ":" + port);
+    socket.on("connect", function() {
+      handler = socket.emit.bind(socket, "message");
     });
   }
 
