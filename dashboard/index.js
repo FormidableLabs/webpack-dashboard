@@ -6,15 +6,15 @@ var blessed = require('blessed');
 var formatOutput = require('../utils/format-output.js');
 var formatModules = require('../utils/format-modules.js');
 var formatAssets = require('../utils/format-assets.js');
-var mockConsole = require('../utils/mock-console.js');
 
 function Dashboard(options) {
   this.color = options && options.color || "green";
+  this.minimal = options && options.minimal || false;
   this.setData = this.setData.bind(this);
 
   this.screen = blessed.screen({
     smartCSR: true,
-    title: 'reactotron',
+    title: 'webpack-dashboard',
     dockBorders: false,
     fullUnicode: true,
     autoPadding: true
@@ -22,18 +22,8 @@ function Dashboard(options) {
 
   this.layoutLog.call(this);
   this.layoutStatus.call(this);
-  this.layoutModules.call(this);
-  this.layoutAssets.call(this);
-
-  var self = this;
-  Object.defineProperty(global, 'console', {
-    value: mockConsole(function(value) {
-      self.setData({
-        type: 'log',
-        value: value
-      });
-    })
-  });
+  !this.minimal && this.layoutModules.call(this);
+  !this.minimal && this.layoutAssets.call(this);
 
   this.screen.key(['escape', 'q', 'C-c'], function() {
     process.exit(0);
@@ -42,74 +32,84 @@ function Dashboard(options) {
   this.screen.render();
 }
 
-Dashboard.prototype.setData = function(data) {
-  switch (data.type) {
-    case 'progress': {
-      var percent = parseInt(data.value * 100);
-      this.progressbar.setProgress(percent);
-      this.screen.render();
-      break;
-    }
-    case 'operations': {
-      this.operations.setContent(data.value);
-      this.screen.render();
-      break;
-    }
-    case 'status': {
-      var content;
+Dashboard.prototype.setData = function(dataArr) {
+  var self = this;
 
-      switch(data.value) {
-        case 'Success':
-          content = '{green-fg}{bold}' + data.value + '{/}';
-          break;
-        case 'Failed':
-          content = '{red-fg}{bold}' + data.value + '{/}';
-          break;
-        default:
-          content = '{white-fg}{bold}' + data.value + '{/}';
+  dataArr.forEach(function(data) {
+    switch (data.type) {
+      case 'progress': {
+        var percent = parseInt(data.value * 100);
+        if (self.minimal) {
+          percent && self.progress.setContent(percent.toString() + '%');
+        } else {
+          self.progressbar.setProgress(percent);
+        }
+        break;
       }
-
-      this.status.setContent(content);
-      this.screen.render();
-
-      break;
-    }
-    case 'stats': {
-      var stats = data.value;
-      if (stats.hasErrors()) {
-        this.status.setContent('{red-fg}{bold}Failed{/}');
+      case 'operations': {
+        self.operations.setContent(data.value);
+        break;
       }
-      this.logText.log(formatOutput(stats));
-      this.moduleTable.setData(formatModules(stats));
-      this.assetTable.setData(formatAssets(stats));
-      this.screen.render();
+      case 'status': {
+        var content;
 
-      break;
+        switch(data.value) {
+          case 'Success':
+            content = '{green-fg}{bold}' + data.value + '{/}';
+            break;
+          case 'Failed':
+            content = '{red-fg}{bold}' + data.value + '{/}';
+            break;
+          default:
+            content = '{white-fg}{bold}' + data.value + '{/}';
+        }
+        self.status.setContent(content);
+        break;
+      }
+      case 'stats': {
+        var stats = {
+          hasErrors: function() {
+            return data.value.errors;
+          },
+          hasWarnings: function() {
+            return data.value.warnings;
+          },
+          toJson: function() {
+            return data.value.data;
+          }
+        };
+        if (stats.hasErrors()) {
+          self.status.setContent('{red-fg}{bold}Failed{/}');
+        }
+        self.logText.log(formatOutput(stats));
+        !self.minimal && self.moduleTable.setData(formatModules(stats));
+        !self.minimal && self.assetTable.setData(formatAssets(stats));
+        break;
+      }
+      case 'log': {
+        self.logText.log(data.value);
+        break;
+      }
+      case 'error': {
+        self.logText.log("{red-fg}" + data.value + "{/}");
+        break;
+      }
+      case 'clear': {
+        self.logText.setContent('');
+        break;
+      }
     }
-    case 'log': {
-      this.logText.log(data.value);
+  });
 
-      this.screen.render();
-      break;
-    }
-    case 'clear': {
-      this.logText.setContent('');
-
-      this.screen.render();
-      break;
-    }
-    default: {
-      break;
-    }
-  }
+  this.screen.render();
 };
 
 Dashboard.prototype.layoutLog = function() {
   this.log = blessed.box({
     label: 'Log',
     padding: 1,
-    width: '75%',
-    height: '42%',
+    width: this.minimal ? "100%" : '75%',
+    height: this.minimal ? "70%" : '42%',
     left: '0%',
     top: '0%',
     border: {
@@ -128,6 +128,7 @@ Dashboard.prototype.layoutLog = function() {
     tags: true,
     width: "100%-5",
     scrollable: true,
+    input: true,
     alwaysScroll: true,
     scrollbar: {
       ch: ' ',
@@ -167,6 +168,7 @@ Dashboard.prototype.layoutModules = function() {
     width: "100%-5",
     align: "left",
     pad: 1,
+    shrink: true,
     scrollable: true,
     alwaysScroll: true,
     scrollbar: {
@@ -226,10 +228,10 @@ Dashboard.prototype.layoutAssets = function() {
 Dashboard.prototype.layoutStatus = function() {
 
   this.wrapper = blessed.layout({
-    width: "25%",
-    height: "42%",
-    top: "0%",
-    left: "75%",
+    width: this.minimal ? "100%" : "25%",
+    height: this.minimal ? "30%" : "42%",
+    top: this.minimal ? "70%" : "0%",
+    left: this.minimal ? "0%" : "75%",
     layout: "grid"
   });
 
@@ -240,8 +242,8 @@ Dashboard.prototype.layoutStatus = function() {
     padding: {
       left: 1,
     },
-    width: '100%',
-    height: '34%',
+    width: this.minimal ? "34%" : '100%',
+    height: this.minimal ? "100%" : '34%',
     valign: "middle",
     border: {
       type: 'line',
@@ -261,8 +263,8 @@ Dashboard.prototype.layoutStatus = function() {
     padding: {
       left: 1,
     },
-    width: '100%',
-    height: '34%',
+    width: this.minimal ? "34%" : '100%',
+    height: this.minimal ? "100%" : '34%',
     valign: "middle",
     border: {
       type: 'line',
@@ -279,9 +281,11 @@ Dashboard.prototype.layoutStatus = function() {
     parent: this.wrapper,
     label: 'Progress',
     tags: true,
-    padding: 1,
-    width: '100%',
-    height: '34%',
+    padding: this.minimal ? {
+      left: 1,
+    } : 1,
+    width: this.minimal ? "33%" : '100%',
+    height: this.minimal ? "100%" : '34%',
     valign: "middle",
     border: {
       type: 'line',
@@ -297,6 +301,10 @@ Dashboard.prototype.layoutStatus = function() {
   this.progressbar = blessed.ProgressBar({
     parent: this.progress,
     height: 1,
+    width: "90%",
+    top: "center",
+    left: "center",
+    hidden: this.minimal,
     orientation: "horizontal",
     style: {
       bar: {
