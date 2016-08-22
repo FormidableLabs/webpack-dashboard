@@ -65,5 +65,5 @@ child.stderr.on("data", function (data) {
 });
 
 process.on("exit", function () {
-  process.kill(-child.pid);
+  process.kill(process.platform === "win32" ? child.pid : -child.pid);
 });
