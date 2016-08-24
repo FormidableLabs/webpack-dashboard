@@ -29,7 +29,7 @@ env.FORCE_COLOR = true;
 
 var child = spawn(command, args, {
   env: env,
-  stdio: [null, null, null, "ipc"],
+  stdio: [null, null, null, null],
   detached: true
 });
 
