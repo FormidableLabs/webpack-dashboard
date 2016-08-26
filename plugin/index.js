@@ -17,8 +17,17 @@ function DashboardPlugin(options) {
   }
 }
 
+function getCurrentTime() {
+  return parseInt((new Date()).getTime() / 1000, 10);
+}
+
+function getTimeMessage(timer) {
+  return ' (' + (getCurrentTime() - timer) + 's)';
+}
+
 DashboardPlugin.prototype.apply = function(compiler) {
   var handler = this.handler;
+  var timer;
 
   if (!handler) {
     handler = noop;
@@ -39,11 +48,12 @@ DashboardPlugin.prototype.apply = function(compiler) {
       value: percent
     }, {
       type: "operations",
-      value: msg
+      value: msg + getTimeMessage(timer)
     }]);
   }));
 
   compiler.plugin("compile", function() {
+    timer = getCurrentTime();
     handler.call(null, [{
       type: "status",
       value: "Compiling"
@@ -74,7 +84,7 @@ DashboardPlugin.prototype.apply = function(compiler) {
       value: 0
     }, {
       type: "operations",
-      value: "idle"
+      value: "idle" + getTimeMessage(timer)
     }, {
       type: "stats",
       value: {
@@ -91,7 +101,7 @@ DashboardPlugin.prototype.apply = function(compiler) {
       value: "Failed"
     }, {
       type: "operations",
-      value: "idle"
+      value: "idle" + getTimeMessage(timer)
     }]);
   });
 
