@@ -90,7 +90,8 @@ Dashboard.prototype.setData = function(dataArr) {
         break;
       }
       case "log": {
-        self.logText.log(data.value);
+        var filteredValue = data.value.replace(/[{}]/g, "");
+        self.logText.log(filteredValue);
         break;
       }
       case "clear": {
