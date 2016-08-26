@@ -8,13 +8,15 @@ var formatModules = require("../utils/format-modules.js");
 var formatAssets = require("../utils/format-assets.js");
 
 function Dashboard(options) {
+  var title = options && options.title || "webpack-dashboard";
+
   this.color = options && options.color || "green";
   this.minimal = options && options.minimal || false;
   this.setData = this.setData.bind(this);
 
   this.screen = blessed.screen({
     smartCSR: true,
-    title: "webpack-dashboard",
+    title: title,
     dockBorders: false,
     fullUnicode: true,
     autoPadding: true

@@ -12,6 +12,7 @@ var pkg = require("../package.json");
 program.version(pkg.version);
 program.option("-c, --color [color]", "Dashboard color");
 program.option("-m, --minimal", "Minimal mode");
+program.option("-t, --title [title]", "Terminal window title");
 program.option("-p, --port [port]", "Socket listener port");
 program.usage("[options] -- [script] [arguments]");
 program.parse(process.argv);
@@ -35,7 +36,8 @@ var child = spawn(command, args, {
 
 var dashboard = new Dashboard({
   color: program.color || "green",
-  minimal: program.minimal || false
+  minimal: program.minimal || false,
+  title: program.title || null
 });
 
 var port = program.port || 9838;

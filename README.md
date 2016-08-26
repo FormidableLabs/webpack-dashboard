@@ -169,6 +169,7 @@ Then, sit back and pretend you're an astronaut.
 
  - `-c, --color [color]` - Custom ANSI color for your dashboard
  - `-m, --minimal` - Runs the dashboard in minimal mode
+ - `-t, --title [title]` - Set title of terminal window
  - `-p, --port [port]` - Custom port for socket communication
 
 ##### Arguments
