@@ -13,8 +13,8 @@ function modulePath(identifier) {
 }
 
 function moduleDirPath(modulePath) {
-  var moduleDirRegex = new RegExp('(.*)node_modules\\' + path.sep + '.*?\\' + path.sep);
-  return modulePath.match(moduleDirRegex)[0];
+  var moduleDirRegex = new RegExp('(.*?node_modules\\' + path.sep + '.*?)\\' + path.sep);
+  return modulePath.match(moduleDirRegex)[1];
 }
 
 function formatModules(stats) {
@@ -30,7 +30,7 @@ function formatModules(stats) {
 
 function printTrees(trees) {
   var output = [
-    ['Name', 'Version', 'Size', 'Percentage']
+    ['Name', 'Size', 'Percentage']
   ];
   trees.forEach(function(tree) {
     printDependencySizeTree(tree, 0, function(data) {
@@ -57,7 +57,7 @@ function printDependencySizeTree(node, depth, outputFn) {
   for (var child of childrenBySize) {
     ++includedCount;
     var percentage = ((child.size/totalSize) * 100).toPrecision(3);
-    outputFn([prefix + child.packageName, prefix + child.packageVersion, prefix + filesize(child.size), prefix + percentage + "%"]);
+    outputFn([prefix + child.packageName + '@' + child.packageVersion, prefix + filesize(child.size), prefix + percentage + "%"]);
 
     printDependencySizeTree(child, depth + 1, outputFn);
 
@@ -70,7 +70,7 @@ function printDependencySizeTree(node, depth, outputFn) {
 
   if (depth === 0 || remainder !== totalSize) {
     var percentage = ((remainder/totalSize) * 100).toPrecision(3);
-    outputFn([prefix + "<self>", prefix, prefix + filesize(remainder), prefix + percentage + "%"]);
+    outputFn([prefix + "<self>", prefix + filesize(remainder), prefix + percentage + "%"]);
   }
 }
 

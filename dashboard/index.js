@@ -175,7 +175,7 @@ Dashboard.prototype.layoutModules = function() {
     keys: true,
     vi: true,
     mouse: true,
-    data: [['Name', 'Version', 'Size', 'Percentage']]
+    data: [['Name', 'Size', 'Percentage']]
   });
 
   this.screen.append(this.modules);
