@@ -66,13 +66,8 @@ function formatOutput(stats) {
       output.push('');
     });
 
-    output.push('You may use special comments to disable some warnings.');
-    output.push('Use {yellow-fg}// eslint-disable-next-line {/yellow-fg} to ignore the next line.');
-    output.push('Use {yellow-fg}/* eslint-disable */{/yellow-fg} to ignore all warnings in a file.');
-
     return lineJoin(output);
   }
 };
 
 module.exports = formatOutput;
-
