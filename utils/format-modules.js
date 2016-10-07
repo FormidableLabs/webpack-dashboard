@@ -139,7 +139,7 @@ function bundleSizeTree(stats) {
         }
         var newChild = {
           packageName: pkg,
-          packageVersion,
+          packageVersion: packageVersion,
           size: mod.size,
           children: []
         };
