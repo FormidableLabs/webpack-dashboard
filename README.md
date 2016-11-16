@@ -8,7 +8,7 @@ When using webpack, especially for a dev server, you are probably used to seeing
 
 ![http://i.imgur.com/p1uAqkD.png](http://i.imgur.com/p1uAqkD.png)
 
-That's cool, but its mostly noisy and scrolly and not super helpful. This plugin changes that. Now when you run your dev server, you basically work at NASA:
+That's cool, but it's mostly noise and scrolly and not super helpful. This plugin changes that. Now when you run your dev server, you basically work at NASA:
 
 ![http://i.imgur.com/5BWa1hB.png](http://i.imgur.com/5BWa1hB.png)
 
@@ -34,7 +34,7 @@ var DashboardPlugin = require('webpack-dashboard/plugin');
 
 // If you aren't using express, add it to your webpack configs plugins section:
 plugins: [
-	new DashboardPlugin()
+    new DashboardPlugin()
 ]
 
 // If you are using an express based dev server, add it with compiler.apply
@@ -44,15 +44,15 @@ Note, in the new version you don't pass the handler function to the `DashboardPl
 
 ```js
 plugins: [
-	new DashboardPlugin({ port: 3001 })
+    new DashboardPlugin({ port: 3001 })
 ]
 ```
 
-The next step, is to call webpack-dashboard from your `package.json`. So if your dev server start script previously looked like:
+The next step is to call webpack-dashboard from your `package.json`. So if your dev server start script previously looked like:
 
 ```js
 "scripts": {
-	"dev": "node index.js"
+    "dev": "node index.js"
 }
 ```
 
@@ -60,7 +60,7 @@ You would change that to:
 
 ```js
 "scripts": {
-	"dev": "webpack-dashboard -- node index.js"
+    "dev": "webpack-dashboard -- node index.js"
 }
 ```
 
@@ -68,7 +68,7 @@ If you are using the webpack-dev-server binary, you can do something like:
 
 ```js
 "scripts": {
-	"dev": "webpack-dashboard -- webpack-dev-server --config ./webpack.dev.js"
+    "dev": "webpack-dashboard -- webpack-dev-server --config ./webpack.dev.js"
 }
 ```
 
@@ -76,14 +76,14 @@ Again, the new version uses sockets, so if you want to use a custom port you mus
 
 ```js
 "scripts": {
-	"dev": "webpack-dashboard -p 3001 -- node index.js"
+    "dev": "webpack-dashboard -p 3001 -- node index.js"
 }
 ```
 You can also pass a supported ANSI color using the `-c` flag to custom colorize your dashboard:
 
 ```js
 "scripts": {
-	"dev": "webpack-dashboard -c magenta -- node index.js"
+    "dev": "webpack-dashboard -c magenta -- node index.js"
 }
 ```
 Now you can just run your start script like normal, except now, you are awesome. Not that you weren't before. I'm just saying. More so.
@@ -92,7 +92,7 @@ Now you can just run your start script like normal, except now, you are awesome.
 
 #### Turn off errors
 
-You need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending upon your setup:
+You need to turn off all error logging by setting your webpack config `quiet` option to true. If you use webpack-hot-middleware, that is done by setting the `log` option to a no-op. You can do something sort of like this, depending on your setup:
 
 ```js
 app.use(require('webpack-dev-middleware')(compiler, {
