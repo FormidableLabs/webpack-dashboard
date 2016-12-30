@@ -30,7 +30,7 @@ First, import the plugin and add it to your webpack config, or apply it to your 
 
 ```js
 // Import the plugin:
-var DashboardPlugin = require('webpack-dashboard/plugin');
+const DashboardPlugin = require('webpack-dashboard/plugin');
 
 // If you aren't using express, add it to your webpack configs plugins section:
 plugins: [
@@ -110,16 +110,16 @@ app.use(require('webpack-hot-middleware')(compiler, {
 First, import the dashboard and webpack plugin:
 
 ```js
-var Dashboard = require('webpack-dashboard');
-var DashboardPlugin = require('webpack-dashboard/plugin');
+const Dashboard = require('webpack-dashboard');
+const DashboardPlugin = require('webpack-dashboard/plugin');
 ```
 
 Next, right after you create your compiler, create an instance of the dashboard and apply the plugin, like so:
 
 ```js
-var compiler = webpack(config);
+const compiler = webpack(config);
 
-var dashboard = new Dashboard();
+const dashboard = new Dashboard();
 
 compiler.apply(new DashboardPlugin(dashboard.setData));
 ```
@@ -131,9 +131,9 @@ If you are running the dev server without an express server, you'll have to init
 First, import the dashboard and plugin, and create a new instance of the dashboard:
 
 ```js
-var Dashboard = require('webpack-dashboard');
-var DashboardPlugin = require('webpack-dashboard/plugin');
-var dashboard = new Dashboard();
+const Dashboard = require('webpack-dashboard');
+const DashboardPlugin = require('webpack-dashboard/plugin');
+const dashboard = new Dashboard();
 ```
 
 Then, in your config under `plugins`, add:
