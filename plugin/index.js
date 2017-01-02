@@ -17,12 +17,18 @@ function DashboardPlugin(options) {
   }
 }
 
-function getCurrentTime() {
-  return parseInt((new Date()).getTime() / 1000, 10);
-}
-
 function getTimeMessage(timer) {
-  return ' (' + (getCurrentTime() - timer) + 's)';
+  var time = Date.now() - timer;
+
+  if (time >= 1000) {
+    time /= 1000;
+    time = Math.round(time);
+    time += 's';
+  } else {
+      time += 'ms';
+  }
+
+  return ' (' + time + ')';
 }
 
 DashboardPlugin.prototype.apply = function(compiler) {
@@ -53,7 +59,7 @@ DashboardPlugin.prototype.apply = function(compiler) {
   }));
 
   compiler.plugin("compile", function() {
-    timer = getCurrentTime();
+    timer = Date.now();
     handler.call(null, [{
       type: "status",
       value: "Compiling"
