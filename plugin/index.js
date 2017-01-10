@@ -98,6 +98,9 @@ DashboardPlugin.prototype.apply = function(compiler) {
         warnings: stats.hasWarnings(),
         data: stats.toJson()
       }
+    }, {
+      type: "log",
+      value: stats.toString({colors: true})
     }]);
   });
 
