@@ -82,6 +82,11 @@ DashboardPlugin.prototype.apply = function(compiler) {
   });
 
   compiler.plugin("done", function(stats) {
+    var options = stats.compilation.options;
+    var statsOptions =
+      (options.devServer && options.devServer.stats)
+        || options.stats
+        || {colors: true};
     handler.call(null, [{
       type: "status",
       value: "Success"
@@ -100,7 +105,7 @@ DashboardPlugin.prototype.apply = function(compiler) {
       }
     }, {
       type: "log",
-      value: stats.toString({colors: true})
+      value: stats.toString(statsOptions)
     }]);
   });
 
