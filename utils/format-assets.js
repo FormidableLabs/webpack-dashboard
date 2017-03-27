@@ -1,11 +1,11 @@
 "use strict";
 
-var filesize = require('filesize');
+const filesize = require("filesize");
 
 function formatAssets(stats) {
-  var json = stats.toJson();
-  var tree;
-  if (!json.hasOwnProperty('assets')) {
+  const json = stats.toJson();
+  let tree;
+  if (!json.hasOwnProperty("assets")) {
     tree = json.children.map(getAssets);
   } else {
     tree = [getAssets(json)];
@@ -18,20 +18,20 @@ function getAssets(stats) {
 }
 
 function printAssets(tree) {
-  var total = 0;
-  var output = [
-    ['Name', 'Size']
+  let total = 0;
+  const output = [
+    ["Name", "Size"]
   ];
-  tree.forEach(function(assets) {
-    assets.forEach(function(asset) {
-      if ( asset.name.indexOf('hot-update') < 0 ) {
+  tree.forEach((assets) => {
+    assets.forEach((asset) => {
+      if (asset.name.indexOf("hot-update") < 0) {
         total += asset.size;
         output.push([asset.name, filesize(asset.size)]);
       }
     });
   });
 
-  output.push(['Total', filesize(total)]);
+  output.push(["Total", filesize(total)]);
 
   return output;
 }
