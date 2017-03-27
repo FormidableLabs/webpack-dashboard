@@ -1,0 +1,5 @@
+---
+extends:
+	- formidable/configurations/es6-node
+rules:
+  func-style: off
