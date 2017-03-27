@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 "use strict";
 
 const filesize = require("filesize");
@@ -7,25 +8,50 @@ function getPosition(string, needle, i) {
   return string.split(needle, i).join(needle).length;
 }
 
-function modulePath(identifier) {
+function getModulePath(identifier) {
   const loaderRegex = /.*!/;
   return identifier.replace(loaderRegex, "");
 }
 
-function moduleDirPath(modulePath) {
+function getModuleDirPath(modulePath) {
   const moduleDirRegex = new RegExp(`(.*?node_modules\\${ path.sep }.*?)\\${ path.sep}`);
   return modulePath.match(moduleDirRegex)[1];
 }
 
-function formatModules(stats) {
-  const json = stats.toJson();
-  let trees;
-  if (!json.hasOwnProperty("modules")) {
-    trees = json.children.map(bundleSizeTree);
-  } else {
-    trees = [bundleSizeTree(json)];
+// eslint-disable-next-line max-statements
+function printDependencySizeTree(node, depth, outputFn) {
+  const childrenBySize = node.children.sort((a, b) => {
+    return b.size - a.size;
+  });
+
+  const totalSize = node.size;
+  let remainder = totalSize;
+
+  let prefix = "";
+  for (let i = 0; i < depth; i++) {
+    prefix += "  ";
   }
-  return printTrees(trees);
+
+  for (const child of childrenBySize) {
+    const percentage = (child.size / totalSize * 100).toPrecision(3);
+    outputFn([
+      `${prefix + child.packageName }@${ child.packageVersion}`,
+      prefix + filesize(child.size), `${prefix + percentage }%`
+    ]);
+
+    printDependencySizeTree(child, depth + 1, outputFn);
+
+    remainder -= child.size;
+
+    if (remainder < 0.01 * totalSize) {
+      break;
+    }
+  }
+
+  if (depth === 0 || remainder !== totalSize) {
+    const percentage = (remainder / totalSize * 100).toPrecision(3);
+    outputFn([`${prefix }<self>`, prefix + filesize(remainder), `${prefix + percentage }%`]);
+  }
 }
 
 function printTrees(trees) {
@@ -38,40 +64,6 @@ function printTrees(trees) {
     });
   });
   return output;
-}
-
-function printDependencySizeTree(node, depth, outputFn) {
-  const childrenBySize = node.children.sort((a, b) => {
-    return b.size - a.size;
-  });
-
-  const totalSize = node.size;
-  let remainder = totalSize;
-  let includedCount = 0;
-
-  let prefix = "";
-  for (let i = 0; i < depth; i++) {
-    prefix += "  ";
-  }
-
-  for (const child of childrenBySize) {
-    ++includedCount;
-    var percentage = (child.size / totalSize * 100).toPrecision(3);
-    outputFn([`${prefix + child.packageName }@${ child.packageVersion}`, prefix + filesize(child.size), `${prefix + percentage }%`]);
-
-    printDependencySizeTree(child, depth + 1, outputFn);
-
-    remainder -= child.size;
-
-    if (remainder < 0.01 * totalSize) {
-      break;
-    }
-  }
-
-  if (depth === 0 || remainder !== totalSize) {
-    var percentage = (remainder / totalSize * 100).toPrecision(3);
-    outputFn([`${prefix }<self>`, prefix + filesize(remainder), `${prefix + percentage }%`]);
-  }
 }
 
 function bundleSizeTree(stats) {
@@ -88,7 +80,7 @@ function bundleSizeTree(stats) {
 
   const modules = stats.modules.map((mod) => {
     return {
-      path: modulePath(mod.identifier),
+      path: getModulePath(mod.identifier),
       size: mod.size
     };
   });
@@ -103,7 +95,6 @@ function bundleSizeTree(stats) {
 
   modules.forEach((mod) => {
     const packages = mod.path.split(new RegExp(`\\${ path.sep }node_modules\\${ path.sep}`));
-    let filename = "";
     if (packages.length > 1) {
       const lastSegment = packages.pop();
 
@@ -115,9 +106,6 @@ function bundleSizeTree(stats) {
       }
 
       packages.push(lastPackageName);
-      filename = lastSegment.slice(lastPackageName.length + 1);
-    } else {
-      filename = packages[0];
     }
     packages.shift();
 
@@ -133,7 +121,10 @@ function bundleSizeTree(stats) {
         parent = existing[0];
       } else {
         try {
-          packageVersion = require(path.join(moduleDirPath(mod.path), "package.json")).version;
+          // eslint-disable-next-line global-require
+          packageVersion = require(
+            path.join(getModuleDirPath(mod.path), "package.json")
+          ).version;
         } catch (err) {
           packageVersion = "";
         }
@@ -150,6 +141,17 @@ function bundleSizeTree(stats) {
   });
 
   return statsTree;
+}
+
+function formatModules(stats) {
+  const json = stats.toJson();
+  let trees;
+  if (!json.hasOwnProperty("modules")) {
+    trees = json.children.map(bundleSizeTree);
+  } else {
+    trees = [bundleSizeTree(json)];
+  }
+  return printTrees(trees);
 }
 
 module.exports = formatModules;

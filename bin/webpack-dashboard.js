@@ -6,6 +6,8 @@ const spawn = require("cross-spawn");
 const Dashboard = require("../dashboard/index.js");
 const SocketIO = require("socket.io");
 
+const DEFAULT_PORT = 9838;
+
 const program = new commander.Command("webpack-dashboard");
 
 const pkg = require("../package.json");
@@ -18,6 +20,7 @@ program.usage("[options] -- [script] [arguments]");
 program.parse(process.argv);
 
 let logFromChild = true;
+let child;
 
 if (!program.args.length) {
   logFromChild = false;
@@ -30,7 +33,7 @@ if (logFromChild) {
 
   env.FORCE_COLOR = true;
 
-  var child = spawn(command, args, {
+  child = spawn(command, args, {
     env,
     stdio: [null, null, null, null],
     detached: true
@@ -43,13 +46,13 @@ const dashboard = new Dashboard({
   title: program.title || null
 });
 
-const port = program.port || 9838;
-const server = SocketIO(port);
+const port = program.port || DEFAULT_PORT;
+const server = new SocketIO(port);
 
 server.on("error", (err) => {
+  // eslint-disable-next-line no-console
   console.log(err);
 });
-
 
 if (logFromChild) {
   server.on("connection", (socket) => {
@@ -84,4 +87,3 @@ if (logFromChild) {
     });
   });
 }
-

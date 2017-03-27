@@ -2,17 +2,6 @@
 
 const filesize = require("filesize");
 
-function formatAssets(stats) {
-  const json = stats.toJson();
-  let tree;
-  if (!json.hasOwnProperty("assets")) {
-    tree = json.children.map(getAssets);
-  } else {
-    tree = [getAssets(json)];
-  }
-  return printAssets(tree);
-}
-
 function getAssets(stats) {
   return stats.assets;
 }
@@ -34,6 +23,17 @@ function printAssets(tree) {
   output.push(["Total", filesize(total)]);
 
   return output;
+}
+
+function formatAssets(stats) {
+  const json = stats.toJson();
+  let tree;
+  if (!json.hasOwnProperty("assets")) {
+    tree = json.children.map(getAssets);
+  } else {
+    tree = [getAssets(json)];
+  }
+  return printAssets(tree);
 }
 
 module.exports = formatAssets;
