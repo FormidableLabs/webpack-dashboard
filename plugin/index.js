@@ -7,13 +7,19 @@ var SocketIOClient = require("socket.io-client");
 
 function noop() {}
 
-function DashboardPlugin(options) {
+function DashboardPlugin(options, callback) {
   if (typeof options === "function") {
     this.handler = options;
   } else {
     options = options || {};
     this.port = options.port || 9838;
     this.handler = options.handler || null;
+  }
+
+  this.onDone = callback || null;
+
+  if (this.onDone) {
+    this.isDoneForTheFirstTime = false;
   }
 }
 
@@ -32,6 +38,8 @@ function getTimeMessage(timer) {
 }
 
 DashboardPlugin.prototype.apply = function(compiler) {
+  var onDone = this.onDone;
+  var isDoneForTheFirstTime = this.isDoneForTheFirstTime;
   var handler = this.handler;
   var timer;
 
@@ -107,6 +115,13 @@ DashboardPlugin.prototype.apply = function(compiler) {
       type: "log",
       value: stats.toString(statsOptions)
     }]);
+
+    if (onDone &&
+        Object.prototype.toString.call(onDone) === '[object Function]' &&
+        !isDoneForTheFirstTime) {
+      onDone();
+      isDoneForTheFirstTime = true;
+    }
   });
 
   compiler.plugin("failed", function() {
