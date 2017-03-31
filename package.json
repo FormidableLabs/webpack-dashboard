@@ -5,7 +5,8 @@
   "bin": "bin/webpack-dashboard.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -33,5 +34,12 @@
     "filesize": "^3.3.0",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.1",
+    "eslint": "^3.18.0",
+    "eslint-config-formidable": "^2.0.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-import": "^2.2.0"
   }
 }

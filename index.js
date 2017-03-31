@@ -1,3 +1,5 @@
-var dashboard = require('./dashboard/index.js');
+"use strict";
+
+const dashboard = require("./dashboard/index.js");
 
 module.exports = dashboard;
