@@ -2,6 +2,8 @@
 
 const blessed = require("blessed");
 
+const InspectpackClient = require("./inspectpack-client");
+
 const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
 const formatAssets = require("../utils/format-assets.js");
@@ -12,9 +14,21 @@ class Dashboard {
   constructor(options) {
     const title = options && options.title || "webpack-dashboard";
 
+    this.inspectpack = new InspectpackClient({
+      onSizes: (bundles) => this.setSizes(bundles),
+      onError(err) {
+        console.log(err);
+      },
+      onClose() {
+        console.log("lost connection to inspectpack server");
+      }
+    });
+
     this.color = options && options.color || "green";
     this.minimal = options && options.minimal || false;
     this.setData = this.setData.bind(this);
+
+    this.stats = null;
 
     this.screen = blessed.screen({
       title,
@@ -120,6 +134,9 @@ class Dashboard {
       }
     };
 
+    // Save for later when merging inspectpack sizes into the asset list
+    this.stats = stats;
+
     if (stats.hasErrors()) {
       this.status.setContent("{red-fg}{bold}Failed{/}");
     }
@@ -127,9 +144,15 @@ class Dashboard {
     this.logText.log(formatOutput(stats));
 
     if (!this.minimal) {
-      this.moduleTable.setData(formatModules(stats));
-      this.assetTable.setData(formatAssets(stats));
+      this.inspectpack.requestSizes(data.value.data.bundleSources);
     }
+  }
+
+  setSizes(bundles) {
+    this.moduleTable.setData(formatModules(bundles));
+    this.assetTable.setData(formatAssets(this.stats, bundles));
+
+    this.screen.render();
   }
 
   setLog(data) {
@@ -214,7 +237,7 @@ class Dashboard {
       keys: true,
       vi: true,
       mouse: true,
-      data: [["Name", "Size", "Percentage"]]
+      data: [["Name", "Size (min+gz)", "Percentage"]]
     });
 
     this.screen.append(this.modules);

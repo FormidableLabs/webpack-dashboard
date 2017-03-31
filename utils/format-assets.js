@@ -1,31 +1,50 @@
 "use strict";
-
+const _ = require("lodash/fp");
 const filesize = require("filesize");
 
 function getAssets(stats) {
   return stats.assets;
 }
 
-function printAssets(tree) {
-  let total = 0;
-  const output = [
-    ["Name", "Size"]
-  ];
-  tree.forEach((assets) => {
-    assets.forEach((asset) => {
-      if (asset.name.indexOf("hot-update") < 0) {
-        total += asset.size;
-        output.push([asset.name, filesize(asset.size)]);
-      }
-    });
-  });
-
-  output.push(["Total", filesize(total)]);
-
-  return output;
+function getAssetSize(asset) {
+  return `${filesize(asset.size)}${asset.minGz && " (min+gz)" || ""}`;
 }
 
-function formatAssets(stats) {
+function getTotalSize(assets) {
+  return filesize(assets.reduce(
+    (total, asset) => total + asset.size,
+    0
+  ));
+}
+
+function resolveAssets(tree, bundles) {
+  return _.flatMap(assets =>
+    assets
+      .filter(asset => asset.name.indexOf("hot-update") < 0)
+      .map(asset => {
+        const realBundleMatch = _.find({ path: asset.name })(bundles);
+        return realBundleMatch ? {
+          name: realBundleMatch.path,
+          size: realBundleMatch.sizes.meta.bundle.minGz,
+          minGz: true
+        } : asset;
+      })
+  )(tree);
+}
+
+function printAssets(tree, bundles) {
+  const assets = resolveAssets(tree, bundles);
+
+  return [["Name", "Size"]]
+    .concat(assets.map(asset =>
+      [asset.name, getAssetSize(asset)]
+    ))
+    .concat(
+      [["Total", getTotalSize(assets)]]
+    );
+}
+
+function formatAssets(stats, bundles) {
   const json = stats.toJson();
   let tree;
   if (!json.hasOwnProperty("assets")) {
@@ -33,7 +52,7 @@ function formatAssets(stats) {
   } else {
     tree = [getAssets(json)];
   }
-  return printAssets(tree);
+  return printAssets(tree, bundles);
 }
 
 module.exports = formatAssets;
