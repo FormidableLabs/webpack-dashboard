@@ -59,7 +59,7 @@ class Dashboard {
         break;
 
       case "log":
-        this.log(data);
+        this.setLog(data);
         break;
 
       case "clear":
@@ -132,7 +132,7 @@ class Dashboard {
     }
   }
 
-  log(data) {
+  setLog(data) {
     this.logText.log(data.value.replace(/[{}]/g, ""));
   }
 
