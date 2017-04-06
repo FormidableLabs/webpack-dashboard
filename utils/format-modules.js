@@ -1,7 +1,9 @@
 "use strict";
 
+const path = require("path");
 const _ = require("lodash/fp");
 const filesize = require("filesize");
+const chalk = require("chalk");
 
 const PERCENT_MULTIPLIER = 100;
 const PERCENT_PRECISION = 3;
@@ -9,7 +11,7 @@ const SCOPED_PACKAGE_INDEX = 2;
 
 function formatModulePercentage(module, bundle) {
   const moduleSize = _.get("size.minGz")(module);
-  const bundleSize = _.get("sizes.meta.bundle.minGz")(bundle);
+  const bundleSize = _.get("metrics.meta.bundle.minGz")(bundle);
   if (!moduleSize || !bundleSize) {
     return "--";
   }
@@ -26,6 +28,23 @@ function getModuleName(module) {
       .reduce((x, y) => x + y);
   }
   return module.baseName.split("/")[0];
+}
+
+function getModuleNameWithVersion(module) {
+  const moduleName = getModuleName(module);
+  try {
+    const moduleMain = require.resolve(moduleName);
+    // eslint-disable-next-line global-require
+    const version = require(
+      path.join(
+        moduleMain.substring(0, moduleMain.lastIndexOf("/")),
+        "package.json"
+      )
+    ).version;
+    return `${moduleName}@${version}`;
+  } catch (err) {
+    return moduleName;
+  }
 }
 
 function groupModules(bundle) {
@@ -46,19 +65,23 @@ function groupModules(bundle) {
       });
     }),
     _.orderBy(_.get("size.minGz"), "desc")
-  )(bundle.sizes.sizes);
+  )(bundle.metrics.sizes);
 }
 
 function formatModules(bundles) {
-  const bundleText = _.flatMap(bundle =>
-    [[`For bundle ${bundle.path}:`, "", ""]].concat(
+  const bundleText = _.flatMap(bundle => {
+    const header = chalk.underline(
+      chalk.green(`For bundle ${bundle.path}:`)
+    );
+    return [[header, "", ""]].concat(
       groupModules(bundle)
         .map(moduleGroup => [
-          moduleGroup.baseName,
+          getModuleNameWithVersion(moduleGroup),
           filesize(moduleGroup.size.minGz),
           formatModulePercentage(moduleGroup, bundle)
         ])
-    ))(bundles);
+    );
+  })(bundles);
 
   return [["Name", "Size (min+gz)", "Percentage"]].concat(bundleText);
 }

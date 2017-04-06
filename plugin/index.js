@@ -95,6 +95,11 @@ class DashboardPlugin {
 
       const statsData = Object.assign({}, stats.toJson(), {
         bundleSources: Object.keys(stats.compilation.assets)
+          .filter(bundlePath =>
+            // Don't include hot reload assets, they break everything
+            // and the updates are already included in the new assets
+            bundlePath.indexOf(".hot-update.") === -1
+          )
           .map(bundlePath => ({
             path: bundlePath,
             source: stats.compilation.assets[bundlePath].source()

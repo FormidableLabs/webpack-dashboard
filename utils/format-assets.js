@@ -25,7 +25,7 @@ function resolveAssets(tree, bundles) {
         const realBundleMatch = _.find({ path: asset.name })(bundles);
         return realBundleMatch ? {
           name: realBundleMatch.path,
-          size: realBundleMatch.sizes.meta.bundle.minGz,
+          size: realBundleMatch.metrics.meta.bundle.minGz,
           minGz: true
         } : asset;
       })
