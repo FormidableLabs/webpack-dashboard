@@ -108,6 +108,26 @@ function getBundleMetrics(stats, inspectpack, handler) {
     );
 }
 
+function checkForDevServeEntry(ac, val) {
+  return ac ||
+      (val === "webpack/hot/dev-server"
+        || val === "webpack/hot/only-dev-server");
+}
+
+// uses the fact that
+// https://github.com/webpack/webpack-dev-server/blob/master/lib/util/addDevServerEntrypoints.js
+// runs on dev server setup, this detects its fingerprints
+function isDevServer(wpOpt) {
+  if (typeof wpOpt.entry === "object" && !Array.isArray(wpOpt.entry)) {
+    return Object.keys(wpOpt.entry).reduce((cur, key) => cur
+      || wpOpt.entry[key].reduce(checkForDevServeEntry, false)
+    , false);
+  } else if (typeof wpOpt.entry === "function") {
+    return wpOpt.entry().reduce(checkForDevServeEntry, false);
+  }
+  return wpOpt.entry.reduce(checkForDevServeEntry, false);
+}
+
 class DashboardPlugin {
   constructor(options) {
     if (typeof options === "function") {
@@ -134,6 +154,7 @@ class DashboardPlugin {
       socket.on("connect", () => {
         handler = socket.emit.bind(socket, "message");
       });
+      this.socket = socket;
     }
 
     compiler.apply(new webpack.ProgressPlugin((percent, msg) => {
@@ -216,6 +237,15 @@ class DashboardPlugin {
         type: "log",
         value: stats.toString(statsOptions)
       }]);
+
+      if (!isDevServer(compiler.options)) {
+        handler([{
+          type: "exit",
+          error: stats.compilation.errors && stats.compilation.errors.length
+        }]);
+        this.socket.close();
+      }
+
 
       getBundleMetrics(stats, this.inspectpack, handler);
     });

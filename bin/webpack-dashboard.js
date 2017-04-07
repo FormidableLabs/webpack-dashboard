@@ -78,7 +78,9 @@ if (logFromChild) {
   });
 
   process.on("exit", () => {
-    process.kill(process.platform === "win32" ? child.pid : -child.pid);
+    try {
+      process.kill(process.platform === "win32" ? child.pid : -child.pid);
+    } catch (e) {} // eslint-disable-line no-empty
   });
 } else {
   server.on("connection", (socket) => {
