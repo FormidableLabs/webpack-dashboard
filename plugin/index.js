@@ -37,6 +37,9 @@ class DashboardPlugin {
     let handler = this.handler;
     let timer;
 
+    // Enable pathinfo for inspectpack support
+    compiler.options.output.pathinfo = true;
+
     if (!handler) {
       handler = noop;
       const port = this.port;
@@ -90,6 +93,19 @@ class DashboardPlugin {
           || options.stats
           || { colors: true };
 
+      const statsData = Object.assign({}, stats.toJson(), {
+        bundleSources: Object.keys(stats.compilation.assets)
+          .filter(bundlePath =>
+            // Don't include hot reload assets, they break everything
+            // and the updates are already included in the new assets
+            bundlePath.indexOf(".hot-update.") === -1
+          )
+          .map(bundlePath => ({
+            path: bundlePath,
+            source: stats.compilation.assets[bundlePath].source()
+          }))
+      });
+
       handler([{
         type: "status",
         value: "Success"
@@ -104,7 +120,7 @@ class DashboardPlugin {
         value: {
           errors: stats.hasErrors(),
           warnings: stats.hasWarnings(),
-          data: stats.toJson()
+          data: statsData
         }
       }, {
         type: "log",

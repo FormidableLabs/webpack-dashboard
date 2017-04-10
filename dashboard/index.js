@@ -1,6 +1,12 @@
 "use strict";
 
+const path = require("path");
+const fs = require("fs");
+const os = require("os");
+
+const chalk = require("chalk");
 const blessed = require("blessed");
+const InspectpackDaemon = require("inspectpack").daemon;
 
 const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
@@ -9,12 +15,27 @@ const formatAssets = require("../utils/format-assets.js");
 const PERCENT_MULTIPLIER = 100;
 
 class Dashboard {
-  constructor(options) {
+  static init(options) {
+    return InspectpackDaemon.init({
+      cacheDir: path.resolve(
+        os.homedir(),
+        ".webpack-dashboard-cache"
+      )
+    }).then(
+      inspectpack => new Dashboard(inspectpack, options)
+    );
+  }
+
+  constructor(inspectpack, options) {
     const title = options && options.title || "webpack-dashboard";
+
+    this.inspectpack = inspectpack;
 
     this.color = options && options.color || "green";
     this.minimal = options && options.minimal || false;
     this.setData = this.setData.bind(this);
+
+    this.stats = null;
 
     this.screen = blessed.screen({
       title,
@@ -120,6 +141,9 @@ class Dashboard {
       }
     };
 
+    // Save for later when merging inspectpack sizes into the asset list
+    this.stats = stats;
+
     if (stats.hasErrors()) {
       this.status.setContent("{red-fg}{bold}Failed{/}");
     }
@@ -127,9 +151,39 @@ class Dashboard {
     this.logText.log(formatOutput(stats));
 
     if (!this.minimal) {
-      this.moduleTable.setData(formatModules(stats));
-      this.assetTable.setData(formatAssets(stats));
+      this.modules.setLabel(chalk.yellow("Modules (loading...)"));
+      this.assets.setLabel(chalk.yellow("Assets (loading...)"));
+      Promise.all(data.value.data.bundleSources.map(bundle =>
+        this.inspectpack.sizes({
+          code: bundle.source,
+          format: "object",
+          minified: true,
+          gzip: true
+        })
+          .then(metrics => ({
+            path: bundle.path,
+            metrics
+          }))
+      ))
+        .then(this.setSizes.bind(this))
+        .catch(this.setSizesError.bind(this));
     }
+  }
+
+  setSizes(bundles) {
+    this.modules.setLabel("Modules");
+    this.assets.setLabel("Assets");
+    this.moduleTable.setData(formatModules(bundles));
+    this.assetTable.setData(formatAssets(this.stats, bundles));
+
+    this.screen.render();
+  }
+
+  setSizesError(err) {
+    this.modules.setLabel(chalk.red("Modules (error)"));
+    this.assets.setLabel(chalk.red("Assets (error)"));
+    this.logText.log(chalk.red("Could not load module/asset sizes."));
+    this.logText.log(chalk.red(err));
   }
 
   setLog(data) {
@@ -214,7 +268,7 @@ class Dashboard {
       keys: true,
       vi: true,
       mouse: true,
-      data: [["Name", "Size", "Percentage"]]
+      data: [["Name", "Size (min+gz)", "Percentage"]]
     });
 
     this.screen.append(this.modules);

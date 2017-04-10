@@ -1,157 +1,89 @@
-/* eslint-disable no-magic-numbers */
 "use strict";
 
-const filesize = require("filesize");
 const path = require("path");
+const _ = require("lodash/fp");
+const filesize = require("filesize");
+const chalk = require("chalk");
 
-function getPosition(string, needle, i) {
-  return string.split(needle, i).join(needle).length;
-}
+const PERCENT_MULTIPLIER = 100;
+const PERCENT_PRECISION = 3;
+const SCOPED_PACKAGE_INDEX = 2;
 
-function getModulePath(identifier) {
-  const loaderRegex = /.*!/;
-  return identifier.replace(loaderRegex, "");
-}
-
-function getModuleDirPath(modulePath) {
-  const moduleDirRegex = new RegExp(`(.*?node_modules\\${ path.sep }.*?)\\${ path.sep}`);
-  return modulePath.match(moduleDirRegex)[1];
-}
-
-// eslint-disable-next-line max-statements
-function printDependencySizeTree(node, depth, outputFn) {
-  const childrenBySize = node.children.sort((a, b) => {
-    return b.size - a.size;
-  });
-
-  const totalSize = node.size;
-  let remainder = totalSize;
-
-  let prefix = "";
-  for (let i = 0; i < depth; i++) {
-    prefix += "  ";
+function formatModulePercentage(module, bundle) {
+  const moduleSize = _.get("size.minGz")(module);
+  const bundleSize = _.get("metrics.meta.bundle.minGz")(bundle);
+  if (!moduleSize || !bundleSize) {
+    return "--";
   }
+  const percentage = (moduleSize / bundleSize * PERCENT_MULTIPLIER)
+    .toPrecision(PERCENT_PRECISION);
+  return `${percentage}%`;
+}
 
-  for (const child of childrenBySize) {
-    const percentage = (child.size / totalSize * 100).toPrecision(3);
-    outputFn([
-      `${prefix + child.packageName }@${ child.packageVersion}`,
-      prefix + filesize(child.size), `${prefix + percentage }%`
-    ]);
-
-    printDependencySizeTree(child, depth + 1, outputFn);
-
-    remainder -= child.size;
-
-    if (remainder < 0.01 * totalSize) {
-      break;
-    }
+function getModuleName(module) {
+  // Support scoped packages
+  if (module.baseName.indexOf("@") === 0) {
+    return module.baseName.split("/")
+      .slice(0, SCOPED_PACKAGE_INDEX)
+      .reduce((x, y) => x + y);
   }
+  return module.baseName.split("/")[0];
+}
 
-  if (depth === 0 || remainder !== totalSize) {
-    const percentage = (remainder / totalSize * 100).toPrecision(3);
-    outputFn([`${prefix }<self>`, prefix + filesize(remainder), `${prefix + percentage }%`]);
+function getModuleNameWithVersion(module) {
+  const moduleName = getModuleName(module);
+  try {
+    const moduleMain = require.resolve(moduleName);
+    // eslint-disable-next-line global-require
+    const version = require(
+      path.join(
+        moduleMain.substring(0, moduleMain.lastIndexOf("/")),
+        "package.json"
+      )
+    ).version;
+    return `${moduleName}@${version}`;
+  } catch (err) {
+    return moduleName;
   }
 }
 
-function printTrees(trees) {
-  const output = [
-    ["Name", "Size", "Percentage"]
-  ];
-  trees.forEach((tree) => {
-    printDependencySizeTree(tree, 0, (data) => {
-      output.push(data);
-    });
-  });
-  return output;
-}
-
-function bundleSizeTree(stats) {
-  const statsTree = {
-    packageName: "<root>",
-    packageVersion: "",
-    size: 0,
-    children: []
-  };
-
-  if (stats.name) {
-    statsTree.bundleName = stats.name;
-  }
-
-  const modules = stats.modules.map((mod) => {
-    return {
-      path: getModulePath(mod.identifier),
-      size: mod.size
-    };
-  });
-
-  modules.sort((a, b) => {
-    if (a === b) {
-      return 0;
-    } else {
-      return a < b ? -1 : 1;
-    }
-  });
-
-  modules.forEach((mod) => {
-    const packages = mod.path.split(new RegExp(`\\${ path.sep }node_modules\\${ path.sep}`));
-    if (packages.length > 1) {
-      const lastSegment = packages.pop();
-
-      let lastPackageName = "";
-      if (lastSegment.indexOf("@")) {
-        lastPackageName = lastSegment.slice(0, lastSegment.search(new RegExp(`\\${ path.sep }|$`)));
-      } else {
-        lastPackageName = lastSegment.slice(0, getPosition(lastSegment, path.sep, 2));
-      }
-
-      packages.push(lastPackageName);
-    }
-    packages.shift();
-
-    let parent = statsTree;
-    parent.size += mod.size;
-    packages.forEach((pkg) => {
-      const existing = parent.children.filter((child) => {
-        return child.packageName === pkg;
-      });
-      let packageVersion = "";
-      if (existing.length > 0) {
-        existing[0].size += mod.size;
-        parent = existing[0];
-      } else {
-        try {
-          // eslint-disable-next-line global-require
-          packageVersion = require(
-            path.join(getModuleDirPath(mod.path), "package.json")
-          ).version;
-        } catch (err) {
-          packageVersion = "";
+function groupModules(bundle) {
+  return _.flow(
+    _.filter(module => module.type === "code"),
+    _.groupBy(getModuleName),
+    _.toPairs,
+    _.map(moduleGroupPairs => {
+      const moduleGroup = _.zipObject(
+        ["baseName", "children"],
+        moduleGroupPairs
+      );
+      return Object.assign({}, moduleGroup, {
+        size: {
+          minGz: moduleGroup.children
+            .reduce((acc, module) => acc + module.size.minGz, 0)
         }
-        const newChild = {
-          packageName: pkg,
-          packageVersion,
-          size: mod.size,
-          children: []
-        };
-        parent.children.push(newChild);
-        parent = newChild;
-      }
-    });
-  });
-
-  return statsTree;
+      });
+    }),
+    _.orderBy(_.get("size.minGz"), "desc")
+  )(bundle.metrics.sizes);
 }
 
-function formatModules(stats) {
-  const json = stats.toJson();
-  let trees;
-  if (!json.hasOwnProperty("modules")) {
-    trees = json.children.map(bundleSizeTree);
-  } else {
-    trees = [bundleSizeTree(json)];
-  }
-  return printTrees(trees);
+function formatModules(bundles) {
+  const bundleText = _.flatMap(bundle => {
+    const header = chalk.underline(
+      chalk.green(`For bundle ${bundle.path}:`)
+    );
+    return [[header, "", ""]].concat(
+      groupModules(bundle)
+        .map(moduleGroup => [
+          getModuleNameWithVersion(moduleGroup),
+          filesize(moduleGroup.size.minGz),
+          formatModulePercentage(moduleGroup, bundle)
+        ])
+    );
+  })(bundles);
+
+  return [["Name", "Size (min+gz)", "Percentage"]].concat(bundleText);
 }
 
 module.exports = formatModules;

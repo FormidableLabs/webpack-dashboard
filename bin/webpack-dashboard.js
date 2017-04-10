@@ -40,50 +40,50 @@ if (logFromChild) {
   });
 }
 
-const dashboard = new Dashboard({
+Dashboard.init({
   color: program.color || "green",
   minimal: program.minimal || false,
   title: program.title || null
-});
+}).then(dashboard => {
+  const port = program.port || DEFAULT_PORT;
+  const server = new SocketIO(port);
 
-const port = program.port || DEFAULT_PORT;
-const server = new SocketIO(port);
+  server.on("error", (err) => {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  });
 
-server.on("error", (err) => {
-  // eslint-disable-next-line no-console
-  console.log(err);
-});
+  if (logFromChild) {
+    server.on("connection", (socket) => {
+      socket.on("message", (message) => {
+        if (message.type !== "log") {
+          dashboard.setData(message);
+        }
+      });
+    });
 
-if (logFromChild) {
-  server.on("connection", (socket) => {
-    socket.on("message", (message) => {
-      if (message.type !== "log") {
+    child.stdout.on("data", (data) => {
+      dashboard.setData([{
+        type: "log",
+        value: data.toString("utf8")
+      }]);
+    });
+
+    child.stderr.on("data", (data) => {
+      dashboard.setData([{
+        type: "log",
+        value: data.toString("utf8")
+      }]);
+    });
+
+    process.on("exit", () => {
+      process.kill(process.platform === "win32" ? child.pid : -child.pid);
+    });
+  } else {
+    server.on("connection", (socket) => {
+      socket.on("message", (message) => {
         dashboard.setData(message);
-      }
+      });
     });
-  });
-
-  child.stdout.on("data", (data) => {
-    dashboard.setData([{
-      type: "log",
-      value: data.toString("utf8")
-    }]);
-  });
-
-  child.stderr.on("data", (data) => {
-    dashboard.setData([{
-      type: "log",
-      value: data.toString("utf8")
-    }]);
-  });
-
-  process.on("exit", () => {
-    process.kill(process.platform === "win32" ? child.pid : -child.pid);
-  });
-} else {
-  server.on("connection", (socket) => {
-    socket.on("message", (message) => {
-      dashboard.setData(message);
-    });
-  });
-}
+  }
+});
