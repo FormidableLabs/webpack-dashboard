@@ -1,35 +1,32 @@
 "use strict";
 
-const path = require("path");
-const fs = require("fs");
-const os = require("os");
-
+const _ = require("lodash/fp");
 const chalk = require("chalk");
 const blessed = require("blessed");
-const InspectpackDaemon = require("inspectpack").daemon;
 
 const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
 const formatAssets = require("../utils/format-assets.js");
+const formatProblems = require("../utils/format-problems.js");
 
 const PERCENT_MULTIPLIER = 100;
 
-class Dashboard {
-  static init(options) {
-    return InspectpackDaemon.init({
-      cacheDir: path.resolve(
-        os.homedir(),
-        ".webpack-dashboard-cache"
-      )
-    }).then(
-      inspectpack => new Dashboard(inspectpack, options)
-    );
-  }
+const DEFAULT_SCROLL_OPTIONS = {
+  scrollable: true,
+  input: true,
+  alwaysScroll: true,
+  scrollbar: {
+    ch: " ",
+    inverse: true
+  },
+  keys: true,
+  vi: true,
+  mouse: true
+};
 
+class Dashboard {
   constructor(inspectpack, options) {
     const title = options && options.title || "webpack-dashboard";
-
-    this.inspectpack = inspectpack;
 
     this.color = options && options.color || "green";
     this.minimal = options && options.minimal || false;
@@ -50,6 +47,7 @@ class Dashboard {
     if (!this.minimal) {
       this.layoutModules();
       this.layoutAssets();
+      this.layoutProblems();
     }
 
     this.screen.key(["escape", "q", "C-c"], () => {
@@ -77,6 +75,22 @@ class Dashboard {
 
       case "stats":
         this.setStats(data);
+        break;
+
+      case "sizes":
+        if (data instanceof Error) {
+          this.setSizesError(data);
+        } else {
+          this.setSizes(data);
+        }
+        break;
+
+      case "problems":
+        if (data instanceof Error) {
+          this.setProblemsError(data);
+        } else {
+          this.setProblems(data);
+        }
         break;
 
       case "log":
@@ -151,38 +165,67 @@ class Dashboard {
     this.logText.log(formatOutput(stats));
 
     if (!this.minimal) {
-      this.modules.setLabel(chalk.yellow("Modules (loading...)"));
+      this.modulesMenu.setLabel(chalk.yellow("Modules (loading...)"));
       this.assets.setLabel(chalk.yellow("Assets (loading...)"));
-      Promise.all(data.value.data.bundleSources.map(bundle =>
-        this.inspectpack.sizes({
-          code: bundle.source,
-          format: "object",
-          minified: true,
-          gzip: true
-        })
-          .then(metrics => ({
-            path: bundle.path,
-            metrics
-          }))
-      ))
-        .then(this.setSizes.bind(this))
-        .catch(this.setSizesError.bind(this));
+      this.problemsMenu.setLabel(chalk.yellow("Problems (loading...)"));
     }
   }
 
-  setSizes(bundles) {
-    this.modules.setLabel("Modules");
+  setSizes(data) {
+    this.modulesMenu.setLabel("Modules");
     this.assets.setLabel("Assets");
-    this.moduleTable.setData(formatModules(bundles));
-    this.assetTable.setData(formatAssets(this.stats, bundles));
+
+    const result = _.flow(
+      _.groupBy("path"),
+      _.mapValues(_.reduce((acc, bundle) =>
+        Object.assign({}, acc, bundle), {}
+      )),
+      _.mapValues(bundle => () => {
+        this.moduleTable.setData(formatModules(bundle));
+        this.screen.render();
+      })
+    )(data.value);
+
+    const previousSelection = this.modulesMenu.selected;
+    this.modulesMenu.setItems(result);
+    this.modulesMenu.selectTab(previousSelection);
+
+    this.assetTable.setData(formatAssets(this.stats, data.value));
 
     this.screen.render();
   }
 
   setSizesError(err) {
-    this.modules.setLabel(chalk.red("Modules (error)"));
+    this.modulesMenu.setLabel(chalk.red("Modules (error)"));
     this.assets.setLabel(chalk.red("Assets (error)"));
     this.logText.log(chalk.red("Could not load module/asset sizes."));
+    this.logText.log(chalk.red(err));
+  }
+
+  setProblems(data) {
+    this.problemsMenu.setLabel("Problems");
+
+    const result = _.flow(
+      _.groupBy("path"),
+      _.mapValues(_.reduce((acc, bundle) =>
+        Object.assign({}, acc, bundle), {}
+      )),
+      _.mapValues(bundle => () => {
+        this.problems.setContent(formatProblems(bundle));
+        this.screen.render();
+      })
+    )(data.value);
+
+    const previousSelection = this.problemsMenu.selected;
+    this.problemsMenu.setItems(result);
+    this.problemsMenu.selectTab(previousSelection);
+
+    this.screen.render();
+  }
+
+  setProblemsError(err) {
+    this.problems.setLabel(chalk.red("Problems (error)"));
+    this.logText.log(chalk.red("Could not analyze bundle problems."));
     this.logText.log(chalk.red(err));
   }
 
@@ -194,12 +237,62 @@ class Dashboard {
     this.logText.setContent("");
   }
 
+  layoutProblems() {
+    this.problemsMenu = blessed.listbar({
+      label: "Problems",
+      tags: true,
+      mouse: true,
+      width: "50%",
+      height: "39%",
+      left: "50%",
+      top: "63%",
+      border: {
+        type: "line"
+      },
+      padding: {
+        top: 1
+      },
+      style: {
+        fg: -1,
+        border: {
+          fg: this.color
+        },
+        item: {
+          fg: "white"
+        },
+        selected: {
+          fg: "black",
+          bg: this.color
+        }
+      },
+      autoCommandKeys: true
+    });
+
+    this.problems = blessed.box(
+      Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
+        parent: this.problemsMenu,
+        padding: 1,
+        border: {
+          fg: -1
+        },
+        style: {
+          fg: -1,
+          border: {
+            fg: this.color
+          }
+        }
+      })
+    );
+
+    this.screen.append(this.problemsMenu);
+  }
+
   layoutLog() {
     this.log = blessed.box({
       label: "Log",
       padding: 1,
       width: this.minimal ? "100%" : "75%",
-      height: this.minimal ? "70%" : "42%",
+      height: this.minimal ? "70%" : "36%",
       left: "0%",
       top: "0%",
       border: {
@@ -213,65 +306,62 @@ class Dashboard {
       }
     });
 
-    this.logText = blessed.log({
-      parent: this.log,
-      tags: true,
-      width: "100%-5",
-      scrollable: true,
-      input: true,
-      alwaysScroll: true,
-      scrollbar: {
-        ch: " ",
-        inverse: true
-      },
-      keys: true,
-      vi: true,
-      mouse: true
-    });
+    this.logText = blessed.log(
+      Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
+        parent: this.log,
+        tags: true,
+        width: "100%-5"
+      })
+    );
 
     this.screen.append(this.log);
   }
 
   layoutModules() {
-    this.modules = blessed.box({
+    this.modulesMenu = blessed.listbar({
       label: "Modules",
+      mouse: true,
       tags: true,
-      padding: 1,
       width: "50%",
-      height: "58%",
+      height: "66%",
       left: "0%",
-      top: "42%",
+      top: "36%",
       border: {
         type: "line"
       },
+      padding: 1,
       style: {
         fg: -1,
         border: {
           fg: this.color
+        },
+        item: {
+          fg: "white"
+        },
+        selected: {
+          fg: "black",
+          bg: this.color
         }
-      }
-    });
-
-    this.moduleTable = blessed.table({
-      parent: this.modules,
-      height: "100%",
-      width: "100%-5",
-      align: "left",
-      pad: 1,
-      shrink: true,
-      scrollable: true,
-      alwaysScroll: true,
-      scrollbar: {
-        ch: " ",
-        inverse: true
       },
-      keys: true,
-      vi: true,
-      mouse: true,
-      data: [["Name", "Size (min+gz)", "Percentage"]]
+      autoCommandKeys: true
     });
 
-    this.screen.append(this.modules);
+    this.moduleTable = blessed.table(
+      Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
+        parent: this.modulesMenu,
+        top: "8",
+        height: "100%",
+        width: "100%-5",
+        padding: {
+          left: 1,
+          right: 1
+        },
+        align: "left",
+        data: [["Name", "Size (min+gz)", "Percentage"]]
+      })
+    );
+
+    this.screen.append(this.modulesMenu);
   }
 
   layoutAssets() {
@@ -280,9 +370,9 @@ class Dashboard {
       tags: true,
       padding: 1,
       width: "50%",
-      height: "58%",
+      height: "28%",
       left: "50%",
-      top: "42%",
+      top: "36%",
       border: {
         type: "line"
       },
@@ -294,32 +384,86 @@ class Dashboard {
       }
     });
 
-    this.assetTable = blessed.table({
-      parent: this.assets,
-      height: "100%",
-      width: "100%-5",
-      align: "left",
-      pad: 1,
-      scrollable: true,
-      alwaysScroll: true,
-      scrollbar: {
-        ch: " ",
-        inverse: true
-      },
-      keys: true,
-      vi: true,
-      mouse: true,
-      data: [["Name", "Size"]]
-    });
+    this.assetTable = blessed.table(
+      Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
+        parent: this.assets,
+        height: "100%",
+        width: "100%-5",
+        align: "left",
+        padding: 1,
+        data: [["Name", "Size"]]
+      })
+    );
 
     this.screen.append(this.assets);
+  }
+
+  layoutDuplicates() {
+    this.duplicates = blessed.box({
+      label: "Duplicate files",
+      tags: true,
+      padding: 1,
+      width: "25%",
+      height: "33%",
+      left: "50%",
+      top: "68%",
+      border: {
+        type: "line"
+      },
+      style: {
+        fg: -1,
+        border: {
+          fg: this.color
+        }
+      }
+    });
+
+    this.duplicatesText = blessed.log(
+      Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
+        parent: this.duplicates,
+        tags: true,
+        width: "100%-5"
+      })
+    );
+    this.screen.append(this.duplicates);
+  }
+
+  layoutVersions() {
+    this.versions = blessed.box({
+      label: "Version skews",
+      tags: true,
+      padding: 1,
+      width: "25%",
+      height: "33%",
+      left: "75%",
+      top: "68%",
+      border: {
+        type: "line"
+      },
+      style: {
+        fg: -1,
+        border: {
+          fg: this.color
+        }
+      }
+    });
+
+    this.versionsText = blessed.log(
+      Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
+        parent: this.versions,
+        tags: true,
+        width: "100%-5"
+      })
+    );
+
+    this.screen.append(this.versions);
   }
 
   // eslint-disable-next-line complexity
   layoutStatus() {
     this.wrapper = blessed.layout({
       width: this.minimal ? "100%" : "25%",
-      height: this.minimal ? "30%" : "42%",
+      height: this.minimal ? "30%" : "37%",
       top: this.minimal ? "70%" : "0%",
       left: this.minimal ? "0%" : "75%",
       layout: "grid"

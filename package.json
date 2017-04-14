@@ -38,6 +38,7 @@
     "commander": "^2.9.0",
     "cross-spawn": "^4.0.0",
     "filesize": "^3.3.0",
+    "handlebars": "^4.0.6",
     "inspectpack": "^1.1.0",
     "lodash": "^4.17.4",
     "socket.io": "^1.4.8",
