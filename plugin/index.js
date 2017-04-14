@@ -1,10 +1,22 @@
 "use strict";
 
+const _ = require("lodash/fp");
+const os = require("os");
+const path = require("path");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
+const InspectpackDaemon = require("inspectpack").daemon;
 
 const DEFAULT_PORT = 9838;
 const ONE_SECOND = 1000;
+const INSPECTPACK_INDEPENDENT_ACTIONS = ["sizes"];
+const INSPECTPACK_PROBLEM_ACTIONS = ["versions", "duplicates"];
+const INSPECTPACK_PROBLEM_TYPE = "problems";
+
+const cacheDir = path.resolve(
+  os.homedir(),
+  ".webpack-dashboard-cache"
+);
 
 function noop() {}
 
@@ -20,6 +32,70 @@ function getTimeMessage(timer) {
   }
 
   return ` (${time})`;
+}
+
+function getBundleMetrics(stats, inspectpack, handler) {
+  const bundles = Object.keys(stats.compilation.assets)
+    .filter(bundlePath =>
+      // Don't include hot reload assets, they break everything
+      // and the updates are already included in the new assets
+      bundlePath.indexOf(".hot-update.") === -1
+    )
+    .map(bundlePath => ({
+      path: bundlePath,
+      context: stats.compilation.options.context,
+      source: stats.compilation.assets[bundlePath].source()
+    }));
+
+  INSPECTPACK_INDEPENDENT_ACTIONS.forEach(action => {
+    Promise.all(bundles.map(bundle =>
+      inspectpack[action]({
+        code: bundle.source,
+        root: bundle.context,
+        format: "object",
+        minified: true,
+        gzip: true
+      })
+        .then(metrics => ({
+          path: bundle.path,
+          metrics
+        }))
+    ))
+      .then(bundle => handler([{
+        type: action,
+        value: bundle
+      }]))
+      .catch(err => handler([{
+        type: action,
+        value: err
+      }]));
+  });
+
+  Promise.all(INSPECTPACK_PROBLEM_ACTIONS.map(action =>
+    Promise.all(bundles.map(bundle =>
+      inspectpack[action]({
+        code: bundle.source,
+        root: bundle.context,
+        format: "object",
+        minified: true,
+        gzip: true
+      })
+        .then(metrics => ({
+          path: bundle.path,
+          [action]: metrics
+        }))
+    ))
+  ))
+    .then(bundle =>
+      handler([{
+        type: INSPECTPACK_PROBLEM_TYPE,
+        value: _.flatten(bundle)
+      }])
+    )
+    .catch(err => handler([{
+      type: INSPECTPACK_PROBLEM_TYPE,
+      value: err
+    }]));
 }
 
 class DashboardPlugin {
@@ -63,6 +139,13 @@ class DashboardPlugin {
       }]);
     }));
 
+    compiler.plugin("watch-run", (c, done) => {
+      InspectpackDaemon.init({ cacheDir }).then(inspectpack => {
+        this.inspectpack = inspectpack;
+        done();
+      });
+    });
+
     compiler.plugin("compile", () => {
       timer = Date.now();
       handler([{
@@ -86,25 +169,22 @@ class DashboardPlugin {
       }]);
     });
 
+    compiler.plugin("failed", () => {
+      handler([{
+        type: "status",
+        value: "Failed"
+      }, {
+        type: "operations",
+        value: `idle${getTimeMessage(timer)}`
+      }]);
+    });
+
     compiler.plugin("done", stats => {
       const options = stats.compilation.options;
       const statsOptions =
         options.devServer && options.devServer.stats
           || options.stats
           || { colors: true };
-
-      const statsData = Object.assign({}, stats.toJson(), {
-        bundleSources: Object.keys(stats.compilation.assets)
-          .filter(bundlePath =>
-            // Don't include hot reload assets, they break everything
-            // and the updates are already included in the new assets
-            bundlePath.indexOf(".hot-update.") === -1
-          )
-          .map(bundlePath => ({
-            path: bundlePath,
-            source: stats.compilation.assets[bundlePath].source()
-          }))
-      });
 
       handler([{
         type: "status",
@@ -120,22 +200,14 @@ class DashboardPlugin {
         value: {
           errors: stats.hasErrors(),
           warnings: stats.hasWarnings(),
-          data: statsData
+          data: stats.toJson()
         }
       }, {
         type: "log",
         value: stats.toString(statsOptions)
       }]);
-    });
 
-    compiler.plugin("failed", () => {
-      handler([{
-        type: "status",
-        value: "Failed"
-      }, {
-        type: "operations",
-        value: `idle${getTimeMessage(timer)}`
-      }]);
+      getBundleMetrics(stats, this.inspectpack, handler);
     });
   }
 }

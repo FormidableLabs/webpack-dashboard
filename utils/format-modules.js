@@ -68,22 +68,16 @@ function groupModules(bundle) {
   )(bundle.metrics.sizes);
 }
 
-function formatModules(bundles) {
-  const bundleText = _.flatMap(bundle => {
-    const header = chalk.underline(
-      chalk.green(`For bundle ${bundle.path}:`)
-    );
-    return [[header, "", ""]].concat(
-      groupModules(bundle)
-        .map(moduleGroup => [
-          getModuleNameWithVersion(moduleGroup),
-          filesize(moduleGroup.size.minGz),
-          formatModulePercentage(moduleGroup, bundle)
-        ])
-    );
-  })(bundles);
+function formatModules(bundle) {
+  const bundleText = groupModules(bundle)
+    .map(moduleGroup => [
+      getModuleNameWithVersion(moduleGroup),
+      filesize(moduleGroup.size.minGz),
+      formatModulePercentage(moduleGroup, bundle)
+    ]);
 
-  return [["Name", "Size (min+gz)", "Percentage"]].concat(bundleText);
+  return [["Name", "Size (min+gz)", "Percentage"]]
+    .concat(bundleText);
 }
 
 module.exports = formatModules;
