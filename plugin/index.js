@@ -39,7 +39,10 @@ function getBundleMetrics(stats, inspectpack, handler) {
     .filter(bundlePath =>
       // Don't include hot reload assets, they break everything
       // and the updates are already included in the new assets
-      bundlePath.indexOf(".hot-update.") === -1
+      bundlePath.indexOf(".hot-update.") === -1 &&
+
+      // Don't parse sourcemaps!
+      path.extname(bundlePath) === ".js"
     )
     .map(bundlePath => ({
       path: bundlePath,
