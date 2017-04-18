@@ -1,4 +1,4 @@
-#webpack-dashboard
+# webpack-dashboard
 
 A CLI dashboard for your webpack dev server
 
