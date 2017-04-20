@@ -7,6 +7,8 @@ const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
 const InspectpackDaemon = require("inspectpack").daemon;
 
+const serializeError = require("../utils/error-serialization").serializeError;
+
 const DEFAULT_PORT = 9838;
 const ONE_SECOND = 1000;
 const INSPECTPACK_INDEPENDENT_ACTIONS = ["sizes"];
@@ -70,7 +72,8 @@ function getBundleMetrics(stats, inspectpack, handler) {
       }]))
       .catch(err => handler([{
         type: action,
-        value: err
+        error: true,
+        value: serializeError(err)
       }]));
   });
 
@@ -79,6 +82,7 @@ function getBundleMetrics(stats, inspectpack, handler) {
       inspectpack[action]({
         code: bundle.source,
         root: bundle.context,
+        duplicates: true,
         format: "object",
         minified: true,
         gzip: true
@@ -95,10 +99,13 @@ function getBundleMetrics(stats, inspectpack, handler) {
         value: _.flatten(bundle)
       }])
     )
-    .catch(err => handler([{
-      type: INSPECTPACK_PROBLEM_TYPE,
-      value: err
-    }]));
+    .catch(err =>
+      handler([{
+        type: INSPECTPACK_PROBLEM_TYPE,
+        error: true,
+        value: serializeError(err)
+      }])
+    );
 }
 
 class DashboardPlugin {

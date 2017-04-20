@@ -8,6 +8,7 @@ const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
 const formatAssets = require("../utils/format-assets.js");
 const formatProblems = require("../utils/format-problems.js");
+const deserializeError = require("../utils/error-serialization").deserializeError;
 
 const PERCENT_MULTIPLIER = 100;
 
@@ -60,57 +61,48 @@ class Dashboard {
   }
 
   setData(dataArray) {
-    dataArray.forEach(data => {
-      switch (data.type) {
-      case "progress":
-        this.setProgress(data);
-        break;
-
-      case "operations":
-        this.setOperations(data);
-        break;
-
-      case "status":
-        this.setStatus(data);
-        break;
-
-      case "stats":
-        this.setStats(data);
-        break;
-
-      case "sizes":
-        if (this.minimal) { break; }
-        if (data instanceof Error) {
-          this.setSizesError(data);
-        } else {
-          this.setSizes(data);
+    const actionForMessageType = data => {
+      const map = {
+        progress: this.setProgress.bind(this),
+        operations: this.setOperations.bind(this),
+        status: this.setStatus.bind(this),
+        stats: this.setStats.bind(this),
+        log: this.setLog.bind(this),
+        clear: this.clear.bind(this),
+        sizes: _data => {
+          if (this.minimal) { return; }
+          if (_data.value instanceof Error) {
+            this.setSizesError(_data.value);
+          } else {
+            this.setSizes(_data);
+          }
+        },
+        problems: _data => {
+          if (this.minimal) { return; }
+          if (_data.value instanceof Error) {
+            this.setProblemsError(_data.value);
+          } else {
+            this.setProblems(_data);
+          }
         }
-        break;
+      };
 
-      case "problems":
-        if (this.minimal) { break; }
-        if (data instanceof Error) {
-          this.setProblemsError(data);
-        } else {
-          this.setProblems(data);
-        }
-        break;
+      return map[data.type](data);
+    };
 
-      case "log":
-        this.setLog(data);
-        break;
-
-      case "clear":
-        this.clear();
-        break;
-      }
-    });
+    dataArray
+      .map(data => data.error ?
+        Object.assign({}, data, {
+          value: deserializeError(data.value)
+        }) : data
+      )
+      .forEach(actionForMessageType);
 
     this.screen.render();
   }
 
   setProgress(data) {
-    const percent = parseInt(data.value * PERCENT_MULTIPLIER);
+    const percent = parseInt(data.value * PERCENT_MULTIPLIER, 10);
     const formattedPercent = `${percent.toString()}%`;
 
     if (!percent) {
@@ -227,9 +219,9 @@ class Dashboard {
   }
 
   setProblemsError(err) {
-    this.problems.setLabel(chalk.red("Problems (error)"));
+    this.problemsMenu.setLabel(chalk.red("Problems (error)"));
     this.logText.log(chalk.red("Could not analyze bundle problems."));
-    this.logText.log(chalk.red(err));
+    this.logText.log(chalk.red(err.stack));
   }
 
   setLog(data) {
