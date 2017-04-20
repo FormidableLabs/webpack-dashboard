@@ -39,7 +39,7 @@
     "cross-spawn": "^4.0.0",
     "filesize": "^3.3.0",
     "handlebars": "^4.0.6",
-    "inspectpack": "^1.1.1",
+    "inspectpack": "^1.2.0",
     "lodash": "^4.17.4",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",

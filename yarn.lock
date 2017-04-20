@@ -1667,16 +1667,16 @@ inquirer@^0.12.0:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
-inspectpack@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-1.1.0.tgz#4634718f73c025be978e1a6d98adef129b28fc73"
+inspectpack@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-1.2.0.tgz#61b946a36af938736b485d4c40d9da43060fb139"
   dependencies:
     babel-traverse "^6.7.6"
     babel-types "^6.7.2"
     babylon "^6.7.0"
-    bluebird "^3.5.0"
     lodash "^4.6.1"
     mkdirp "^0.5.1"
+    pify "^2.3.0"
     uglify-js "^2.6.2"
     workerpool "https://github.com/FormidableLabs/workerpool#71d4e17"
     yargs "^4.3.1"
@@ -2222,11 +2222,11 @@ oauth-sign@~0.8.1:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
-object-assign@4.1.0:
+object-assign@4.1.0, object-assign@^4.0.1, object-assign@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.0.tgz#7a3b3d0e98063d43f4c03f2e8ae6cd51a86883a0"
 
-object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
@@ -2420,7 +2420,7 @@ performance-now@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-0.2.0.tgz#33ef30c5c77d4ea21c5a53869d91b56d8f2555e5"
 
-pify@^2.0.0:
+pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
 
