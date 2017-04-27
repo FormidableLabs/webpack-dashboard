@@ -3,19 +3,18 @@
 const path = require("path");
 const _ = require("lodash/fp");
 const filesize = require("filesize");
-const chalk = require("chalk");
 
 const PERCENT_MULTIPLIER = 100;
 const PERCENT_PRECISION = 3;
 const SCOPED_PACKAGE_INDEX = 2;
 
-function formatModulePercentage(module, bundle) {
+function formatModulePercentage(module, pseudoBundleSize) {
   const moduleSize = _.get("size.minGz")(module);
-  const bundleSize = _.get("metrics.meta.bundle.minGz")(bundle);
-  if (!moduleSize || !bundleSize) {
+
+  if (!moduleSize || !pseudoBundleSize) {
     return "--";
   }
-  const percentage = (moduleSize / bundleSize * PERCENT_MULTIPLIER)
+  const percentage = (moduleSize / pseudoBundleSize * PERCENT_MULTIPLIER)
     .toPrecision(PERCENT_PRECISION);
   return `${percentage}%`;
 }
@@ -57,6 +56,7 @@ function groupModules(bundle) {
         ["baseName", "children"],
         moduleGroupPairs
       );
+
       return Object.assign({}, moduleGroup, {
         size: {
           minGz: moduleGroup.children
@@ -68,12 +68,30 @@ function groupModules(bundle) {
   )(bundle.metrics.sizes);
 }
 
+// Get the sum of all module groups' min+gz size.
+// This is not equivalent to the bundle's final
+// min+gz size because gzipping the entire bundle
+// can compress duplicate code more efficiently.
+const getPseudoBundleSize = _.flow(
+  groupModules,
+  _.mapValues(group =>
+    group.children.reduce((total, module) =>
+      total + module.size.minGz, 0
+    )
+  ),
+  _.values,
+  _.reduce((total, groupSize) => total + groupSize, 0)
+);
+
 function formatModules(bundle) {
   const bundleText = groupModules(bundle)
     .map(moduleGroup => [
       getModuleNameWithVersion(moduleGroup),
       filesize(moduleGroup.size.minGz),
-      formatModulePercentage(moduleGroup, bundle)
+      formatModulePercentage(
+        moduleGroup,
+        getPseudoBundleSize(bundle)
+      )
     ]);
 
   return [["Name", "Size (min+gz)", "Percentage"]]
