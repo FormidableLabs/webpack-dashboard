@@ -69,6 +69,7 @@ class Dashboard {
         stats: this.setStats.bind(this),
         log: this.setLog.bind(this),
         clear: this.clear.bind(this),
+        exit: this.exit.bind(this),
         sizes: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
@@ -101,6 +102,15 @@ class Dashboard {
     this.screen.render();
   }
 
+  exit(error) {
+    if (error) {
+      throw error;
+    } else {
+      // eslint-disable-next-line no-process-exit
+      process.exit(0);
+    }
+
+  }
   setProgress(data) {
     const percent = parseInt(data.value * PERCENT_MULTIPLIER, 10);
     const formattedPercent = `${percent.toString()}%`;
