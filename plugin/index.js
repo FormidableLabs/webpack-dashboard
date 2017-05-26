@@ -134,6 +134,7 @@ class DashboardPlugin {
       socket.on("connect", () => {
         handler = socket.emit.bind(socket, "message");
       });
+      this.socket = socket;
     }
 
     compiler.apply(new webpack.ProgressPlugin((percent, msg) => {
@@ -150,6 +151,7 @@ class DashboardPlugin {
     }));
 
     compiler.plugin("watch-run", (c, done) => {
+      this.watching = true;
       InspectpackDaemon.init({ cacheDir }).then(inspectpack => {
         this.inspectpack = inspectpack;
         done();
@@ -216,6 +218,13 @@ class DashboardPlugin {
         type: "log",
         value: stats.toString(statsOptions)
       }]);
+
+      if (!this.watching) {
+        if (this.socket) {
+          this.socket.close();
+        }
+        return;
+      }
 
       getBundleMetrics(stats, this.inspectpack, handler);
     });
