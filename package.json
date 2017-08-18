@@ -12,12 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/FormidableLabs/webpack-dashboard.git"
   },
-  "keywords": [
-    "webpack",
-    "cli",
-    "plugin",
-    "dashboard"
-  ],
+  "keywords": ["webpack", "cli", "plugin", "dashboard"],
   "author": "Ken Wheeler",
   "license": "MIT",
   "bugs": {
