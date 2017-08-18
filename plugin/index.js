@@ -1,3 +1,4 @@
+/* eslint-disable max-params, no-unexpected-multiline, no-console, max-statements */
 "use strict";
 
 const _ = require("lodash/fp");
@@ -11,14 +12,10 @@ const serializeError = require("../utils/error-serialization").serializeError;
 
 const DEFAULT_PORT = 9838;
 const ONE_SECOND = 1000;
-const INSPECTPACK_INDEPENDENT_ACTIONS = ["sizes"];
 const INSPECTPACK_PROBLEM_ACTIONS = ["versions", "duplicates"];
 const INSPECTPACK_PROBLEM_TYPE = "problems";
 
-const cacheDir = path.resolve(
-  os.homedir(),
-  ".webpack-dashboard-cache"
-);
+const cacheDir = path.resolve(os.homedir(), ".webpack-dashboard-cache");
 
 function noop() {}
 
@@ -36,15 +33,15 @@ function getTimeMessage(timer) {
   return ` (${time})`;
 }
 
-function getBundleMetrics(stats, inspectpack, handler) {
+function getBundleMetrics(stats, inspectpack, handler, done) {
   const bundles = Object.keys(stats.compilation.assets)
-    .filter(bundlePath =>
-      // Don't include hot reload assets, they break everything
-      // and the updates are already included in the new assets
-      bundlePath.indexOf(".hot-update.") === -1 &&
-
-      // Don't parse sourcemaps!
-      path.extname(bundlePath) === ".js"
+    .filter(
+      bundlePath =>
+        // Don't include hot reload assets, they break everything
+        // and the updates are already included in the new assets
+        bundlePath.indexOf(".hot-update.") === -1 &&
+        // Don't parse sourcemaps!
+        path.extname(bundlePath) === ".js"
     )
     .map(bundlePath => ({
       path: bundlePath,
@@ -52,60 +49,89 @@ function getBundleMetrics(stats, inspectpack, handler) {
       source: stats.compilation.assets[bundlePath].source()
     }));
 
-  INSPECTPACK_INDEPENDENT_ACTIONS.forEach(action => {
-    Promise.all(bundles.map(bundle =>
-      inspectpack[action]({
-        code: bundle.source,
-        root: bundle.context,
-        format: "object",
-        minified: true,
-        gzip: true
-      })
-        .then(metrics => ({
-          path: bundle.path,
-          metrics
-        }))
-    ))
-      .then(bundle => handler([{
-        type: action,
-        value: bundle
-      }]))
-      .catch(err => handler([{
-        type: action,
-        error: true,
-        value: serializeError(err)
-      }]));
-  });
-
-  Promise.all(INSPECTPACK_PROBLEM_ACTIONS.map(action =>
-    Promise.all(bundles.map(bundle =>
-      inspectpack[action]({
-        code: bundle.source,
-        root: bundle.context,
-        duplicates: true,
-        format: "object",
-        minified: true,
-        gzip: true
-      })
-        .then(metrics => ({
-          path: bundle.path,
-          [action]: metrics
-        }))
-    ))
-  ))
-    .then(bundle =>
-      handler([{
-        type: INSPECTPACK_PROBLEM_TYPE,
-        value: _.flatten(bundle)
-      }])
+  Promise.all([
+    Promise.all(
+      bundles.map(bundle =>
+        inspectpack
+          .sizes({
+            code: bundle.source,
+            root: bundle.context,
+            format: "object",
+            minified: true,
+            gzip: true
+          })
+          .then(metrics => ({
+            path: bundle.path,
+            metrics
+          }))
+      )
     )
-    .catch(err =>
-      handler([{
-        type: INSPECTPACK_PROBLEM_TYPE,
-        error: true,
-        value: serializeError(err)
-      }])
-    );
+      .then(bundle => {
+        handler([
+          {
+            type: "sizes",
+            value: bundle
+          }
+        ]);
+        return true;
+      })
+      .catch(err => {
+        handler([
+          {
+            type: "sizes",
+            error: true,
+            value: serializeError(err)
+          }
+        ]);
+      }),
+    Promise.all(
+      INSPECTPACK_PROBLEM_ACTIONS.map(action =>
+        Promise.all(
+          bundles.map(bundle =>
+            inspectpack
+              [action]({
+                code: bundle.source,
+                root: bundle.context,
+                duplicates: true,
+                format: "object",
+                minified: true,
+                gzip: true
+              })
+              .then(metrics => ({
+                path: bundle.path,
+                [action]: metrics
+              }))
+          )
+        )
+      )
+    )
+      .then(bundle => {
+        handler([
+          {
+            type: INSPECTPACK_PROBLEM_TYPE,
+            error: true,
+            value: _.flatten(bundle)
+          }
+        ]);
+        return true;
+      })
+      .catch(err => {
+        handler([
+          {
+            type: INSPECTPACK_PROBLEM_TYPE,
+            error: true,
+            value: serializeError(err)
+          }
+        ]);
+      })
+  ])
+    .then(() => {
+      done();
+    })
+    .catch(err => {
+      console.error("INSPECTPACK ERROR: ", err);
+      done();
+    });
 }
 
 class DashboardPlugin {
@@ -116,6 +142,17 @@ class DashboardPlugin {
       options = options || {};
       this.port = options.port || DEFAULT_PORT;
       this.handler = options.handler || null;
+    }
+    this.done = this.done.bind(this);
+  }
+
+  done() {
+    if (this.watching === false) {
+      if (this.socket) {
+        this.handler = null;
+        this.socket.close();
+        this.inspectpack._pool.clear();
+      }
     }
   }
 
@@ -130,25 +167,30 @@ class DashboardPlugin {
       handler = noop;
       const port = this.port;
       const host = "127.0.0.1";
-      const socket = new SocketIOClient(`http://${host}:${port}`);
-      socket.on("connect", () => {
-        handler = socket.emit.bind(socket, "message");
+      this.socket = new SocketIOClient(`http://${host}:${port}`);
+      this.socket.on("connect", () => {
+        handler = this.socket.emit.bind(this.socket, "message");
       });
-      this.socket = socket;
     }
 
-    compiler.apply(new webpack.ProgressPlugin((percent, msg) => {
-      handler([{
-        type: "status",
-        value: "Compiling"
-      }, {
-        type: "progress",
-        value: percent
-      }, {
-        type: "operations",
-        value: msg + getTimeMessage(timer)
-      }]);
-    }));
+    compiler.apply(
+      new webpack.ProgressPlugin((percent, msg) => {
+        handler([
+          {
+            type: "status",
+            value: "Compiling"
+          },
+          {
+            type: "progress",
+            value: percent
+          },
+          {
+            type: "operations",
+            value: msg + getTimeMessage(timer)
+          }
+        ]);
+      })
+    );
 
     compiler.plugin("watch-run", (c, done) => {
       this.watching = true;
@@ -158,75 +200,90 @@ class DashboardPlugin {
       });
     });
 
+    compiler.plugin("run", (c, done) => {
+      this.watching = false;
+      InspectpackDaemon.init({ cacheDir }).then(inspectpack => {
+        this.inspectpack = inspectpack;
+        done();
+      });
+    });
+
     compiler.plugin("compile", () => {
       timer = Date.now();
-      handler([{
-        type: "status",
-        value: "Compiling"
-      }]);
+      handler([
+        {
+          type: "status",
+          value: "Compiling"
+        }
+      ]);
     });
 
     compiler.plugin("invalid", () => {
-      handler([{
-        type: "status",
-        value: "Invalidated"
-      }, {
-        type: "progress",
-        value: 0
-      }, {
-        type: "operations",
-        value: "idle"
-      }, {
-        type: "clear"
-      }]);
+      handler([
+        {
+          type: "status",
+          value: "Invalidated"
+        },
+        {
+          type: "progress",
+          value: 0
+        },
+        {
+          type: "operations",
+          value: "idle"
+        },
+        {
+          type: "clear"
+        }
+      ]);
     });
 
     compiler.plugin("failed", () => {
-      handler([{
-        type: "status",
-        value: "Failed"
-      }, {
-        type: "operations",
-        value: `idle${getTimeMessage(timer)}`
-      }]);
+      handler([
+        {
+          type: "status",
+          value: "Failed"
+        },
+        {
+          type: "operations",
+          value: `idle${getTimeMessage(timer)}`
+        }
+      ]);
     });
 
     compiler.plugin("done", stats => {
       const options = stats.compilation.options;
-      const statsOptions =
-        options.devServer && options.devServer.stats
-          || options.stats
-          || { colors: true };
+      const statsOptions = options.devServer && options.devServer.stats ||
+      options.stats || { colors: true };
 
-      handler([{
-        type: "status",
-        value: "Success"
-      }, {
-        type: "progress",
-        value: 0
-      }, {
-        type: "operations",
-        value: `idle${getTimeMessage(timer)}`
-      }, {
-        type: "stats",
-        value: {
-          errors: stats.hasErrors(),
-          warnings: stats.hasWarnings(),
-          data: stats.toJson()
+      handler([
+        {
+          type: "status",
+          value: "Success"
+        },
+        {
+          type: "progress",
+          value: 0
+        },
+        {
+          type: "operations",
+          value: `idle${getTimeMessage(timer)}`
+        },
+        {
+          type: "stats",
+          value: {
+            errors: stats.hasErrors(),
+            warnings: stats.hasWarnings(),
+            data: stats.toJson()
+          }
+        },
+        {
+          type: "log",
+          value: stats.toString(statsOptions)
         }
-      }, {
-        type: "log",
-        value: stats.toString(statsOptions)
-      }]);
+      ]);
 
-      if (!this.watching) {
-        if (this.socket) {
-          this.socket.close();
-        }
-        return;
-      }
-
-      getBundleMetrics(stats, this.inspectpack, handler);
+      getBundleMetrics(stats, this.inspectpack, handler, this.done);
     });
   }
 }
