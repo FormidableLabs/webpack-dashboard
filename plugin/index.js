@@ -4,6 +4,7 @@
 const _ = require("lodash/fp");
 const os = require("os");
 const path = require("path");
+const most = require("most");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
 const InspectpackDaemon = require("inspectpack").daemon;
@@ -33,8 +34,8 @@ function getTimeMessage(timer) {
   return ` (${time})`;
 }
 
-function getBundleMetrics(stats, inspectpack, handler, done) {
-  const bundles = Object.keys(stats.compilation.assets)
+function observeBundleMetrics(stats, inspectpack) {
+  const bundlesToObserve = Object.keys(stats.compilation.assets)
     .filter(
       bundlePath =>
         // Don't include hot reload assets, they break everything
@@ -49,89 +50,66 @@ function getBundleMetrics(stats, inspectpack, handler, done) {
       source: stats.compilation.assets[bundlePath].source()
     }));
 
-  Promise.all([
-    Promise.all(
-      bundles.map(bundle =>
-        inspectpack
-          .sizes({
+  const getSizes = bundles => Promise.all(
+    bundles.map(bundle =>
+      inspectpack.sizes({
+        code: bundle.source,
+        root: bundle.context,
+        format: "object",
+        minified: true,
+        gzip: true
+      })
+        .then(metrics => ({
+          path: bundle.path,
+          metrics
+        }))
+    )
+  )
+    .then(bundle => ({
+      type: "sizes",
+      value: bundle
+    }))
+    .catch(err => ({
+      type: "sizes",
+      error: true,
+      value: serializeError(err)
+    }));
+
+  const getProblems = bundles => Promise.all(
+    INSPECTPACK_PROBLEM_ACTIONS.map(action =>
+      Promise.all(
+        bundles.map(bundle =>
+          inspectpack[action]({
             code: bundle.source,
             root: bundle.context,
+            duplicates: true,
             format: "object",
             minified: true,
             gzip: true
           })
-          .then(metrics => ({
-            path: bundle.path,
-            metrics
-          }))
-      )
-    )
-      .then(bundle => {
-        handler([
-          {
-            type: "sizes",
-            value: bundle
-          }
-        ]);
-        return true;
-      })
-      .catch(err => {
-        handler([
-          {
-            type: "sizes",
-            error: true,
-            value: serializeError(err)
-          }
-        ]);
-      }),
-    Promise.all(
-      INSPECTPACK_PROBLEM_ACTIONS.map(action =>
-        Promise.all(
-          bundles.map(bundle =>
-            inspectpack
-              [action]({
-                code: bundle.source,
-                root: bundle.context,
-                duplicates: true,
-                format: "object",
-                minified: true,
-                gzip: true
-              })
-              .then(metrics => ({
-                path: bundle.path,
-                [action]: metrics
-              }))
-          )
+            .then(metrics => ({
+              path: bundle.path,
+              [action]: metrics
+            }))
         )
       )
     )
-      .then(bundle => {
-        handler([
-          {
-            type: INSPECTPACK_PROBLEM_TYPE,
-            error: true,
-            value: _.flatten(bundle)
-          }
-        ]);
-        return true;
-      })
-      .catch(err => {
-        handler([
-          {
-            type: INSPECTPACK_PROBLEM_TYPE,
-            error: true,
-            value: serializeError(err)
-          }
-        ]);
-      })
-  ])
-    .then(() => {
-      done();
-    })
-    .catch(err => {
-      console.error("INSPECTPACK ERROR: ", err);
-      done();
-    });
+  )
+    .then(bundle => ({
+      type: INSPECTPACK_PROBLEM_TYPE,
+      value: _.flatten(bundle)
+    }))
+    .catch(err => ({
+      type: INSPECTPACK_PROBLEM_TYPE,
+      error: true,
+      value: serializeError(err)
+    }));
+
+  const sizesStream = most.of(bundlesToObserve).map(getSizes);
+  const problemsStream = most.of(bundlesToObserve).map(getProblems);
+
+  return most.mergeArray([sizesStream, problemsStream])
+    .chain(most.fromPromise);
 }
 
 class DashboardPlugin {
@@ -143,16 +121,17 @@ class DashboardPlugin {
       this.port = options.port || DEFAULT_PORT;
       this.handler = options.handler || null;
     }
-    this.done = this.done.bind(this);
+
+    this.cleanup = this.cleanup.bind(this);
+
+    this.watching = false;
   }
 
-  done() {
-    if (this.watching === false) {
-      if (this.socket) {
-        this.handler = null;
-        this.socket.close();
-        this.inspectpack._pool.clear();
-      }
+  cleanup() {
+    if (!this.watching && this.socket) {
+      this.handler = null;
+      this.socket.close();
+      this.inspectpack.terminate();
     }
   }
 
@@ -283,7 +262,15 @@ class DashboardPlugin {
         }
       ]);
 
-      getBundleMetrics(stats, this.inspectpack, handler, this.done);
+      observeBundleMetrics(stats, this.inspectpack)
+        .subscribe({
+          next: message => handler([message]),
+          error: err => {
+            console.log("Error from inspectpack:", err);
+            this.cleanup();
+          },
+          complete: this.cleanup
+        });
     });
   }
 }
