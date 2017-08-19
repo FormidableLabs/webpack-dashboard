@@ -1,6 +1,6 @@
 {
   "name": "webpack-dashboard",
-  "version": "1.0.0-2",
+  "version": "1.0.0-3",
   "description": "a CLI dashboard for webpack dev server",
   "bin": "bin/webpack-dashboard.js",
   "main": "index.js",
@@ -12,7 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/FormidableLabs/webpack-dashboard.git"
   },
-  "keywords": ["webpack", "cli", "plugin", "dashboard"],
+  "keywords": [
+    "webpack",
+    "cli",
+    "plugin",
+    "dashboard"
+  ],
   "author": "Ken Wheeler",
   "license": "MIT",
   "bugs": {
