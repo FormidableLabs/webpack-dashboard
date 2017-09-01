@@ -12,6 +12,7 @@ const InspectpackDaemon = require('inspectpack').daemon;
 const serializeError = require('../utils/error-serialization').serializeError;
 
 const DEFAULT_PORT = 9838;
+const DEFAULT_HOST = '127.0.0.1';
 const ONE_SECOND = 1000;
 const INSPECTPACK_PROBLEM_ACTIONS = ['versions', 'duplicates'];
 const INSPECTPACK_PROBLEM_TYPE = 'problems';
@@ -122,6 +123,7 @@ class DashboardPlugin {
     } else {
       options = options || {};
       this.port = options.port || DEFAULT_PORT;
+      this.host = options.host || DEFAULT_HOST;
       this.handler = options.handler || null;
     }
 
@@ -152,7 +154,7 @@ class DashboardPlugin {
     if (!handler) {
       handler = noop;
       const port = this.port;
-      const host = '127.0.0.1';
+      const host = this.host;
       this.socket = new SocketIOClient(`http://${host}:${port}`);
       this.socket.on('connect', () => {
         handler = this.socket.emit.bind(this.socket, 'message');
