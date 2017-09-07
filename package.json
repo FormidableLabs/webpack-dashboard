@@ -43,15 +43,14 @@
     "lodash": "^4.17.4",
     "most": "^1.6.1",
     "socket.io": "^1.4.8",
-    "socket.io-client": "^1.4.8",
-    "webpack": "^2.3.2",
-    "webpack-dev-server": "^2.4.2"
+    "socket.io-client": "^1.4.8"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.1",
     "eslint": "^3.18.0",
     "eslint-config-formidable": "^2.0.1",
     "eslint-plugin-filenames": "^1.1.0",
-    "eslint-plugin-import": "^2.2.0"
+    "eslint-plugin-import": "^2.2.0",
+    "webpack": "^2.3.2"
   }
 }
