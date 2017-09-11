@@ -49,40 +49,44 @@ const dashboard = new Dashboard({
 const port = program.port || DEFAULT_PORT;
 const server = new SocketIO(port);
 
-server.on("error", (err) => {
+server.on("error", err => {
   // eslint-disable-next-line no-console
   console.log(err);
 });
 
 if (logFromChild) {
-  server.on("connection", (socket) => {
-    socket.on("message", (message) => {
+  server.on("connection", socket => {
+    socket.on("message", message => {
       if (message.type !== "log") {
         dashboard.setData(message);
       }
     });
   });
 
-  child.stdout.on("data", (data) => {
-    dashboard.setData([{
-      type: "log",
-      value: data.toString("utf8")
-    }]);
+  child.stdout.on("data", data => {
+    dashboard.setData([
+      {
+        type: "log",
+        value: data.toString("utf8")
+      }
+    ]);
   });
 
-  child.stderr.on("data", (data) => {
-    dashboard.setData([{
-      type: "log",
-      value: data.toString("utf8")
-    }]);
+  child.stderr.on("data", data => {
+    dashboard.setData([
+      {
+        type: "log",
+        value: data.toString("utf8")
+      }
+    ]);
   });
 
   process.on("exit", () => {
     process.kill(process.platform === "win32" ? child.pid : -child.pid);
   });
 } else {
-  server.on("connection", (socket) => {
-    socket.on("message", (message) => {
+  server.on("connection", socket => {
+    socket.on("message", message => {
       dashboard.setData(message);
     });
   });
