@@ -5,24 +5,25 @@
   "bin": "bin/webpack-dashboard.js",
   "main": "index.js",
   "scripts": {
-    "precommit": "lint-staged",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ."
   },
   "repository": {
     "type": "git",
-    "url":
-      "git+https://github.com/FormidableLabs/webpack-dashboard.git"
+    "url": "git+https://github.com/FormidableLabs/webpack-dashboard.git"
   },
-  "keywords": ["webpack", "cli", "plugin", "dashboard"],
+  "keywords": [
+    "webpack",
+    "cli",
+    "plugin",
+    "dashboard"
+  ],
   "author": "Ken Wheeler",
   "license": "MIT",
   "bugs": {
-    "url":
-      "https://github.com/FormidableLabs/webpack-dashboard/issues"
+    "url": "https://github.com/FormidableLabs/webpack-dashboard/issues"
   },
-  "homepage":
-    "https://github.com/FormidableLabs/webpack-dashboard#readme",
+  "homepage": "https://github.com/FormidableLabs/webpack-dashboard#readme",
   "peerDependencies": {
     "webpack": "*"
   },
@@ -48,13 +49,8 @@
     "babel-eslint": "^7.2.1",
     "eslint": "^3.18.0",
     "eslint-config-formidable": "^2.0.1",
-    "eslint-config-prettier": "^2.4.0",
     "eslint-plugin-filenames": "^1.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "prettier": "^1.6.1",
     "webpack": "^2.3.2"
-  },
-  "lint-staged": {
-    "*.{js,json,css}": ["prettier --write", "git add"]
   }
 }

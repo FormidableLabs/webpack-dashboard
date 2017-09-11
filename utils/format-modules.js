@@ -14,17 +14,15 @@ function formatModulePercentage(module, pseudoBundleSize) {
   if (!moduleSize || !pseudoBundleSize) {
     return "--";
   }
-  const percentage = (moduleSize /
-    pseudoBundleSize *
-    PERCENT_MULTIPLIER).toPrecision(PERCENT_PRECISION);
+  const percentage = (moduleSize / pseudoBundleSize * PERCENT_MULTIPLIER)
+    .toPrecision(PERCENT_PRECISION);
   return `${percentage}%`;
 }
 
 function getModuleName(module) {
   // Support scoped packages
   if (module.baseName.indexOf("@") === 0) {
-    return module.baseName
-      .split("/")
+    return module.baseName.split("/")
       .slice(0, SCOPED_PACKAGE_INDEX)
       .reduce((x, y) => x + y);
   }
@@ -36,10 +34,12 @@ function getModuleNameWithVersion(module) {
   try {
     const moduleMain = require.resolve(moduleName);
     // eslint-disable-next-line global-require
-    const version = require(path.join(
-      moduleMain.substring(0, moduleMain.lastIndexOf("/")),
-      "package.json"
-    )).version;
+    const version = require(
+      path.join(
+        moduleMain.substring(0, moduleMain.lastIndexOf("/")),
+        "package.json"
+      )
+    ).version;
     return `${moduleName}@${version}`;
   } catch (err) {
     return moduleName;
@@ -59,10 +59,8 @@ function groupModules(bundle) {
 
       return Object.assign({}, moduleGroup, {
         size: {
-          minGz: moduleGroup.children.reduce(
-            (acc, module) => acc + module.size.minGz,
-            0
-          )
+          minGz: moduleGroup.children
+            .reduce((acc, module) => acc + module.size.minGz, 0)
         }
       });
     }),
@@ -77,20 +75,27 @@ function groupModules(bundle) {
 const getPseudoBundleSize = _.flow(
   groupModules,
   _.mapValues(group =>
-    group.children.reduce((total, module) => total + module.size.minGz, 0)
+    group.children.reduce((total, module) =>
+      total + module.size.minGz, 0
+    )
   ),
   _.values,
   _.reduce((total, groupSize) => total + groupSize, 0)
 );
 
 function formatModules(bundle) {
-  const bundleText = groupModules(bundle).map(moduleGroup => [
-    getModuleNameWithVersion(moduleGroup),
-    filesize(moduleGroup.size.minGz),
-    formatModulePercentage(moduleGroup, getPseudoBundleSize(bundle))
-  ]);
+  const bundleText = groupModules(bundle)
+    .map(moduleGroup => [
+      getModuleNameWithVersion(moduleGroup),
+      filesize(moduleGroup.size.minGz),
+      formatModulePercentage(
+        moduleGroup,
+        getPseudoBundleSize(bundle)
+      )
+    ]);
 
-  return [["Name", "Size (min+gz)", "Percentage"]].concat(bundleText);
+  return [["Name", "Size (min+gz)", "Percentage"]]
+    .concat(bundleText);
 }
 
 module.exports = formatModules;

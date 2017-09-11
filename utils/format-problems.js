@@ -16,9 +16,7 @@ function formatProblems(bundle) {
   if (!duplicates && versions) {
     return `${chalk.green("No duplicate files!")}\n${versions}`;
   }
-  return `${formatDuplicates(bundle.duplicates)}\n${formatVersions(
-    bundle.versions
-  )}`;
+  return `${formatDuplicates(bundle.duplicates)}\n${formatVersions(bundle.versions)}`;
 }
 
 module.exports = formatProblems;

@@ -7,25 +7,28 @@ function getAssets(stats) {
 }
 
 function getAssetSize(asset) {
-  return `${filesize(asset.size)}${(asset.minGz && " (min+gz)") || ""}`;
+  return `${filesize(asset.size)}${asset.minGz && " (min+gz)" || ""}`;
 }
 
 function getTotalSize(assets) {
-  return filesize(assets.reduce((total, asset) => total + asset.size, 0));
+  return filesize(assets.reduce(
+    (total, asset) => total + asset.size,
+    0
+  ));
 }
 
 function resolveAssets(tree, bundles) {
   return _.flatMap(assets =>
-    assets.filter(asset => asset.name.indexOf("hot-update") < 0).map(asset => {
-      const realBundleMatch = _.find({ path: asset.name })(bundles);
-      return realBundleMatch
-        ? {
-            name: realBundleMatch.path,
-            size: realBundleMatch.metrics.meta.bundle.minGz,
-            minGz: true
-          }
-        : asset;
-    })
+    assets
+      .filter(asset => asset.name.indexOf("hot-update") < 0)
+      .map(asset => {
+        const realBundleMatch = _.find({ path: asset.name })(bundles);
+        return realBundleMatch ? {
+          name: realBundleMatch.path,
+          size: realBundleMatch.metrics.meta.bundle.minGz,
+          minGz: true
+        } : asset;
+      })
   )(tree);
 }
 
@@ -33,8 +36,12 @@ function printAssets(tree, bundles) {
   const assets = resolveAssets(tree, bundles);
 
   return [["Name", "Size"]]
-    .concat(assets.map(asset => [asset.name, getAssetSize(asset)]))
-    .concat([["Total", getTotalSize(assets)]]);
+    .concat(assets.map(asset =>
+      [asset.name, getAssetSize(asset)]
+    ))
+    .concat(
+      [["Total", getTotalSize(assets)]]
+    );
 }
 
 function formatAssets(stats, bundles) {
