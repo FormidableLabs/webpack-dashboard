@@ -8,7 +8,8 @@ const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
 const formatAssets = require("../utils/format-assets.js");
 const formatProblems = require("../utils/format-problems.js");
-const deserializeError = require("../utils/error-serialization").deserializeError;
+const deserializeError = require("../utils/error-serialization")
+  .deserializeError;
 
 const PERCENT_MULTIPLIER = 100;
 
@@ -27,10 +28,10 @@ const DEFAULT_SCROLL_OPTIONS = {
 
 class Dashboard {
   constructor(options) {
-    const title = options && options.title || "webpack-dashboard";
+    const title = (options && options.title) || "webpack-dashboard";
 
-    this.color = options && options.color || "green";
-    this.minimal = options && options.minimal || false;
+    this.color = (options && options.color) || "green";
+    this.minimal = (options && options.minimal) || false;
     this.setData = this.setData.bind(this);
 
     this.stats = null;
@@ -70,7 +71,9 @@ class Dashboard {
         log: this.setLog.bind(this),
         clear: this.clear.bind(this),
         sizes: _data => {
-          if (this.minimal) { return; }
+          if (this.minimal) {
+            return;
+          }
           if (_data.value instanceof Error) {
             this.setSizesError(_data.value);
           } else {
@@ -78,7 +81,9 @@ class Dashboard {
           }
         },
         problems: _data => {
-          if (this.minimal) { return; }
+          if (this.minimal) {
+            return;
+          }
           if (_data.value instanceof Error) {
             this.setProblemsError(_data.value);
           } else {
@@ -91,10 +96,13 @@ class Dashboard {
     };
 
     dataArray
-      .map(data => data.error ?
-        Object.assign({}, data, {
-          value: deserializeError(data.value)
-        }) : data
+      .map(
+        data =>
+          data.error
+            ? Object.assign({}, data, {
+                value: deserializeError(data.value)
+              })
+            : data
       )
       .forEach(actionForMessageType);
 
@@ -125,14 +133,14 @@ class Dashboard {
     let content;
 
     switch (data.value) {
-    case "Success":
-      content = `{green-fg}{bold}${data.value}{/}`;
-      break;
-    case "Failed":
-      content = `{red-fg}{bold}${data.value}{/}`;
-      break;
-    default:
-      content = `{bold}${data.value}{/}`;
+      case "Success":
+        content = `{green-fg}{bold}${data.value}{/}`;
+        break;
+      case "Failed":
+        content = `{red-fg}{bold}${data.value}{/}`;
+        break;
+      default:
+        content = `{bold}${data.value}{/}`;
     }
     this.status.setContent(content);
   }
@@ -172,9 +180,9 @@ class Dashboard {
 
     const result = _.flow(
       _.groupBy("path"),
-      _.mapValues(_.reduce((acc, bundle) =>
-        Object.assign({}, acc, bundle), {}
-      )),
+      _.mapValues(
+        _.reduce((acc, bundle) => Object.assign({}, acc, bundle), {})
+      ),
       _.mapValues(bundle => () => {
         this.moduleTable.setData(formatModules(bundle));
         this.screen.render();
@@ -202,9 +210,9 @@ class Dashboard {
 
     const result = _.flow(
       _.groupBy("path"),
-      _.mapValues(_.reduce((acc, bundle) =>
-        Object.assign({}, acc, bundle), {}
-      )),
+      _.mapValues(
+        _.reduce((acc, bundle) => Object.assign({}, acc, bundle), {})
+      ),
       _.mapValues(bundle => () => {
         this.problems.setContent(formatProblems(bundle));
         this.screen.render();
@@ -453,9 +461,11 @@ class Dashboard {
       parent: this.wrapper,
       label: "Progress",
       tags: true,
-      padding: this.minimal ? {
-        left: 1
-      } : 1,
+      padding: this.minimal
+        ? {
+            left: 1
+          }
+        : 1,
       width: this.minimal ? "33%" : "100%",
       height: this.minimal ? "100%" : "34%",
       valign: "middle",

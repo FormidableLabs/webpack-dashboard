@@ -1,6 +1,9 @@
----
-extends:
-	- formidable/configurations/es6-node
-rules:
-  func-style: off
-  arrow-parens: off
+{
+ "extends": [
+    "formidable/configurations/es6-node",
+    "prettier"
+ ],
+ "rules": {
+    "func-style": "off"
+ }
+}

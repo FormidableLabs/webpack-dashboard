@@ -8,10 +8,7 @@ function isLikelyASyntaxError(message) {
 
 function formatMessage(message) {
   return message
-    .replace(
-      "Module build failed: SyntaxError:",
-      friendlySyntaxErrorLabel
-    )
+    .replace("Module build failed: SyntaxError:", friendlySyntaxErrorLabel)
     .replace(
       /Module not found: Error: Cannot resolve 'file' or 'directory'/,
       "Module not found:"
