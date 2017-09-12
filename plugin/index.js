@@ -38,10 +38,10 @@ function observeBundleMetrics(stats, inspectpack) {
   const bundlesToObserve = Object.keys(stats.compilation.assets)
     .filter(
       bundlePath =>
-        // Don"t include hot reload assets, they break everything
+        // Don't include hot reload assets, they break everything
         // and the updates are already included in the new assets
         bundlePath.indexOf(".hot-update.") === -1 &&
-        // Don"t parse sourcemaps!
+        // Don't parse sourcemaps!
         path.extname(bundlePath) === ".js"
     )
     .map(bundlePath => ({
