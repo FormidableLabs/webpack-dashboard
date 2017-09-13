@@ -12,7 +12,7 @@ const InspectpackDaemon = require("inspectpack").daemon;
 const serializeError = require("../utils/error-serialization").serializeError;
 
 const DEFAULT_PORT = 9838;
-const DEFAULT_HOST = '127.0.0.1';
+const DEFAULT_HOST = "127.0.0.1";
 const ONE_SECOND = 1000;
 const INSPECTPACK_PROBLEM_ACTIONS = ["versions", "duplicates"];
 const INSPECTPACK_PROBLEM_TYPE = "problems";
