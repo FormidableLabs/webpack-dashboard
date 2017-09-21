@@ -18,7 +18,7 @@ const template = Handlebars.compile(
 `);
 
 function formatVersions(versions) {
-  return versions.versions.length && template({
+  return ((versions || {}).versions || []).length && template({
     versions: versions.versions
   }) || "";
 }
