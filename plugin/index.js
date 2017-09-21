@@ -1,4 +1,4 @@
-/* eslint-disable max-params, no-unexpected-multiline, no-console, max-statements */
+/* eslint-disable max-params, max-statements */
 "use strict";
 
 const _ = require("lodash/fp");
@@ -34,87 +34,6 @@ function getTimeMessage(timer) {
   return ` (${time})`;
 }
 
-function observeBundleMetrics(stats, inspectpack) {
-  const bundlesToObserve = Object.keys(stats.compilation.assets)
-    .filter(
-      bundlePath =>
-        // Don't include hot reload assets, they break everything
-        // and the updates are already included in the new assets
-        bundlePath.indexOf(".hot-update.") === -1 &&
-        // Don't parse sourcemaps!
-        path.extname(bundlePath) === ".js"
-    )
-    .map(bundlePath => ({
-      path: bundlePath,
-      context: stats.compilation.options.context,
-      source: stats.compilation.assets[bundlePath].source()
-    }));
-
-  const getSizes = bundles =>
-    Promise.all(
-      bundles.map(bundle =>
-        inspectpack
-          .sizes({
-            code: bundle.source,
-            root: bundle.context,
-            format: "object",
-            minified: true,
-            gzip: true
-          })
-          .then(metrics => ({
-            path: bundle.path,
-            metrics
-          }))
-      )
-    )
-      .then(bundle => ({
-        type: "sizes",
-        value: bundle
-      }))
-      .catch(err => ({
-        type: "sizes",
-        error: true,
-        value: serializeError(err)
-      }));
-
-  const getProblems = bundles =>
-    Promise.all(
-      INSPECTPACK_PROBLEM_ACTIONS.map(action =>
-        Promise.all(
-          bundles.map(bundle =>
-            inspectpack
-              [action]({
-                code: bundle.source,
-                root: bundle.context,
-                duplicates: true,
-                format: "object",
-                minified: true,
-                gzip: true
-              })
-              .then(metrics => ({
-                path: bundle.path,
-                [action]: metrics
-              }))
-          )
-        )
-      )
-    )
-      .then(bundle => ({
-        type: INSPECTPACK_PROBLEM_TYPE,
-        value: _.flatten(bundle)
-      }))
-      .catch(err => ({
-        type: INSPECTPACK_PROBLEM_TYPE,
-        error: true,
-        value: serializeError(err)
-      }));
-
-  const sizesStream = most.of(bundlesToObserve).map(getSizes);
-  const problemsStream = most.of(bundlesToObserve).map(getProblems);
-
-  return most.mergeArray([sizesStream, problemsStream]).chain(most.fromPromise);
-}
-
 class DashboardPlugin {
   constructor(options) {
     if (typeof options === "function") {
@@ -122,13 +41,13 @@ class DashboardPlugin {
     } else {
       options = options || {};
       this.port = options.port || DEFAULT_PORT;
+      this.root = options.root;
       this.handler = options.handler || null;
     }
 
     this.cleanup = this.cleanup.bind(this);
 
     this.inspectpack = InspectpackDaemon.create({ cacheFilename });
-    console.log(this.inspectpack);
     this.watching = false;
   }
 
@@ -263,15 +182,152 @@ class DashboardPlugin {
         }
       ]);
 
-      observeBundleMetrics(stats, this.inspectpack).subscribe({
+      this.observeBundleMetrics(stats, this.inspectpack).subscribe({
         next: message => handler([message]),
         error: err => {
-          console.log("Error from inspectpack:", err);
+          console.log("Error from inspectpack:", err); // eslint-disable-line no-console
           this.cleanup();
         },
         complete: this.cleanup
       });
     });
+  }
+
+  /**
+   * Infer the root of the project, w/ package.json + node_modules.
+   *
+   * Inspectpack's `version` option needs to know where to start resolving
+   * packages from to translate `~/lodash/index.js` to
+   * `/ACTUAL/PATH/node_modules/index.js`.
+   *
+   * In common practice, this is _usually_ `bundle.context`, but sometimes folks
+   * will set that to a _different_ directory of assets directly copied in or
+   * something.
+   *
+   * To handle varying scenarios, we resolve the project's root as:
+   * 1. Plugin `root` option, if set
+   * 2. `bundle.context`, if `package.json` exists
+   * 3. `process.cwd()`, if `package.json` exists
+   * 4. `null` if nothing else matches
+   *
+   * @param {Object} bundle Bundle
+   * @returns {String|null} Project root path or null
+   */
+  getProjectRoot(bundle) {
+    /*eslint-disable global-require*/
+    // Start with plugin option (and don't check it).
+    // We **will** allow a bad project root to blow up webpack-dashboard.
+    if (this.root) {
+      return this.root;
+    }
+
+    // Try bundle context.
+    try {
+      if (bundle.context && require(path.join(bundle.context, "package.json"))) {
+        return bundle.context;
+      }
+    } catch (err) { /* passthrough */ }
+
+    // Try CWD.
+    try {
+      if (require(path.resolve("package.json"))) {
+        return process.cwd();
+      }
+    } catch (err) { /* passthrough */ }
+
+    // A null will be filtered out, disabling `versions` action.
+    return null;
+  }
+
+  observeBundleMetrics(stats, inspectpack) {
+    const bundlesToObserve = Object.keys(stats.compilation.assets)
+      .filter(
+        bundlePath =>
+          // Don't include hot reload assets, they break everything
+          // and the updates are already included in the new assets
+          bundlePath.indexOf(".hot-update.") === -1 &&
+          // Don't parse sourcemaps!
+          path.extname(bundlePath) === ".js"
+      )
+      .map(bundlePath => ({
+        path: bundlePath,
+        context: stats.compilation.options.context,
+        source: stats.compilation.assets[bundlePath].source()
+      }));
+
+    const getSizes = bundles =>
+      Promise.all(
+        bundles.map(bundle =>
+          inspectpack
+            .sizes({
+              code: bundle.source,
+              format: "object",
+              minified: true,
+              gzip: true
+            })
+            .then(metrics => ({
+              path: bundle.path,
+              metrics
+            }))
+        )
+      )
+        .then(bundle => ({
+          type: "sizes",
+          value: bundle
+        }))
+        .catch(err => ({
+          type: "sizes",
+          error: true,
+          value: serializeError(err)
+        }));
+
+    const getProblems = bundles =>
+      Promise.all(
+        INSPECTPACK_PROBLEM_ACTIONS.map(action =>
+          Promise.all(
+            bundles
+              .map(bundle => {
+                // Root is only needed for versions and we hit disk to check it.
+                // So, only check on actual actions and bail out if not found.
+                let root;
+                if (action === "versions") {
+                  root = this.getProjectRoot(bundle);
+                  if (!root) {
+                    return null;
+                  }
+                }
+
+                return inspectpack[action]({
+                  code: bundle.source,
+                  root,
+                  duplicates: true,
+                  format: "object",
+                  minified: true,
+                  gzip: true
+                })
+                  .then(metrics => ({
+                    path: bundle.path,
+                    [action]: metrics
+                  }));
+              })
+              .filter(Boolean) // Filter out incorrect actions.
+          )
+        )
+      )
+        .then(bundle => ({
+          type: INSPECTPACK_PROBLEM_TYPE,
+          value: _.flatten(bundle)
+        }))
+        .catch(err => ({
+          type: INSPECTPACK_PROBLEM_TYPE,
+          error: true,
+          value: serializeError(err)
+        }));
+
+    const sizesStream = most.of(bundlesToObserve).map(getSizes);
+    const problemsStream = most.of(bundlesToObserve).map(getProblems);
+
+    return most.mergeArray([sizesStream, problemsStream]).chain(most.fromPromise);
   }
 }
 

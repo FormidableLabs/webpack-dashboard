@@ -83,6 +83,7 @@ Then, sit back and pretend you're an astronaut.
 #### Options
 
  - `port` - Custom port for socket communication
+ - `root` - Custom full path to project root (where `package.json` + `node_modules` are if not in `process.cwd()`)
  - `handler` - Plugin handler method, i.e. `dashboard.setData`
 
 *Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`*
