@@ -225,7 +225,9 @@ class Dashboard {
   }
 
   setLog(data) {
-    this.logText.log(data.value.replace(/[{}]/g, ""));
+    if (!this.stats.hasErrors()) {
+      this.logText.log(data.value.replace(/[{}]/g, ""));
+    }
   }
 
   clear() {
