@@ -414,7 +414,7 @@ class Dashboard {
       padding: {
         left: 1
       },
-      width: this.minimal ? "34%" : "100%",
+      width: this.minimal ? "34%-1" : "100%",
       height: this.minimal ? "100%" : "34%",
       valign: "middle",
       border: {
@@ -435,7 +435,7 @@ class Dashboard {
       padding: {
         left: 1
       },
-      width: this.minimal ? "34%" : "100%",
+      width: this.minimal ? "34%-1" : "100%",
       height: this.minimal ? "100%" : "34%",
       valign: "middle",
       border: {
