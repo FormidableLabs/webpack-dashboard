@@ -262,6 +262,27 @@ class Dashboard {
     );
 
     this.screen.append(this.log);
+    this.mapNavigationKeysToScrollLog();
+  }
+
+  mapNavigationKeysToScrollLog() {
+    this.screen.key(["pageup"], () => {
+      this.logText.setScrollPerc(0);
+      this.logText.screen.render();
+    });
+    this.screen.key(["pagedown"], () => {
+      // eslint-disable-next-line no-magic-numbers
+      this.logText.setScrollPerc(100);
+      this.logText.screen.render();
+    });
+    this.screen.key(["up"], () => {
+      this.logText.scroll(-1);
+      this.logText.screen.render();
+    });
+    this.screen.key(["down"], () => {
+      this.logText.scroll(1);
+      this.logText.screen.render();
+    });
   }
 
   layoutModules() {
