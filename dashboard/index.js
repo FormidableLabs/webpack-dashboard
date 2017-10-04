@@ -250,9 +250,10 @@ class Dashboard {
   }
 
   setLog(data) {
-    if (!this.stats.hasErrors()) {
-      this.logText.log(data.value.replace(/[{}]/g, ""));
+    if (this.stats && this.stats.hasErrors()) {
+      return;
     }
+    this.logText.log(data.value.replace(/[{}]/g, ""));
   }
 
   clear() {
