@@ -72,6 +72,10 @@ class Dashboard {
         sizes: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
+            if (_data.value.message === "No code sections found") {
+              this.setProductionSizesWarning();
+              return;
+            }
             this.setSizesError(_data.value);
           } else {
             this.setSizes(_data);
@@ -80,6 +84,10 @@ class Dashboard {
         problems: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
+            if (_data.value.message === "No code sections found") {
+              this.setProductionProblemsWarning();
+              return;
+            }
             this.setProblemsError(_data.value);
           } else {
             this.setProblems(_data);
@@ -195,6 +203,23 @@ class Dashboard {
     this.assets.setLabel(chalk.red("Assets (error)"));
     this.logText.log(chalk.red("Could not load module/asset sizes."));
     this.logText.log(chalk.red(err));
+  }
+
+  setProductionSizesWarning() {
+    this.modulesMenu.setLabel(chalk.yellow("Modules (warning)"));
+    this.assets.setLabel(chalk.yellow("Assets (warning)"));
+    this.moduleTable.setData([[
+      // eslint-disable-next-line max-len
+      "There are no code sections that could be analyzed, it is possible you are using a production configuration. To see more on modules and assets switch to a development configuration."
+    ]]);
+    this.assetTable.setData([[
+      "Unable to list specific asset data."
+    ]]);
+  }
+
+  setProductionProblemsWarning() {
+    this.problemsMenu.setLabel(chalk.yellow("Problems (warning)"));
+    this.problems.setContent("Unable to analyze problems.");
   }
 
   setProblems(data) {
