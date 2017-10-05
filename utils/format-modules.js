@@ -26,7 +26,7 @@ function getModuleName(module) {
       .slice(0, SCOPED_PACKAGE_INDEX)
       .reduce((x, y) => x + y);
   }
-  const nameComponents = module.baseName.split("/");
+  const nameComponents = module.baseName.split(path.sep);
   if (nameComponents[0] === ".") {
     // In Webpack 3, the part of the file name we want to display is the
     // third component when split. In Webpack 2, it's the first.
