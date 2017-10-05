@@ -26,7 +26,14 @@ function getModuleName(module) {
       .slice(0, SCOPED_PACKAGE_INDEX)
       .reduce((x, y) => x + y);
   }
-  return module.baseName.split("/")[0];
+  const nameComponents = module.baseName.split(path.sep);
+  if (nameComponents[0] === ".") {
+    // In Webpack 3, the part of the file name we want to display is the
+    // third component when split. In Webpack 2, it's the first.
+    // eslint-disable-next-line no-magic-numbers
+    return nameComponents[2];
+  }
+  return nameComponents[0];
 }
 
 function getModuleNameWithVersion(module) {

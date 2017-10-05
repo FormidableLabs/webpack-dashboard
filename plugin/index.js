@@ -74,6 +74,9 @@ class DashboardPlugin {
       this.socket.on("connect", () => {
         handler = this.socket.emit.bind(this.socket, "message");
       });
+      this.socket.once("mode", args => {
+        this.minimal = args.minimal;
+      });
     }
 
     compiler.apply(
@@ -182,14 +185,16 @@ class DashboardPlugin {
         }
       ]);
 
-      this.observeBundleMetrics(stats, this.inspectpack).subscribe({
-        next: message => handler([message]),
-        error: err => {
-          console.log("Error from inspectpack:", err); // eslint-disable-line no-console
-          this.cleanup();
-        },
-        complete: this.cleanup
-      });
+      if (!this.minimal) {
+        this.observeBundleMetrics(stats, this.inspectpack).subscribe({
+          next: message => handler([message]),
+          error: err => {
+            console.log("Error from inspectpack:", err); // eslint-disable-line no-console
+            this.cleanup();
+          },
+          complete: this.cleanup
+        });
+      }
     });
   }
 

@@ -56,6 +56,8 @@ server.on("error", (err) => {
 
 if (logFromChild) {
   server.on("connection", (socket) => {
+    socket.emit("mode", { minimal: program.minimal || false });
+
     socket.on("message", (message) => {
       if (message.type !== "log") {
         dashboard.setData(message);
