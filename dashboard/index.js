@@ -72,6 +72,10 @@ class Dashboard {
         sizes: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
+            if (_data.value.message === "No code sections found") {
+              this.setProductionSizesWarning();
+              return;
+            }
             this.setSizesError(_data.value);
           } else {
             this.setSizes(_data);
@@ -80,6 +84,10 @@ class Dashboard {
         problems: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
+            if (_data.value.message === "No code sections found") {
+              this.setProductionProblemsWarning();
+              return;
+            }
             this.setProblemsError(_data.value);
           } else {
             this.setProblems(_data);
@@ -197,6 +205,23 @@ class Dashboard {
     this.logText.log(chalk.red(err));
   }
 
+  setProductionSizesWarning() {
+    this.modulesMenu.setLabel(chalk.yellow("Modules (warning)"));
+    this.assets.setLabel(chalk.yellow("Assets (warning)"));
+    this.moduleTable.setData([[
+      // eslint-disable-next-line max-len
+      "There are no code sections that could be analyzed, it is possible you are using a production configuration. To see more on modules and assets switch to a development configuration."
+    ]]);
+    this.assetTable.setData([[
+      "Unable to list specific asset data."
+    ]]);
+  }
+
+  setProductionProblemsWarning() {
+    this.problemsMenu.setLabel(chalk.yellow("Problems (warning)"));
+    this.problems.setContent("Unable to analyze problems.");
+  }
+
   setProblems(data) {
     this.problemsMenu.setLabel("Problems");
 
@@ -225,6 +250,9 @@ class Dashboard {
   }
 
   setLog(data) {
+    if (this.stats && this.stats.hasErrors()) {
+      return;
+    }
     this.logText.log(data.value.replace(/[{}]/g, ""));
   }
 
@@ -260,6 +288,27 @@ class Dashboard {
     );
 
     this.screen.append(this.log);
+    this.mapNavigationKeysToScrollLog();
+  }
+
+  mapNavigationKeysToScrollLog() {
+    this.screen.key(["pageup"], () => {
+      this.logText.setScrollPerc(0);
+      this.logText.screen.render();
+    });
+    this.screen.key(["pagedown"], () => {
+      // eslint-disable-next-line no-magic-numbers
+      this.logText.setScrollPerc(100);
+      this.logText.screen.render();
+    });
+    this.screen.key(["up"], () => {
+      this.logText.scroll(-1);
+      this.logText.screen.render();
+    });
+    this.screen.key(["down"], () => {
+      this.logText.scroll(1);
+      this.logText.screen.render();
+    });
   }
 
   layoutModules() {
@@ -414,7 +463,7 @@ class Dashboard {
       padding: {
         left: 1
       },
-      width: this.minimal ? "34%" : "100%",
+      width: this.minimal ? "34%-1" : "100%",
       height: this.minimal ? "100%" : "34%",
       valign: "middle",
       border: {
@@ -435,7 +484,7 @@ class Dashboard {
       padding: {
         left: 1
       },
-      width: this.minimal ? "34%" : "100%",
+      width: this.minimal ? "34%-1" : "100%",
       height: this.minimal ? "100%" : "34%",
       valign: "middle",
       border: {

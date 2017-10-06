@@ -6,7 +6,11 @@ const formatVersions = require("./format-versions");
 
 function formatProblems(bundle) {
   const duplicates = formatDuplicates(bundle.duplicates);
-  const versions = formatVersions(bundle.versions);
+  // Versions may be undefined if we couldn't get a project root.
+  const versions = typeof bundle.versions === "undefined" ?
+    `${chalk.yellow("Unable to diagnose possible version skews\n")}` :
+    formatVersions(bundle.versions);
+
   if (!duplicates && !versions) {
     return chalk.green("No problems detected!");
   }
@@ -16,7 +20,8 @@ function formatProblems(bundle) {
   if (!duplicates && versions) {
     return `${chalk.green("No duplicate files!")}\n${versions}`;
   }
-  return `${formatDuplicates(bundle.duplicates)}\n${formatVersions(bundle.versions)}`;
+
+  return `${duplicates}\n${versions}`;
 }
 
 module.exports = formatProblems;

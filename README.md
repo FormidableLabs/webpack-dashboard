@@ -82,8 +82,9 @@ Then, sit back and pretend you're an astronaut.
 #### Webpack plugin
 #### Options
 
- - `port` - Custom port for connecting the socket client
  - `host` - Custom host for connection the socket client
+ - `port` - Custom port for connecting the socket client
+ - `root` - Custom full path to project root (where `package.json` + `node_modules` are if not in `process.cwd()`)
  - `handler` - Plugin handler method, i.e. `dashboard.setData`
 
 *Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`*
