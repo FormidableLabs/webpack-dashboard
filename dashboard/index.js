@@ -67,15 +67,12 @@ class Dashboard {
         operations: this.setOperations.bind(this),
         status: this.setStatus.bind(this),
         stats: this.setStats.bind(this),
+        nodeEnv: this.setNodeEnv.bind(this),
         log: this.setLog.bind(this),
         clear: this.clear.bind(this),
         sizes: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
-            if (_data.value.message === "No code sections found") {
-              this.setProductionSizesWarning();
-              return;
-            }
             this.setSizesError(_data.value);
           } else {
             this.setSizes(_data);
@@ -84,17 +81,12 @@ class Dashboard {
         problems: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
-            if (_data.value.message === "No code sections found") {
-              this.setProductionProblemsWarning();
-              return;
-            }
             this.setProblemsError(_data.value);
           } else {
             this.setProblems(_data);
           }
         }
       };
-
       return map[data.type](data);
     };
 
@@ -127,6 +119,13 @@ class Dashboard {
 
   setOperations(data) {
     this.operations.setContent(data.value);
+  }
+
+  setNodeEnv(data) {
+    this.nodeEnv = data.value;
+    if (this.nodeEnv === "production") {
+      this.setProductionConfigurationWarning();
+    }
   }
 
   setStatus(data) {
@@ -205,19 +204,16 @@ class Dashboard {
     this.logText.log(chalk.red(err));
   }
 
-  setProductionSizesWarning() {
+  setProductionConfigurationWarning() {
     this.modulesMenu.setLabel(chalk.yellow("Modules (warning)"));
     this.assets.setLabel(chalk.yellow("Assets (warning)"));
     this.moduleTable.setData([[
       // eslint-disable-next-line max-len
-      "There are no code sections that could be analyzed, it is possible you are using a production configuration. To see more on modules and assets switch to a development configuration."
+      "It appears you are using a production config. Therefore there are no code sections that could be analyzed. To see more on modules and assets switch to a development configuration."
     ]]);
     this.assetTable.setData([[
       "Unable to list specific asset data."
     ]]);
-  }
-
-  setProductionProblemsWarning() {
     this.problemsMenu.setLabel(chalk.yellow("Problems (warning)"));
     this.problems.setContent("Unable to analyze problems.");
   }

@@ -66,6 +66,12 @@ class DashboardPlugin {
     // Enable pathinfo for inspectpack support
     compiler.options.output.pathinfo = true;
 
+    // Safely get the node env if specified in the webpack config
+    const definePlugin = compiler.options.plugins
+      .filter(plugin => plugin.constructor.name === "DefinePlugin")[0];
+    const nodeEnv = JSON.parse(
+      _.getOr("\"development\"")(["definitions", "process.env", "NODE_ENV"])(definePlugin));
+
     if (!handler) {
       handler = noop;
       const port = this.port;
@@ -73,6 +79,7 @@ class DashboardPlugin {
       this.socket = new SocketIOClient(`http://${host}:${port}`);
       this.socket.on("connect", () => {
         handler = this.socket.emit.bind(this.socket, "message");
+        handler([{ type: "nodeEnv", value: nodeEnv }]);
       });
       this.socket.once("mode", args => {
         this.minimal = args.minimal;
@@ -185,7 +192,7 @@ class DashboardPlugin {
         }
       ]);
 
-      if (!this.minimal) {
+      if (!this.minimal && nodeEnv !== "production") {
         this.observeBundleMetrics(stats, this.inspectpack).subscribe({
           next: message => handler([message]),
           error: err => {
