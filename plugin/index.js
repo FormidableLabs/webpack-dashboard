@@ -2,7 +2,6 @@
 "use strict";
 
 const _ = require("lodash/fp");
-const { get } = require("lodash");
 const os = require("os");
 const path = require("path");
 const most = require("most");
@@ -70,8 +69,8 @@ class DashboardPlugin {
     // Safely get the node env if specified in the webpack config
     const definePlugin = compiler.options.plugins
       .filter(plugin => plugin.constructor.name === "DefinePlugin")[0];
-    const nodeEnv = JSON.parse(get(definePlugin,
-      ["definitions", "process.env", "NODE_ENV"], "\"development\""));
+    const nodeEnv = JSON.parse(
+      _.getOr("\"development\"")(["definitions", "process.env", "NODE_ENV"])(definePlugin));
 
     if (!handler) {
       handler = noop;
