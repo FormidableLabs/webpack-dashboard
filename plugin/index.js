@@ -2,6 +2,7 @@
 "use strict";
 
 const _ = require("lodash/fp");
+const { get } = require("lodash");
 const os = require("os");
 const path = require("path");
 const most = require("most");
@@ -66,6 +67,12 @@ class DashboardPlugin {
     // Enable pathinfo for inspectpack support
     compiler.options.output.pathinfo = true;
 
+    // Safely get the node env if specified in the webpack config
+    const definePlugin = compiler.options.plugins
+      .filter(plugin => plugin.constructor.name === "DefinePlugin")[0];
+    const nodeEnv = JSON.parse(get(definePlugin,
+      ["definitions", "process.env", "NODE_ENV"], "\"development\""));
+
     if (!handler) {
       handler = noop;
       const port = this.port;
@@ -73,6 +80,7 @@ class DashboardPlugin {
       this.socket = new SocketIOClient(`http://${host}:${port}`);
       this.socket.on("connect", () => {
         handler = this.socket.emit.bind(this.socket, "message");
+        handler([{ type: "nodeEnv", value: nodeEnv }]);
       });
       this.socket.once("mode", args => {
         this.minimal = args.minimal;
@@ -102,7 +110,6 @@ class DashboardPlugin {
       this.watching = true;
       done();
     });
-
     compiler.plugin("run", (c, done) => {
       this.watching = false;
       done();
@@ -110,6 +117,7 @@ class DashboardPlugin {
 
     compiler.plugin("compile", () => {
       timer = Date.now();
+
       handler([
         {
           type: "status",
