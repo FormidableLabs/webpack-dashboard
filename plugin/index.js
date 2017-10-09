@@ -110,6 +110,7 @@ class DashboardPlugin {
       this.watching = true;
       done();
     });
+
     compiler.plugin("run", (c, done) => {
       this.watching = false;
       done();
@@ -117,7 +118,6 @@ class DashboardPlugin {
 
     compiler.plugin("compile", () => {
       timer = Date.now();
-
       handler([
         {
           type: "status",
