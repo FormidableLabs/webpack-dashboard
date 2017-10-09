@@ -59,6 +59,10 @@ You would change that to:
 ```
 Now you can just run your start script like normal, except now, you are awesome. Not that you weren't before. I'm just saying. More so.
 
+### InspectPack and Node Environments
+
+Webpack Dashboard does additional analysis of individual module sizes, asset sizes and any problems when your bundle is unminified and not in a production environment. The Webpack Plugin automatically adds `pathinfo = true` to your configuration’s output object. Environments are defined through the `DefinePlugin` with `process.env["NODE_ENV"]` being `"production"`. Webpack Dashboard will produce a warning if a production configuration is run.
+
 #### Run it
 
 Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something along those lines.

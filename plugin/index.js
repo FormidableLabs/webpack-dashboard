@@ -193,7 +193,7 @@ class DashboardPlugin {
         }
       ]);
 
-      if (!this.minimal) {
+      if (!this.minimal && nodeEnv !== "production") {
         this.observeBundleMetrics(stats, this.inspectpack).subscribe({
           next: message => handler([message]),
           error: err => {

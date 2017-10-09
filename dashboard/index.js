@@ -73,10 +73,6 @@ class Dashboard {
         sizes: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
-            if (this.nodeEnv === "production") {
-              this.setProductionSizesWarning();
-              return;
-            }
             this.setSizesError(_data.value);
           } else {
             this.setSizes(_data);
@@ -85,10 +81,6 @@ class Dashboard {
         problems: _data => {
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
-            if (this.nodeEnv === "production") {
-              this.setProductionProblemsWarning();
-              return;
-            }
             this.setProblemsError(_data.value);
           } else {
             this.setProblems(_data);
@@ -131,6 +123,9 @@ class Dashboard {
 
   setNodeEnv(data) {
     this.nodeEnv = data.value;
+    if (this.nodeEnv === "production") {
+      this.setProductionConfigurationWarning();
+    }
   }
 
   setStatus(data) {
@@ -209,7 +204,7 @@ class Dashboard {
     this.logText.log(chalk.red(err));
   }
 
-  setProductionSizesWarning() {
+  setProductionConfigurationWarning() {
     this.modulesMenu.setLabel(chalk.yellow("Modules (warning)"));
     this.assets.setLabel(chalk.yellow("Assets (warning)"));
     this.moduleTable.setData([[
@@ -219,9 +214,6 @@ class Dashboard {
     this.assetTable.setData([[
       "Unable to list specific asset data."
     ]]);
-  }
-
-  setProductionProblemsWarning() {
     this.problemsMenu.setLabel(chalk.yellow("Problems (warning)"));
     this.problems.setContent("Unable to analyze problems.");
   }
