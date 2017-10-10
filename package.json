@@ -5,9 +5,11 @@
   "bin": "bin/webpack-dashboard.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha 'test/**/*.spec.js'",
+    "test-cov": "nyc mocha 'test/**/*.spec.js'",
     "lint": "eslint .",
-    "check": "npm run lint"
+    "check": "npm run lint && npm run test",
+    "check-ci": "npm run lint && npm run test-cov"
   },
   "repository": {
     "type": "git",
@@ -48,10 +50,15 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.1",
+    "chai": "^4.1.2",
     "eslint": "^3.18.0",
     "eslint-config-formidable": "^2.0.1",
     "eslint-plugin-filenames": "^1.1.0",
     "eslint-plugin-import": "^2.2.0",
+    "mocha": "^4.0.1",
+    "nyc": "^11.2.1",
+    "sinon": "^4.0.1",
+    "sinon-chai": "^2.14.0",
     "webpack": "^2.3.2"
   }
 }

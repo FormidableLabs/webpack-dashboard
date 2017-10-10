@@ -1,0 +1,4 @@
+---
+extends:
+	- formidable/configurations/es6-node-test
+
