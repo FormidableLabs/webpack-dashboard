@@ -13,4 +13,4 @@ branches:
 
 script:
   - yarn --version
-  - yarn run check
+  - yarn run check-ci
