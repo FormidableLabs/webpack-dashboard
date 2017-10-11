@@ -18,8 +18,6 @@ That's cool, but it's mostly noise and scrolly and not super helpful. This plugi
 
 ### Use
 
-***OS X Terminal.app users:*** Make sure that **View → Allow Mouse Reporting** is enabled, otherwise scrolling through logs and modules won't work. If your version of Terminal.app doesn't have this feature, you may want to check out an alternative such as [iTerm2](https://www.iterm2.com/index.html).
-
 First, import the plugin and add it to your webpack config, or apply it to your compiler:
 
 ```js
@@ -68,6 +66,16 @@ Webpack Dashboard does additional analysis of individual module sizes, asset siz
 Finally, start your server using whatever command you have set up. Either you have `npm run dev` or `npm start` pointed at `node devServer.js` or something along those lines.
 
 Then, sit back and pretend you're an astronaut.
+
+
+### Supported Operating Systems and Terminals
+**macOS →**
+Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like scrolling, in Terminal you will need to ensure *View → Enable Mouse Reporting* is enabled. This is supported in macOS El Capitan, Sierra, and High Sierra. In iTerm 2, to select full rows of text hold the <kbd>⌥ Opt</kbd> key. To select a block of text hold the <kbd>⌥ Opt</kbd> + <kbd>⌘ Cmd</kbd> key combination.
+
+**Windows 10 →** Webpack Dashboard works in Command Prompt, PowerShell, and Linux Subsystem for Windows. Mouse events are not supported at this time. The main log can be scrolled using the <kbd>↑</kbd>, <kbd>↓</kbd>, <kbd>Page Up</kbd>, and <kbd>Page Down</kbd> keys.
+
+**Linux →** Still Testing...
+
 
 ### API
 
