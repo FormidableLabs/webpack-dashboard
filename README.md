@@ -85,7 +85,7 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
  - `-c, --color [color]` - Custom ANSI color for your dashboard
  - `-m, --minimal` - Runs the dashboard in minimal mode
  - `-t, --title [title]` - Set title of terminal window
- - `-p, --port [port]` - Custom port for socket communication
+ - `-p, --port [port]` - Custom port for socket communication server
 
 ##### Arguments
 
@@ -94,7 +94,8 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
 #### Webpack plugin
 #### Options
 
- - `port` - Custom port for socket communication
+ - `host` - Custom host for connection the socket client
+ - `port` - Custom port for connecting the socket client
  - `root` - Custom full path to project root (where `package.json` + `node_modules` are if not in `process.cwd()`)
  - `handler` - Plugin handler method, i.e. `dashboard.setData`
 
