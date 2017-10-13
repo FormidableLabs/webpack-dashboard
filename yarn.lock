@@ -308,7 +308,7 @@ babel-template@^6.16.0, babel-template@^6.24.1, babel-template@^6.26.0:
     babylon "^6.18.0"
     lodash "^4.17.4"
 
-babel-traverse@^6.18.0, babel-traverse@^6.23.1, babel-traverse@^6.26.0, babel-traverse@^6.7.6:
+babel-traverse@^6.18.0, babel-traverse@^6.23.1, babel-traverse@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-traverse/-/babel-traverse-6.26.0.tgz#46a9cbd7edcc62c8e5c064e2d2d8d0f4035766ee"
   dependencies:
@@ -1689,19 +1689,17 @@ inquirer@^0.12.0:
     through "^2.3.6"
 
 inspectpack@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-2.0.0.tgz#0e9fbd97fac08146812f6d178f12270010dc452c"
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-2.2.2.tgz#1d32cfd4e4de183a06a701d27639722c92bc839c"
   dependencies:
-    babel-traverse "^6.7.6"
     babel-types "^6.7.2"
     babylon "^6.7.0"
-    better-sqlite3 "^4.0.2"
     lodash "^4.6.1"
-    pify "^2.3.0"
     uglify-es "^3.0.28"
     workerpool "^2.2.1"
     yargs "^4.3.1"
   optionalDependencies:
+    better-sqlite3 "^4.0.2"
     farmhash "^1.2.1"
 
 integer@^1.0.1:
@@ -2650,7 +2648,7 @@ performance-now@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-0.2.0.tgz#33ef30c5c77d4ea21c5a53869d91b56d8f2555e5"
 
-pify@^2.0.0, pify@^2.3.0:
+pify@^2.0.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
 
