@@ -49,7 +49,6 @@ class DashboardPlugin {
 
     this.cleanup = this.cleanup.bind(this);
 
-    this.inspectpack = InspectpackDaemon.create({ cacheFilename });
     this.watching = false;
   }
 
@@ -57,11 +56,16 @@ class DashboardPlugin {
     if (!this.watching && this.socket) {
       this.handler = null;
       this.socket.close();
-      this.inspectpack.terminate();
+      if (this.inspectpack) {
+        this.inspectpack.terminate();
+      }
     }
   }
 
   apply(compiler) {
+    // Lazily created so plugin can be configured without starting the daemon
+    this.inspectpack = InspectpackDaemon.create({ cacheFilename });
+
     let handler = this.handler;
     let timer;
 
