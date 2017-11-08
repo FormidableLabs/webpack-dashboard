@@ -72,7 +72,7 @@ function groupModules(bundle) {
       });
     }),
     _.orderBy(_.get("size.minGz"), "desc")
-  )(bundle.metrics.sizes);
+  )(bundle.metrics ? bundle.metrics.sizes : []);
 }
 
 // Get the sum of all module groups' min+gz size.
