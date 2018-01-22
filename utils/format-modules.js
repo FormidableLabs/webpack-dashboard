@@ -4,11 +4,13 @@ const path = require("path");
 const _ = require("lodash/fp");
 const filesize = require("filesize");
 
+const ipUtils = require("./inspectpack");
+const getSize = ipUtils.getSize;
+const hasSize = ipUtils.hasSize;
+
 const PERCENT_MULTIPLIER = 100;
 const PERCENT_PRECISION = 3;
 const SCOPED_PACKAGE_INDEX = 2;
-
-const getSize = val => val && val !== "--" ? val : 0;
 
 function formatModulePercentage(module, pseudoBundleSize) {
   const moduleSize = getSize(_.get("size.minGz")(module)) ||
@@ -90,9 +92,9 @@ function groupModules(bundle) {
 
       // Dynamically determine and assert on grouping size key.
       const totalSize = moduleGroup.children.reduce((acc, module) => {
-        if (module.size.minGz && module.size.minGz !== "--") {
+        if (hasSize(module.size.minGz)) {
           sizeKey = checkAndGetSizeKey(sizeKey, "minGz");
-        } else if (module.size.min && module.size.min !== "--") {
+        } else if (hasSize(module.size.min)) {
           sizeKey = checkAndGetSizeKey(sizeKey, "min");
         } else {
           sizeKey = checkAndGetSizeKey(sizeKey, "full");
@@ -143,11 +145,11 @@ function formatModules(bundle) {
       // _and_ update heading to most specific: min+gz > min > normal
       const sizeObj = moduleGroup.size;
       let size = sizeObj.full || sizeObj.size || 0;
-      if (sizeObj.minGz && sizeObj.minGz !== "--") {
-        size = sizeObj.minGz;
+      if (hasSize(sizeObj.minGz)) {
+        size = getSize(sizeObj.minGz);
         sizeHeading = "Size (min+gz)";
-      } else if (sizeObj.min && sizeObj.min !== "--") {
-        size = sizeObj.min;
+      } else if (hasSize(sizeObj.min)) {
+        size = getSize(sizeObj.min);
         if (sizeHeading !== "Size (min+gz)") {
           sizeHeading = "Size (min)";
         }

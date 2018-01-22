@@ -2,6 +2,9 @@
 const _ = require("lodash/fp");
 const filesize = require("filesize");
 
+const ipUtils = require("./inspectpack");
+const getSize = ipUtils.getSize;
+
 function getAssets(stats) {
   return stats.assets;
 }
@@ -10,10 +13,10 @@ function getAssetSize(asset) {
   // Inspectpack returns things with `.full` raw size. Webpack returns `.size`.
   let size = asset.full || asset.size || 0;
   let sizeType = "";
-  if (asset.minGz && asset.minGz !== "--") {
+  if (getSize(asset.minGz)) {
     size = asset.minGz;
     sizeType = " (min+gz)";
-  } else if (asset.min && asset.min !== "--") {
+  } else if (getSize(asset.min)) {
     size = asset.min;
     sizeType = " (min)";
   }
@@ -37,8 +40,7 @@ function resolveAssets(tree, bundles) {
         const realMeta = (((realBundleMatch || {}).metrics || {}).meta || {}).bundle;
         return realBundleMatch ? {
           name: realBundleMatch.path,
-          full: realMeta.full || realMeta.size || 0,
-          minGz: true // TODO(RYAN): UNWIND THIS
+          full: realMeta.full || realMeta.size || 0
         } : asset;
       })
   )(tree);
