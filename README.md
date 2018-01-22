@@ -80,6 +80,8 @@ plugins: [
 ]
 ```
 
+It's also worth noting that under-the-hood `inspectpack` caches previous calculated results for dramatic speedups (like 50-100x faster than uncached in some instances). To enable best results, make sure that the `optionalDependencies` of `better-sqlite` and `farmhash` were installed, and the default cache file location of `${HOME}/.webpack-dashboard-cache.db` is writable by the dashboard processes.
+
 ### Supported Operating Systems and Terminals
 **macOS →**
 Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like scrolling, in Terminal you will need to ensure *View → Enable Mouse Reporting* is enabled. This is supported in macOS El Capitan, Sierra, and High Sierra. In iTerm 2, to select full rows of text hold the <kbd>⌥ Opt</kbd> key. To select a block of text hold the <kbd>⌥ Opt</kbd> + <kbd>⌘ Cmd</kbd> key combination.
