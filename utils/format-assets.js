@@ -10,10 +10,10 @@ function getAssetSize(asset) {
   // Inspectpack returns things with `.full` raw size. Webpack returns `.size`.
   let size = asset.full || asset.size || 0;
   let sizeType = "";
-  if (asset.minGz) {
+  if (asset.minGz && asset.minGz !== "--") {
     size = asset.minGz;
     sizeType = " (min+gz)";
-  } else if (asset.min) {
+  } else if (asset.min && asset.min !== "--") {
     size = asset.min;
     sizeType = " (min)";
   }
