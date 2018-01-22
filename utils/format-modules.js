@@ -9,7 +9,9 @@ const PERCENT_PRECISION = 3;
 const SCOPED_PACKAGE_INDEX = 2;
 
 function formatModulePercentage(module, pseudoBundleSize) {
-  const moduleSize = _.get("size.minGz")(module);
+  const moduleSize = _.get("size.minGz")(module) ||
+    _.get("size.min")(module) ||
+    _.get("size.full")(module);
 
   if (!moduleSize || !pseudoBundleSize) {
     return "--";
@@ -91,18 +93,34 @@ const getPseudoBundleSize = _.flow(
 );
 
 function formatModules(bundle) {
+  let sizeHeading = "Size";
   const bundleText = groupModules(bundle)
-    .map(moduleGroup => [
-      getModuleNameWithVersion(moduleGroup),
-      filesize(moduleGroup.size.minGz),
-      formatModulePercentage(
-        moduleGroup,
-        getPseudoBundleSize(bundle)
-      )
-    ]);
+    .map(moduleGroup => {
+      // Dynamically detect if have min+gz data.
+      // _and_ update heading to most specific: min+gz > min > normal
+      const sizeObj = moduleGroup.size;
+      let size = sizeObj.full || sizeObj.size || 0;
+      if (sizeObj.minGz) {
+        size = sizeObj.minGz;
+        sizeHeading = "Size (min+gz)";
+      } else if (sizeObj.min) {
+        size = sizeObj.min;
+        if (sizeHeading !== "Size (min+gz)") {
+          sizeHeading = "Size (min)";
+        }
+      }
 
-  return [["Name", "Size (min+gz)", "Percentage"]]
-    .concat(bundleText);
+      return [
+        getModuleNameWithVersion(moduleGroup),
+        filesize(size),
+        formatModulePercentage(
+          moduleGroup,
+          getPseudoBundleSize(bundle)
+        )
+      ];
+    });
+
+  return [["Name", sizeHeading, "Percentage"]].concat(bundleText);
 }
 
 module.exports = formatModules;

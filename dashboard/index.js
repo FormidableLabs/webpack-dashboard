@@ -27,10 +27,11 @@ const DEFAULT_SCROLL_OPTIONS = {
 
 class Dashboard {
   constructor(options) {
-    const title = options && options.title || "webpack-dashboard";
+    options = options || {};
+    const title = options.title || "webpack-dashboard";
 
-    this.color = options && options.color || "green";
-    this.minimal = options && options.minimal || false;
+    this.color = options.color || "green";
+    this.minimal = options.minimal || false;
     this.setData = this.setData.bind(this);
 
     this.stats = null;
@@ -350,7 +351,7 @@ class Dashboard {
           left: 1
         },
         align: "left",
-        data: [["Name", "Size (min+gz)", "Percentage"]]
+        data: [["Name", "Size", "Percentage"]]
       })
     );
 
