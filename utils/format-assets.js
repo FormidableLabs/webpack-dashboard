@@ -4,6 +4,7 @@ const filesize = require("filesize");
 
 const ipUtils = require("./inspectpack");
 const getSize = ipUtils.getSize;
+const hasSize = ipUtils.hasSize;
 
 function getAssets(stats) {
   return stats.assets;
@@ -13,11 +14,11 @@ function getAssetSize(asset) {
   // Inspectpack returns things with `.full` raw size. Webpack returns `.size`.
   let size = asset.full || asset.size || 0;
   let sizeType = "";
-  if (getSize(asset.minGz)) {
-    size = asset.minGz;
+  if (hasSize(asset.minGz)) {
+    size = getSize(asset.minGz);
     sizeType = " (min+gz)";
-  } else if (getSize(asset.min)) {
-    size = asset.min;
+  } else if (hasSize(asset.min)) {
+    size = getSize(asset.min);
     sizeType = " (min)";
   }
 
@@ -40,7 +41,9 @@ function resolveAssets(tree, bundles) {
         const realMeta = (((realBundleMatch || {}).metrics || {}).meta || {}).bundle;
         return realBundleMatch ? {
           name: realBundleMatch.path,
-          full: realMeta.full || realMeta.size || 0
+          full: realMeta.full || realMeta.size || 0,
+          min: hasSize(realMeta.min) ? getSize(realMeta.min) : undefined,
+          minGz: hasSize(realMeta.minGz) ? getSize(realMeta.minGz) : undefined
         } : asset;
       })
   )(tree);

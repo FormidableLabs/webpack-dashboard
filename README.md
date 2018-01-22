@@ -59,7 +59,7 @@ Now you can just run your start script like normal, except now, you are awesome.
 
 ### InspectPack and Node Environments
 
-Webpack Dashboard does additional analysis of individual module sizes, asset sizes, and any problems when your bundle is unminified and not in a production environment. The Webpack Plugin automatically adds `pathinfo = true` to your configuration’s output object. Environments are defined through the `DefinePlugin` with `process.env["NODE_ENV"]` being `"production"`. Webpack Dashboard will produce a warning if a production configuration is run.
+Webpack Dashboard does additional analysis of individual module sizes (including minified + gzipped), asset sizes, and any problems when your bundle is unminified and not in a production environment. The Webpack Plugin automatically adds `pathinfo = true` to your configuration’s output object. Environments are defined through the `DefinePlugin` with `process.env["NODE_ENV"]` being `"production"`. Webpack Dashboard will produce a warning if a production configuration is run.
 
 #### Run it
 
@@ -67,6 +67,18 @@ Finally, start your server using whatever command you have set up. Either you ha
 
 Then, sit back and pretend you're an astronaut.
 
+#### CPU usage + tips
+
+By default, `inspectpack` produces an approximated minified + gzip size for each individual module. For large bundles, this can be very CPU intensive. While we parallelize and cache these results, if you are experiencing system slowdown from lots of Node.js processes, you can disable either minification and/or gzip approximate calculations by adding the following options to the plugin configuration:
+
+```js
+plugins: [
+    new DashboardPlugin({
+        minified: false,
+        gzip: false
+    })
+]
+```
 
 ### Supported Operating Systems and Terminals
 **macOS →**

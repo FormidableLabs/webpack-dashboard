@@ -114,7 +114,7 @@ function groupModules(bundle) {
       });
     }),
     // Lazy evaluate because of lazy key inference.
-    (vals) => _.orderBy(_.get(`size.${sizeKey}`), "desc")(vals)
+    vals => _.orderBy(_.get(`size.${sizeKey}`), "desc")(vals)
   )(bundle.metrics ? bundle.metrics.sizes : []);
 }
 
