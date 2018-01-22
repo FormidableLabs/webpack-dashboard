@@ -7,12 +7,23 @@ function getAssets(stats) {
 }
 
 function getAssetSize(asset) {
-  return `${filesize(asset.size)}${asset.minGz && " (min+gz)" || ""}`;
+  // Inspectpack returns things with `.full` raw size. Webpack returns `.size`.
+  let size = asset.full || asset.size || 0;
+  let sizeType = "";
+  if (asset.minGz) {
+    size = asset.minGz;
+    sizeType = " (min+gz)";
+  } else if (asset.min) {
+    size = asset.min;
+    sizeType = " (min)";
+  }
+
+  return `${filesize(size)}${sizeType || ""}`;
 }
 
 function getTotalSize(assets) {
   return filesize(assets.reduce(
-    (total, asset) => total + asset.size,
+    (total, asset) => total + (asset.full || asset.size || 0),
     0
   ));
 }
@@ -23,10 +34,11 @@ function resolveAssets(tree, bundles) {
       .filter(asset => asset.name.indexOf("hot-update") < 0)
       .map(asset => {
         const realBundleMatch = _.find({ path: asset.name })(bundles);
+        const realMeta = (((realBundleMatch || {}).metrics || {}).meta || {}).bundle;
         return realBundleMatch ? {
           name: realBundleMatch.path,
-          size: realBundleMatch.metrics ? realBundleMatch.metrics.meta.bundle.minGz : 0,
-          minGz: true
+          full: realMeta.full || realMeta.size || 0,
+          minGz: true // TODO(RYAN): UNWIND THIS
         } : asset;
       })
   )(tree);
