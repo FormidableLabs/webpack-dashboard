@@ -59,7 +59,7 @@ Now you can just run your start script like normal, except now, you are awesome.
 
 ### InspectPack and Node Environments
 
-Webpack Dashboard does additional analysis of individual module sizes, asset sizes, and any problems when your bundle is unminified and not in a production environment. The Webpack Plugin automatically adds `pathinfo = true` to your configuration’s output object. Environments are defined through the `DefinePlugin` with `process.env["NODE_ENV"]` being `"production"`. Webpack Dashboard will produce a warning if a production configuration is run.
+Webpack Dashboard does additional analysis of individual module sizes (including minified + gzipped), asset sizes, and any problems when your bundle is unminified and not in a production environment. The Webpack Plugin automatically adds `pathinfo = true` to your configuration’s output object. Environments are defined through the `DefinePlugin` with `process.env["NODE_ENV"]` being `"production"`. Webpack Dashboard will produce a warning if a production configuration is run.
 
 #### Run it
 
@@ -67,6 +67,20 @@ Finally, start your server using whatever command you have set up. Either you ha
 
 Then, sit back and pretend you're an astronaut.
 
+#### CPU usage + tips
+
+By default, `inspectpack` produces an approximated minified + gzip size for each individual module. For large bundles, this can be very CPU intensive. While we parallelize and cache these results, if you are experiencing system slowdown from lots of Node.js processes, you can disable either minification and/or gzip approximate calculations by adding the following options to the plugin configuration:
+
+```js
+plugins: [
+    new DashboardPlugin({
+        minified: false,
+        gzip: false
+    })
+]
+```
+
+It's also worth noting that under-the-hood `inspectpack` caches previous calculated results for dramatic speedups (like 50-100x faster than uncached in some instances). To enable best results, make sure that the `optionalDependencies` of `better-sqlite` and `farmhash` were installed, and the default cache file location of `${HOME}/.webpack-dashboard-cache.db` is writable by the dashboard processes.
 
 ### Supported Operating Systems and Terminals
 **macOS →**
@@ -97,6 +111,8 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
  - `host` - Custom host for connection the socket client
  - `port` - Custom port for connecting the socket client
  - `root` - Custom full path to project root (where `package.json` + `node_modules` are if not in `process.cwd()`)
+ - `minified` - Calculate and use minified asset sizes? (default: `true`)
+ - `gzip` - Calculate and use gzipped asset sizes? True implies `minified = true`. (default: `true`)
  - `handler` - Plugin handler method, i.e. `dashboard.setData`
 
 *Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`*

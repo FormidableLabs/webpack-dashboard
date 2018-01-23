@@ -44,6 +44,9 @@ class DashboardPlugin {
       this.host = options.host || DEFAULT_HOST;
       this.port = options.port || DEFAULT_PORT;
       this.root = options.root;
+      this.gzip = !(options.gzip === false);
+      // `gzip = true` implies `minified = true`.
+      this.minified = this.gzip || !(options.minified === false);
       this.handler = options.handler || null;
     }
 
@@ -280,8 +283,8 @@ class DashboardPlugin {
             .sizes({
               code: bundle.source,
               format: "object",
-              minified: true,
-              gzip: true
+              minified: this.minified,
+              gzip: this.gzip
             })
             .then(metrics => ({
               path: bundle.path,
@@ -320,8 +323,8 @@ class DashboardPlugin {
                   root,
                   duplicates: true,
                   format: "object",
-                  minified: true,
-                  gzip: true
+                  minified: this.minified,
+                  gzip: this.gzip
                 })
                   .then(metrics => ({
                     path: bundle.path,
