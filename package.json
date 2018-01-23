@@ -1,6 +1,6 @@
 {
   "name": "webpack-dashboard",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "a CLI dashboard for webpack dev server",
   "bin": "bin/webpack-dashboard.js",
   "main": "index.js",
