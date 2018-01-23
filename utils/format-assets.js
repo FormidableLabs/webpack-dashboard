@@ -38,7 +38,7 @@ function resolveAssets(tree, bundles) {
       .filter(asset => asset.name.indexOf("hot-update") < 0)
       .map(asset => {
         const realBundleMatch = _.find({ path: asset.name })(bundles);
-        const realMeta = (((realBundleMatch || {}).metrics || {}).meta || {}).bundle;
+        const realMeta = (((realBundleMatch || {}).metrics || {}).meta || {}).bundle || {};
         return realBundleMatch ? {
           name: realBundleMatch.path,
           full: realMeta.full || realMeta.size || 0,
