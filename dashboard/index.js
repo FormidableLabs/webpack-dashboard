@@ -1,4 +1,5 @@
 "use strict";
+// HERE(IP4)
 
 const _ = require("lodash/fp");
 const chalk = require("chalk");
@@ -34,7 +35,7 @@ class Dashboard {
     this.minimal = options.minimal || false;
     this.setData = this.setData.bind(this);
 
-    this.stats = null;
+    this.stats = null; // TODO(IP4): Need to store this???
 
     this.screen = blessed.screen({
       title,
