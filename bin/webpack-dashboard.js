@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 "use strict";
-// DONE(IP4)
+// DONE(IP3)
 
 const commander = require("commander");
 const spawn = require("cross-spawn");

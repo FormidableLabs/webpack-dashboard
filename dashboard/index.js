@@ -1,5 +1,5 @@
 "use strict";
-// HERE(IP4)
+// TODO(IP3): First pass done.
 
 const _ = require("lodash/fp");
 const chalk = require("chalk");
@@ -35,7 +35,7 @@ class Dashboard {
     this.minimal = options.minimal || false;
     this.setData = this.setData.bind(this);
 
-    this.stats = null; // TODO(IP4): Need to store this???
+    this.stats = null; // TODO(IP3): Need to store this???
 
     this.screen = blessed.screen({
       title,
@@ -69,10 +69,9 @@ class Dashboard {
         operations: this.setOperations.bind(this),
         status: this.setStatus.bind(this),
         stats: this.setStats.bind(this),
-        nodeEnv: this.setNodeEnv.bind(this),
         log: this.setLog.bind(this),
         clear: this.clear.bind(this),
-        sizes: _data => {
+        sizes: _data => { // TODO(IP3): sizes
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
             this.setSizesError(_data.value);
@@ -80,7 +79,7 @@ class Dashboard {
             this.setSizes(_data);
           }
         },
-        problems: _data => {
+        problems: _data => { // TODO(IP3): problems
           if (this.minimal) { return; }
           if (_data.value instanceof Error) {
             this.setProblemsError(_data.value);
@@ -123,13 +122,6 @@ class Dashboard {
     this.operations.setContent(data.value);
   }
 
-  setNodeEnv(data) {
-    this.nodeEnv = data.value;
-    if (this.nodeEnv === "production") {
-      this.setProductionConfigurationWarning();
-    }
-  }
-
   setStatus(data) {
     let content;
 
@@ -148,15 +140,9 @@ class Dashboard {
 
   setStats(data) {
     const stats = {
-      hasErrors: () => {
-        return data.value.errors;
-      },
-      hasWarnings: () => {
-        return data.value.warnings;
-      },
-      toJson: () => {
-        return data.value.data;
-      }
+      hasErrors: () => data.value.errors,
+      hasWarnings: () => data.value.warnings,
+      toJson: () => data.value.data
     };
 
     // Save for later when merging inspectpack sizes into the asset list
@@ -175,10 +161,11 @@ class Dashboard {
     }
   }
 
-  setSizes(data) {
+  setSizes(data) { // TODO(IP3): REFACTOR TO IP3
     this.modulesMenu.setLabel("Modules");
     this.assets.setLabel("Assets");
 
+    // TODO(IP3): "bundle"
     const result = _.flow(
       _.groupBy("path"),
       _.mapValues(_.reduce((acc, bundle) =>
@@ -206,23 +193,10 @@ class Dashboard {
     this.logText.log(chalk.red(err));
   }
 
-  setProductionConfigurationWarning() {
-    this.modulesMenu.setLabel(chalk.yellow("Modules (warning)"));
-    this.assets.setLabel(chalk.yellow("Assets (warning)"));
-    this.moduleTable.setData([[
-      // eslint-disable-next-line max-len
-      "It appears you are using a production config. Therefore there are no code sections that could be analyzed. To see more on modules and assets switch to a development configuration."
-    ]]);
-    this.assetTable.setData([[
-      "Unable to list specific asset data."
-    ]]);
-    this.problemsMenu.setLabel(chalk.yellow("Problems (warning)"));
-    this.problems.setContent("Unable to analyze problems.");
-  }
-
   setProblems(data) {
     this.problemsMenu.setLabel("Problems");
 
+    // TODO(IP3): "bundle"
     const result = _.flow(
       _.groupBy("path"),
       _.mapValues(_.reduce((acc, bundle) =>
@@ -243,7 +217,7 @@ class Dashboard {
 
   setProblemsError(err) {
     this.problemsMenu.setLabel(chalk.red("Problems (error)"));
-    this.logText.log(chalk.red("Could not analyze bundle problems."));
+    this.logText.log(chalk.red("Could not analyze bundle problems.")); // TODO(IP3): "bundle"
     this.logText.log(chalk.red(err.stack));
   }
 
