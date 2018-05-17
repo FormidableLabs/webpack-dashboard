@@ -1,7 +1,6 @@
 "use strict";
 // TODO(IP3): First pass done.
 
-const _ = require("lodash/fp");
 const chalk = require("chalk");
 const blessed = require("blessed");
 
@@ -9,7 +8,7 @@ const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
 const formatAssets = require("../utils/format-assets.js");
 const formatProblems = require("../utils/format-problems.js");
-const deserializeError = require("../utils/error-serialization").deserializeError;
+const { deserializeError }  = require("../utils/error-serialization");
 
 const PERCENT_MULTIPLIER = 100;
 
@@ -28,15 +27,42 @@ const DEFAULT_SCROLL_OPTIONS = {
 
 class Dashboard {
   constructor(options) {
+    // Options, params
     options = options || {};
     const title = options.title || "webpack-dashboard";
 
     this.color = options.color || "green";
     this.minimal = options.minimal || false;
+    this.stats = null;
+
+    // Data binding, lookup tables.
     this.setData = this.setData.bind(this);
+    this.actionForMessageType = {
+      progress: this.setProgress.bind(this),
+      operations: this.setOperations.bind(this),
+      status: this.setStatus.bind(this),
+      stats: this.setStats.bind(this),
+      log: this.setLog.bind(this),
+      clear: this.clear.bind(this),
+      sizes: _data => { // TODO(IP3): sizes
+        if (this.minimal) { return; }
+        if (_data.value instanceof Error) {
+          this.setSizesError(_data.value);
+        } else {
+          this.setSizes(_data);
+        }
+      },
+      problems: _data => { // TODO(IP3): problems
+        if (this.minimal) { return; }
+        if (_data.value instanceof Error) {
+          this.setProblemsError(_data.value);
+        } else {
+          this.setProblems(_data);
+        }
+      }
+    };
 
-    this.stats = null; // TODO(IP3): Need to store this???
-
+    // Start UI stuff.
     this.screen = blessed.screen({
       title,
       smartCSR: true,
@@ -63,41 +89,15 @@ class Dashboard {
   }
 
   setData(dataArray) {
-    const actionForMessageType = data => {
-      const map = {
-        progress: this.setProgress.bind(this),
-        operations: this.setOperations.bind(this),
-        status: this.setStatus.bind(this),
-        stats: this.setStats.bind(this),
-        log: this.setLog.bind(this),
-        clear: this.clear.bind(this),
-        sizes: _data => { // TODO(IP3): sizes
-          if (this.minimal) { return; }
-          if (_data.value instanceof Error) {
-            this.setSizesError(_data.value);
-          } else {
-            this.setSizes(_data);
-          }
-        },
-        problems: _data => { // TODO(IP3): problems
-          if (this.minimal) { return; }
-          if (_data.value instanceof Error) {
-            this.setProblemsError(_data.value);
-          } else {
-            this.setProblems(_data);
-          }
-        }
-      };
-      return map[data.type](data);
-    };
-
     dataArray
       .map(data => data.error ?
         Object.assign({}, data, {
           value: deserializeError(data.value)
         }) : data
       )
-      .forEach(actionForMessageType);
+      .forEach((data) => {
+        this.actionForMessageType[data.type](data);
+      });
 
     this.screen.render();
   }
@@ -201,7 +201,14 @@ class Dashboard {
   setProblems(data) {
     this.problemsMenu.setLabel("Problems");
 
+    // const result = data.value
+    //   .reduce((memo, obj) => {
+    //     memo[obj.path] = (memo[obj.path] || []).concat(obj);
+    //     return memo;
+    //   }, [])
+
     // TODO(IP3): "bundle"
+    const _ =  require("lodash/fp");
     const result = _.flow(
       _.groupBy("path"),
       _.mapValues(_.reduce((acc, bundle) =>
@@ -212,6 +219,7 @@ class Dashboard {
         this.screen.render();
       })
     )(data.value);
+    //console.error("TODO HERE RESULT", JSON.stringify(result, null, 2));
 
     const previousSelection = this.problemsMenu.selected;
     this.problemsMenu.setItems(result);
