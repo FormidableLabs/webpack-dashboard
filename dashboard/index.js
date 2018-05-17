@@ -162,26 +162,31 @@ class Dashboard {
   }
 
   setSizes(data) { // TODO(IP3): REFACTOR TO IP3
+    // Modules use inspectpack data.
     this.modulesMenu.setLabel("Modules");
+    // const previousSelection = this.modulesMenu.selected;
+    // this.modulesMenu.setItems(result);
+    // this.modulesMenu.selectTab(previousSelection);
+
+    console.error("TODO HERE", data);
+
+    // // TODO(IP3): "bundle"
+    // const result = _.flow(
+    //   _.groupBy("path"),
+    //   _.mapValues(_.reduce((acc, bundle) =>
+    //     Object.assign({}, acc, bundle), {}
+    //   )),
+    //   _.mapValues(bundle => () => {
+    //     this.moduleTable.setData(formatModules(bundle));
+    //     this.screen.render();
+    //   })
+    // )(data.value);
+
+
+
+    // Assets use stats straight up.
     this.assets.setLabel("Assets");
-
-    // TODO(IP3): "bundle"
-    const result = _.flow(
-      _.groupBy("path"),
-      _.mapValues(_.reduce((acc, bundle) =>
-        Object.assign({}, acc, bundle), {}
-      )),
-      _.mapValues(bundle => () => {
-        this.moduleTable.setData(formatModules(bundle));
-        this.screen.render();
-      })
-    )(data.value);
-
-    const previousSelection = this.modulesMenu.selected;
-    this.modulesMenu.setItems(result);
-    this.modulesMenu.selectTab(previousSelection);
-
-    this.assetTable.setData(formatAssets(this.stats, data.value));
+    this.assetTable.setData(formatAssets(this.stats));
 
     this.screen.render();
   }

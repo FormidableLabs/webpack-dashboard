@@ -202,7 +202,7 @@ class DashboardPlugin {
         value: [
           {
             path: "TODO_CHUNKS",
-            metrics
+            sizes: metrics
           }
         ]
       }))

@@ -4,9 +4,9 @@ const path = require("path");
 const _ = require("lodash/fp");
 const filesize = require("filesize");
 
-const ipUtils = require("./inspectpack");
-const getSize = ipUtils.getSize;
-const hasSize = ipUtils.hasSize;
+// TODO(IP3): REMOVE
+const getSize = () => 1234;
+const hasSize = () => false;
 
 const PERCENT_MULTIPLIER = 100;
 const PERCENT_PRECISION = 3;
