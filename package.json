@@ -43,20 +43,20 @@
     "filesize": "^3.3.0",
     "handlebars": "^4.0.6",
     "inspectpack": "^2.0.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.10",
     "most": "^1.6.1",
-    "socket.io": "^1.4.8",
-    "socket.io-client": "^1.4.8"
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1"
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.1",
+    "babel-eslint": "^8.2.3",
     "chai": "^4.1.2",
     "eslint": "^3.18.0",
     "eslint-config-formidable": "^2.0.1",
     "eslint-plugin-filenames": "^1.1.0",
     "eslint-plugin-import": "^2.2.0",
     "mocha": "^4.0.1",
-    "nyc": "^11.2.1",
+    "nyc": "^11.8.0",
     "sinon": "^4.0.1",
     "sinon-chai": "^2.14.0",
     "webpack": "^2.3.2"
