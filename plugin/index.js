@@ -2,7 +2,6 @@
 "use strict";
 // TODO(IP3): First pass done.
 
-const _ = require("lodash/fp");
 const most = require("most");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
@@ -178,33 +177,25 @@ class DashboardPlugin {
         }
       ]);
 
-      if (!this.minimal) {
-        this.observeMetrics(stats).subscribe({
-          next: message => handler([message]),
-          error: err => {
-            console.log("Error from inspectpack:", err); // eslint-disable-line no-console
-            this.cleanup();
-          },
-          complete: this.cleanup
-        });
-      }
+      this.observeMetrics(stats).subscribe({
+        next: message => handler([message]),
+        error: err => {
+          console.log("Error from inspectpack:", err); // eslint-disable-line no-console
+          this.cleanup();
+        },
+        complete: this.cleanup
+      });
     });
   }
 
   observeMetrics(statsObj) {
     const statsToObserve = statsObj.toJson();
 
-    // TODO(IP3): Separate chunks. (TODO_CHUNKS)
     const getSizes = stats => actions("sizes", { stats })
       .then(instance => instance.getData())
-      .then(metrics => ({
+      .then(data => ({
         type: "sizes",
-        value: [
-          {
-            path: "TODO_CHUNKS",
-            sizes: metrics
-          }
-        ]
+        value: data
       }))
       .catch(err => ({
         type: "sizes",
@@ -212,17 +203,17 @@ class DashboardPlugin {
         value: serializeError(err)
       }));
 
-    // TODO(IP3): Need to filter out "no problems to report".
     const getProblems = stats => Promise
-      .all(INSPECTPACK_PROBLEM_ACTIONS.map(action => actions(action, { stats })
-        .then(metrics => ({
-          path: "TODO_CHUNKS",
-          [action]: metrics
-        }))
-      ))
-      .then(allMetrics => ({
+      .all(INSPECTPACK_PROBLEM_ACTIONS.map(action => actions(action, { stats })))
+      // Remove "no problem" results.
+      .then(datas => datas.filter(data => Object.keys(data.assets).length))
+      // Process remaining data.
+      .then(datas => ({
         type: INSPECTPACK_PROBLEM_TYPE,
-        value: _.flatten(allMetrics)
+        value: INSPECTPACK_PROBLEM_ACTIONS.reduce((memo, action, i) => ({
+          ...memo,
+          [action]: datas[i]
+        }), {})
       }))
       .catch(err => ({
         type: INSPECTPACK_PROBLEM_TYPE,

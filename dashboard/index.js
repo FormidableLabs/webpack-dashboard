@@ -8,7 +8,7 @@ const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
 const formatAssets = require("../utils/format-assets.js");
 const formatProblems = require("../utils/format-problems.js");
-const { deserializeError }  = require("../utils/error-serialization");
+const { deserializeError } = require("../utils/error-serialization");
 
 const PERCENT_MULTIPLIER = 100;
 
@@ -44,7 +44,7 @@ class Dashboard {
       stats: this.setStats.bind(this),
       log: this.setLog.bind(this),
       clear: this.clear.bind(this),
-      sizes: _data => { // TODO(IP3): sizes
+      sizes: _data => {
         if (this.minimal) { return; }
         if (_data.value instanceof Error) {
           this.setSizesError(_data.value);
@@ -52,7 +52,7 @@ class Dashboard {
           this.setSizes(_data);
         }
       },
-      problems: _data => { // TODO(IP3): problems
+      problems: _data => {
         if (this.minimal) { return; }
         if (_data.value instanceof Error) {
           this.setProblemsError(_data.value);
@@ -95,7 +95,7 @@ class Dashboard {
           value: deserializeError(data.value)
         }) : data
       )
-      .forEach((data) => {
+      .forEach(data => {
         this.actionForMessageType[data.type](data);
       });
 
@@ -161,14 +161,20 @@ class Dashboard {
     }
   }
 
-  setSizes(data) { // TODO(IP3): REFACTOR TO IP3
+  setSizes(data) {
+    const { assets } = data.value;
+    console.error("TODO HERE", assets);
+
+    // Start with assets.
+    this.assets.setLabel("Assets");
+    this.assetTable.setData(formatAssets(assets));
+
     // Modules use inspectpack data.
     this.modulesMenu.setLabel("Modules");
     // const previousSelection = this.modulesMenu.selected;
     // this.modulesMenu.setItems(result);
     // this.modulesMenu.selectTab(previousSelection);
 
-    console.error("TODO HERE", data);
 
     // // TODO(IP3): "bundle"
     // const result = _.flow(
@@ -181,12 +187,6 @@ class Dashboard {
     //     this.screen.render();
     //   })
     // )(data.value);
-
-
-
-    // Assets use stats straight up.
-    this.assets.setLabel("Assets");
-    this.assetTable.setData(formatAssets(this.stats));
 
     this.screen.render();
   }
@@ -208,7 +208,7 @@ class Dashboard {
     //   }, [])
 
     // TODO(IP3): "bundle"
-    const _ =  require("lodash/fp");
+    const _ = require("lodash/fp");
     const result = _.flow(
       _.groupBy("path"),
       _.mapValues(_.reduce((acc, bundle) =>

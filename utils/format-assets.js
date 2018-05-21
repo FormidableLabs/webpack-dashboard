@@ -4,54 +4,37 @@
 /**
  * Assets are the full emitted bundles.
  */
-
 const filesize = require("filesize");
-
-function getAssets(stats) {
-  return stats.assets;
-}
 
 function getAssetSize(asset) {
   return filesize(asset.size || 0);
 }
 
-function getTotalSize(assets) {
-  return filesize(assets.reduce(
+function getTotalSize(assetsList) {
+  return filesize(assetsList.reduce(
     (total, asset) => total + (asset.size || 0),
     0
   ));
 }
 
-function resolveAssets(tree) {
-  return tree
-    // Flatten one level.
-    .reduce((m, a) => m.concat(a), [])
-    // Remove hot update cruft.
-    .filter(asset => asset.name.indexOf("hot-update") < 0);
-}
-
-function printAssets(tree) {
-  const assets = resolveAssets(tree);
-
+function printAssets(assetsList) {
   return [["Name", "Size"]]
-    .concat(assets.map(asset =>
+    .concat(assetsList.map(asset =>
       [asset.name, getAssetSize(asset)]
     ))
     .concat(
-      [["Total", getTotalSize(assets)]]
+      [["Total", getTotalSize(assetsList)]]
     );
 }
 
-function formatAssets(stats) {
-  const json = stats.toJson();
-  let tree;
-  if (!json.hasOwnProperty("assets")) {
-    tree = json.children.map(getAssets);
-  } else {
-    tree = [getAssets(json)];
-  }
+function formatAssets(assets) {
+  // Convert to list.
+  const assetsList = Object.keys(assets).map(name => ({
+    name,
+    size: assets[name].meta.full
+  }));
 
-  return printAssets(tree);
+  return printAssets(assetsList);
 }
 
 module.exports = formatAssets;
