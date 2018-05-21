@@ -173,7 +173,10 @@ class Dashboard {
     const modulesItems = Object.keys(assets).reduce((memo, name) => ({
       ...memo,
       [name]: () => {
-        this.moduleTable.setData(formatModules(assets[name].files));
+        this.moduleTable.setData(formatModules(
+          assets[name].files,
+          assets[name].meta.full
+        ));
         this.screen.render();
       }
     }), {});
@@ -182,21 +185,7 @@ class Dashboard {
     this.modulesMenu.setItems(modulesItems);
     this.modulesMenu.selectTab(previousSelection);
 
-
-
-
-    // // TODO(IP3): "bundle"
-    // const result = _.flow(
-    //   _.groupBy("path"),
-    //   _.mapValues(_.reduce((acc, bundle) =>
-    //     Object.assign({}, acc, bundle), {}
-    //   )),
-    //   _.mapValues(bundle => () => {
-    //     this.moduleTable.setData(formatModules(bundle));
-    //     this.screen.render();
-    //   })
-    // )(data.value);
-
+    // Final render.
     this.screen.render();
   }
 
