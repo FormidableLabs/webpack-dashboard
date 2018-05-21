@@ -25,7 +25,7 @@ function formatModules(mods) {
 
   return [].concat(
     [["Name", "Size", "Percentage"]],
-    mods.map((mod) => [
+    mods.map(mod => [
       mod.baseName || `./${relative(process.cwd(), mod.fileName)}`,
       mod.size.full,
       formatPercentage(mod.size.full, assetSize)
