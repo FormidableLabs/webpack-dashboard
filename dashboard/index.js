@@ -173,10 +173,7 @@ class Dashboard {
     const modulesItems = Object.keys(assets).reduce((memo, name) => ({
       ...memo,
       [name]: () => {
-        this.moduleTable.setData(formatModules(
-          assets[name].files,
-          assets[name].meta.full
-        ));
+        this.moduleTable.setData(formatModules(assets[name].files));
         this.screen.render();
       }
     }), {});

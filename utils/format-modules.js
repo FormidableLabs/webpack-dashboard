@@ -1,5 +1,6 @@
 "use strict";
 // DONE(IP3)
+// TODO(IP3): Removed modules groupings. _Could_ re-add this in as a future feature / ticket.
 
 /**
  * Modules are the individual files within an asset.
@@ -16,10 +17,15 @@ function formatPercentage(modSize, assetSize) {
   return `${percentage}%`;
 }
 
-function formatModules(modules, assetSize) {
+function formatModules(mods) {
+  // We _could_ use the `asset.meta.full` from inspectpack, but that is for
+  // the entire module with boilerplate included. We instead do a percentage
+  // of the files we're counting here.
+  const assetSize = mods.reduce((count, mod) => count + mod.size.full, 0);
+
   return [].concat(
     [["Name", "Size", "Percentage"]],
-    modules.map((mod) => [
+    mods.map((mod) => [
       mod.baseName || `./${relative(process.cwd(), mod.fileName)}`,
       mod.size.full,
       formatPercentage(mod.size.full, assetSize)
