@@ -1,5 +1,21 @@
 "use strict";
 
+const { relative } = require("path");
+
+function formatModules(modules) {
+  return [].concat(
+    [["Name", "Size", "Percentage"]],
+    modules.map((mod) => [
+      mod.baseName || `./${relative(process.cwd(), mod.fileName)}`,
+      mod.size.full,
+      "TODO%"
+    ])
+  );
+}
+
+module.exports = formatModules;
+
+/*
 const path = require("path");
 const _ = require("lodash/fp");
 const filesize = require("filesize");
@@ -170,3 +186,4 @@ function formatModules(bundle) {
 }
 
 module.exports = formatModules;
+*/

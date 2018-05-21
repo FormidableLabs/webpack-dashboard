@@ -163,17 +163,26 @@ class Dashboard {
 
   setSizes(data) {
     const { assets } = data.value;
-    console.error("TODO HERE", assets);
 
-    // Start with assets.
+    // Start with top-level assets.
     this.assets.setLabel("Assets");
     this.assetTable.setData(formatAssets(assets));
 
-    // Modules use inspectpack data.
+    // Then split modules across assets.
+    const previousSelection = this.modulesMenu.selected;
+    const modulesItems = Object.keys(assets).reduce((memo, name) => ({
+      ...memo,
+      [name]: () => {
+        this.moduleTable.setData(formatModules(assets[name].files));
+        this.screen.render();
+      }
+    }), {});
+
     this.modulesMenu.setLabel("Modules");
-    // const previousSelection = this.modulesMenu.selected;
-    // this.modulesMenu.setItems(result);
-    // this.modulesMenu.selectTab(previousSelection);
+    this.modulesMenu.setItems(modulesItems);
+    this.modulesMenu.selectTab(previousSelection);
+
+
 
 
     // // TODO(IP3): "bundle"
