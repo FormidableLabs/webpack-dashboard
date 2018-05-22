@@ -1,5 +1,9 @@
 "use strict";
+// DONE(IP3)
 
+/**
+ * Problem: Duplicate files (same path name) in a bundle.
+ */
 const chalk = require("chalk");
 const filesize = require("filesize");
 const Handlebars = require("handlebars");
