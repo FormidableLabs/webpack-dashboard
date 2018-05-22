@@ -1,7 +1,5 @@
 "use strict";
 
-// DONE(IP3)
-
 /**
  * Problem: Duplicate files (same path name) in a bundle.
  */

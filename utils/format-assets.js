@@ -1,7 +1,5 @@
 "use strict";
 
-// DONE(IP3)
-
 /**
  * Assets are the full emitted bundles.
  */

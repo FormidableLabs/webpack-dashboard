@@ -1,7 +1,5 @@
 "use strict";
 
-// DONE(IP3)
-
 const chalk = require("chalk");
 const Handlebars = require("handlebars");
 

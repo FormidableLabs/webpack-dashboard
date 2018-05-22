@@ -2,8 +2,6 @@
 
 "use strict";
 
-// DONE(IP3)
-
 const commander = require("commander");
 const spawn = require("cross-spawn");
 const Dashboard = require("../dashboard/index.js");

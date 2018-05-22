@@ -1,7 +1,5 @@
 "use strict";
 
-// TODO(IP3): First pass done.
-
 const chalk = require("chalk");
 const blessed = require("blessed");
 
@@ -218,9 +216,6 @@ class Dashboard {
     this.problemsMenu.selectTab(previousSelection);
 
     this.screen.render();
-
-    // TODO HERE -- Pass data correctly.
-    // throw new Error(require('util').inspect(data.value, { depth: 100 }));
   }
 
   setProblemsError(err) {

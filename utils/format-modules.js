@@ -1,8 +1,5 @@
 "use strict";
 
-// DONE(IP3)
-// TODO(IP3): Removed modules groupings. _Could_ re-add this in as a future feature / ticket.
-
 /**
  * Modules are the individual files within an asset.
  */
