@@ -8,3 +8,4 @@ npm-debug.log*
 .coverage
 .lankrc*
 yarn-error.log
+package-lock.json
