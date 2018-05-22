@@ -2,8 +2,6 @@
 
 "use strict";
 
-// TODO(IP3): First pass done.
-
 const most = require("most");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
@@ -33,6 +31,22 @@ function getTimeMessage(timer) {
 
   return ` (${time})`;
 }
+
+// Naive camel-casing.
+const camel = str => str.replace(/-([a-z])/, group => group[1].toUpperCase());
+
+// Normalize webpack3 vs. 4 API differences.
+function _webpackHook(hookType, compiler, event, callback) {
+  if (compiler.hooks) {
+    hookType = hookType || "tap";
+    compiler.hooks[camel(event)][hookType]("webpack-dashboard", callback);
+  } else {
+    compiler.plugin(event, callback);
+  }
+}
+
+const webpackHook = _webpackHook.bind(null, "tap");
+const webpackAsyncHook = _webpackHook.bind(null, "tapAsync");
 
 class DashboardPlugin {
   constructor(options) {
@@ -74,36 +88,34 @@ class DashboardPlugin {
       });
     }
 
-    compiler.apply(
-      new webpack.ProgressPlugin((percent, msg) => {
-        handler([
-          {
-            type: "status",
-            value: "Compiling"
-          },
-          {
-            type: "progress",
-            value: percent
-          },
-          {
-            type: "operations",
-            value: msg + getTimeMessage(timer)
-          }
-        ]);
-      })
-    );
+    new webpack.ProgressPlugin((percent, msg) => {
+      handler([
+        {
+          type: "status",
+          value: "Compiling"
+        },
+        {
+          type: "progress",
+          value: percent
+        },
+        {
+          type: "operations",
+          value: msg + getTimeMessage(timer)
+        }
+      ]);
+    }).apply(compiler);
 
-    compiler.plugin("watch-run", (c, done) => {
+    webpackAsyncHook(compiler, "watch-run", (c, done) => {
       this.watching = true;
       done();
     });
 
-    compiler.plugin("run", (c, done) => {
+    webpackAsyncHook(compiler, "run", (c, done) => {
       this.watching = false;
       done();
     });
 
-    compiler.plugin("compile", () => {
+    webpackHook(compiler, "compile", () => {
       timer = Date.now();
       handler([
         {
@@ -113,7 +125,7 @@ class DashboardPlugin {
       ]);
     });
 
-    compiler.plugin("invalid", () => {
+    webpackHook(compiler, "invalid", () => {
       handler([
         {
           type: "status",
@@ -133,7 +145,7 @@ class DashboardPlugin {
       ]);
     });
 
-    compiler.plugin("failed", () => {
+    webpackHook(compiler, "failed", () => {
       handler([
         {
           type: "status",
@@ -146,7 +158,7 @@ class DashboardPlugin {
       ]);
     });
 
-    compiler.plugin("done", stats => {
+    webpackHook(compiler, "done", stats => {
       const options = stats.compilation.options;
       const statsOptions
         = options.devServer && options.devServer.stats
