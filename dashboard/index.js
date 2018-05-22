@@ -26,7 +26,7 @@ const DEFAULT_SCROLL_OPTIONS = {
 };
 
 class Dashboard {
-  constructor(options) {
+  constructor(options) { // eslint-disable-line max-statements
     // Options, params
     options = options || {};
     const title = options.title || "webpack-dashboard";
