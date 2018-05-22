@@ -12,7 +12,7 @@ const { serializeError } = require("../utils/error-serialization");
 const DEFAULT_PORT = 9838;
 const DEFAULT_HOST = "127.0.0.1";
 const ONE_SECOND = 1000;
-const INSPECTPACK_PROBLEM_ACTIONS = ["versions", "duplicates"];
+const INSPECTPACK_PROBLEM_ACTIONS = ["duplicates", "versions"];
 const INSPECTPACK_PROBLEM_TYPE = "problems";
 
 function noop() {}
@@ -204,10 +204,9 @@ class DashboardPlugin {
       }));
 
     const getProblems = stats => Promise
-      .all(INSPECTPACK_PROBLEM_ACTIONS.map(action => actions(action, { stats })))
-      // Remove "no problem" results.
-      .then(datas => datas.filter(data => Object.keys(data.assets).length))
-      // Process remaining data.
+      .all(INSPECTPACK_PROBLEM_ACTIONS.map(action => actions(action, { stats })
+        .then(instance => instance.getData())
+      ))
       .then(datas => ({
         type: INSPECTPACK_PROBLEM_TYPE,
         value: INSPECTPACK_PROBLEM_ACTIONS.reduce((memo, action, i) => ({

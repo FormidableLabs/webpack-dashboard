@@ -194,38 +194,38 @@ class Dashboard {
   }
 
   setProblems(data) {
-    this.problemsMenu.setLabel("Problems");
+    const { duplicates, versions } = data.value;
 
-    // const result = data.value
-    //   .reduce((memo, obj) => {
-    //     memo[obj.path] = (memo[obj.path] || []).concat(obj);
-    //     return memo;
-    //   }, [])
-
-    // TODO(IP3): "bundle"
-    const _ = require("lodash/fp");
-    const result = _.flow(
-      _.groupBy("path"),
-      _.mapValues(_.reduce((acc, bundle) =>
-        Object.assign({}, acc, bundle), {}
-      )),
-      _.mapValues(bundle => () => {
-        this.problems.setContent(formatProblems(bundle));
-        this.screen.render();
-      })
-    )(data.value);
-    //console.error("TODO HERE RESULT", JSON.stringify(result, null, 2));
+    // Separate across assets.
+    // Use duplicates as the "canary" to get asset names.
+    const assetNames = Object.keys(duplicates.assets);
 
     const previousSelection = this.problemsMenu.selected;
-    this.problemsMenu.setItems(result);
+    const problemsItems = assetNames.reduce((memo, name) => ({
+      ...memo,
+      [name]: () => {
+
+        this.problems.setContent(formatProblems({
+          duplicates: duplicates.assets[name],
+          versions: versions.assets[name]
+        }));
+        this.screen.render();
+      }
+    }), {});
+
+    this.problemsMenu.setLabel("Problems");
+    this.problemsMenu.setItems(problemsItems);
     this.problemsMenu.selectTab(previousSelection);
 
     this.screen.render();
+
+    // TODO HERE -- Pass data correctly.
+    //throw new Error(require('util').inspect(data.value, { depth: 100 }));
   }
 
   setProblemsError(err) {
     this.problemsMenu.setLabel(chalk.red("Problems (error)"));
-    this.logText.log(chalk.red("Could not analyze bundle problems.")); // TODO(IP3): "bundle"
+    this.logText.log(chalk.red("Could not analyze bundle problems."));
     this.logText.log(chalk.red(err.stack));
   }
 

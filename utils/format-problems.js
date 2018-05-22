@@ -5,11 +5,8 @@ const formatDuplicates = require("./format-duplicates");
 const formatVersions = require("./format-versions");
 
 function formatProblems(data) {
-  const duplicates = formatDuplicates(data.duplicates); // TODO(IP3): Refactor
-  // Versions may be undefined if we couldn't get a project root.
-  const versions = typeof data.versions === "undefined" ?
-    `${chalk.yellow("Unable to diagnose possible version skews\n")}` :
-    formatVersions(data.versions); // TODO(IP3): Refactor
+  const duplicates = formatDuplicates(data.duplicates);
+  const versions = formatVersions(data.versions);
 
   if (!duplicates && !versions) {
     return chalk.green("No problems detected!");

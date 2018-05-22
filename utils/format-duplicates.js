@@ -9,29 +9,40 @@ Handlebars.registerHelper("filesize", function (options) {
   return filesize(options.fn(this));
 });
 
+// TODO:
+// {{#each file}}
+//   {{source}}
+//   {{/each}}
+
 const template = Handlebars.compile(
 `${chalk.yellow(chalk.underline("Duplicate files"))}
 
-{{#each duplicates}}
+{{#each files}}
 {{@key}}:
-  {{#each summary}}
-  {{source}}
-  {{/each}}
+  TODO
 
   Wasted bytes (min+gz): {{#filesize}}{{size.minGzExtra}}{{/filesize}}
 {{/each}}
 
-Total files with duplicates: {{total.numFilesExtra}}
-Total duplicate files: {{total.numFilesWithDuplicates}}
-Total wasted bytes (min+gz): {{#filesize}}{{total.size.minGzExtra}}{{/filesize}}
+Extra duplicate files (unique): {{meta.extraFiles}}
+Extra duplicate sources (non-unique): {{meta.extraSources.num}}
+Wasted duplicate bytes (non-unique): {{meta.extraSources.bytes}}
 `);
 
 function formatDuplicates(duplicates) {
-  return _.get("meta.numFilesExtra")(duplicates) &&
-    template({
-      total: duplicates.meta,
-      duplicates: _.omit("meta")(duplicates)
-    }) || "";
+  if (!duplicates || !Object.keys(duplicates.files).length) {
+    return "";
+  }
+
+  const { meta, files } = duplicates;
+
+  return "TODO_DUPLICATES";
+
+  // TODO
+  // template({
+  //   meta,
+  //   files
+  // });
 }
 
 module.exports = formatDuplicates;
