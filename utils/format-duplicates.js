@@ -1,5 +1,5 @@
 "use strict";
-const _ = require("lodash/fp");
+
 const chalk = require("chalk");
 const filesize = require("filesize");
 const Handlebars = require("handlebars");
@@ -9,40 +9,24 @@ Handlebars.registerHelper("filesize", function (options) {
   return filesize(options.fn(this));
 });
 
-// TODO:
-// {{#each file}}
-//   {{source}}
-//   {{/each}}
-
+/*eslint-disable max-len*/
 const template = Handlebars.compile(
 `${chalk.yellow(chalk.underline("Duplicate files"))}
 
 {{#each files}}
-{{@key}}:
-  TODO
-
-  Wasted bytes (min+gz): {{#filesize}}{{size.minGzExtra}}{{/filesize}}
+- ${chalk.cyan("{{@key}}")}
+  (files: {{meta.extraFiles.num}}, sources: {{meta.extraSources.num}}, bytes: {{#filesize}}{{meta.extraSources.bytes}}{{/filesize}})
 {{/each}}
 
-Extra duplicate files (unique): {{meta.extraFiles}}
+Extra duplicate files (unique): {{meta.extraFiles.num}}
 Extra duplicate sources (non-unique): {{meta.extraSources.num}}
-Wasted duplicate bytes (non-unique): {{meta.extraSources.bytes}}
+Wasted duplicate bytes (non-unique): {{#filesize}}{{meta.extraSources.bytes}}{{/filesize}}
 `);
+/*eslint-enable max-len*/
 
 function formatDuplicates(duplicates) {
-  if (!duplicates || !Object.keys(duplicates.files).length) {
-    return "";
-  }
-
-  const { meta, files } = duplicates;
-
-  return "TODO_DUPLICATES";
-
-  // TODO
-  // template({
-  //   meta,
-  //   files
-  // });
+  const haveDups = !!Object.keys((duplicates || {}).files || {}).length;
+  return haveDups ? template(duplicates) : "";
 }
 
 module.exports = formatDuplicates;

@@ -334,7 +334,7 @@ class Dashboard {
           left: 1
         },
         align: "left",
-        data: [["Name", "Size", "Percentage"]]
+        data: [["Name", "Size", "Percent"]]
       })
     );
 
