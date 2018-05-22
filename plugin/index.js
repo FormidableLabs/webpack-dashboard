@@ -177,14 +177,16 @@ class DashboardPlugin {
         }
       ]);
 
-      this.observeMetrics(stats).subscribe({
-        next: message => handler([message]),
-        error: err => {
-          console.log("Error from inspectpack:", err); // eslint-disable-line no-console
-          this.cleanup();
-        },
-        complete: this.cleanup
-      });
+      if (!this.minimal) {
+        this.observeMetrics(stats).subscribe({
+          next: message => handler([message]),
+          error: err => {
+            console.log("Error from inspectpack:", err); // eslint-disable-line no-console
+            this.cleanup();
+          },
+          complete: this.cleanup
+        });
+      }
     });
   }
 

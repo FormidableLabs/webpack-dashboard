@@ -90,9 +90,6 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
 
  - `host` - Custom host for connection the socket client
  - `port` - Custom port for connecting the socket client
- - `root` - Custom full path to project root (where `package.json` + `node_modules` are if not in `process.cwd()`)
- - `minified` - Calculate and use minified asset sizes? (default: `true`)
- - `gzip` - Calculate and use gzipped asset sizes? True implies `minified = true`. (default: `true`)
  - `handler` - Plugin handler method, i.e. `dashboard.setData`
 
 *Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`*
