@@ -1,4 +1,5 @@
 "use strict";
+
 // TODO(IP3): First pass done.
 
 const chalk = require("chalk");
@@ -90,8 +91,8 @@ class Dashboard {
 
   setData(dataArray) {
     dataArray
-      .map(data => data.error ?
-        Object.assign({}, data, {
+      .map(data => data.error
+        ? Object.assign({}, data, {
           value: deserializeError(data.value)
         }) : data
       )
@@ -204,7 +205,6 @@ class Dashboard {
     const problemsItems = assetNames.reduce((memo, name) => ({
       ...memo,
       [name]: () => {
-
         this.problems.setContent(formatProblems({
           duplicates: duplicates.assets[name],
           versions: versions.assets[name]
@@ -220,7 +220,7 @@ class Dashboard {
     this.screen.render();
 
     // TODO HERE -- Pass data correctly.
-    //throw new Error(require('util').inspect(data.value, { depth: 100 }));
+    // throw new Error(require('util').inspect(data.value, { depth: 100 }));
   }
 
   setProblemsError(err) {

@@ -1,11 +1,14 @@
 /* eslint-disable max-params, max-statements */
+
 "use strict";
+
 // TODO(IP3): First pass done.
 
 const most = require("most");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
-const { actions } = require("inspectpack");
+// TODO(IP3): Remove eslint disable
+const { actions } = require("inspectpack"); // eslint-disable-line import/no-unresolved
 
 const { serializeError } = require("../utils/error-serialization");
 
@@ -145,10 +148,10 @@ class DashboardPlugin {
 
     compiler.plugin("done", stats => {
       const options = stats.compilation.options;
-      const statsOptions =
-        options.devServer && options.devServer.stats ||
-        options.stats ||
-        { colors: true };
+      const statsOptions
+        = options.devServer && options.devServer.stats
+        || options.stats
+        || { colors: true };
 
       handler([
         {

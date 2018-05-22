@@ -1,5 +1,7 @@
 #!/usr/bin/env node
+
 "use strict";
+
 // DONE(IP3)
 
 const commander = require("commander");

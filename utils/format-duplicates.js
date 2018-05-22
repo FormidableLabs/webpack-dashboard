@@ -1,4 +1,5 @@
 "use strict";
+
 // DONE(IP3)
 
 /**
@@ -13,9 +14,9 @@ Handlebars.registerHelper("filesize", function (options) {
   return filesize(options.fn(this));
 });
 
-/*eslint-disable max-len*/
+/* eslint-disable max-len*/
 const template = Handlebars.compile(
-`${chalk.yellow(chalk.underline("Duplicate files"))}
+  `${chalk.yellow(chalk.underline("Duplicate files"))}
 
 {{#each files}}
 - ${chalk.cyan("{{@key}}")}
@@ -26,7 +27,7 @@ Extra duplicate files (unique): {{meta.extraFiles.num}}
 Extra duplicate sources (non-unique): {{meta.extraSources.num}}
 Wasted duplicate bytes (non-unique): {{#filesize}}{{meta.extraSources.bytes}}{{/filesize}}
 `);
-/*eslint-enable max-len*/
+/* eslint-enable max-len*/
 
 function formatDuplicates(duplicates) {
   const haveDups = !!Object.keys((duplicates || {}).files || {}).length;

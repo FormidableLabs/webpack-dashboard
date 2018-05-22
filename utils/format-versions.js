@@ -1,4 +1,5 @@
 "use strict";
+
 // DONE(IP3)
 
 const chalk = require("chalk");
@@ -16,7 +17,7 @@ Handlebars.registerHelper("skew", function (options) {
 });
 
 const template = Handlebars.compile(
-`${chalk.yellow(chalk.underline("Version skews"))}
+  `${chalk.yellow(chalk.underline("Version skews"))}
 
 {{#each packages}}
 ${chalk.cyan("{{@key}}")}:

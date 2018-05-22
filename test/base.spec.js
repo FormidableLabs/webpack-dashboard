@@ -17,7 +17,7 @@ const base = module.exports = {
 };
 
 beforeEach(() => {
-  base.sandbox = sinon.sandbox.create({
+  base.sandbox = sinon.createSandbox({
     useFakeTimers: true
   });
 
