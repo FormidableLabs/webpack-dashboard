@@ -3,7 +3,7 @@
 /**
  * Modules are the individual files within an asset.
  */
-const { relative } = require("path");
+const { relative, resolve } = require("path");
 const filesize = require("filesize");
 
 const PERCENT_MULTIPLIER = 100;
@@ -25,7 +25,7 @@ function formatModules(mods) {
   return [].concat(
     [["Name", "Size", "Percent"]],
     mods.map(mod => [
-      mod.baseName || `./${relative(process.cwd(), mod.fileName)}`,
+      mod.baseName || `./${relative(process.cwd(), resolve(mod.fileName))}`,
       filesize(mod.size.full),
       formatPercentage(mod.size.full, assetSize)
     ])

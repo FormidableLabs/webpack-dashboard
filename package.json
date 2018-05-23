@@ -40,7 +40,7 @@
     "cross-spawn": "^6.0.5",
     "filesize": "^3.6.1",
     "handlebars": "^4.0.11",
-    "inspectpack": "^2.2.4",
+    "inspectpack": "^3.0.0",
     "most": "^1.7.3",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1"
@@ -57,6 +57,7 @@
     "nyc": "^11.8.0",
     "sinon": "^5.0.7",
     "sinon-chai": "^3.0.0",
-    "webpack": "^4.8.3"
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3"
   }
 }

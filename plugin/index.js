@@ -5,8 +5,7 @@
 const most = require("most");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
-// TODO(IP3): Remove eslint disable
-const { actions } = require("inspectpack"); // eslint-disable-line import/no-unresolved
+const { actions } = require("inspectpack");
 
 const { serializeError } = require("../utils/error-serialization");
 
