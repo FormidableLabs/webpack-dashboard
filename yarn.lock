@@ -2831,9 +2831,9 @@ inquirer@^5.1.0, inquirer@^5.2.0:
     strip-ansi "^4.0.0"
     through "^2.3.6"
 
-inspectpack@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-3.0.0.tgz#69af460eed0e00fd28f6f267d3f226f8ee6c3bef"
+inspectpack@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-3.0.1.tgz#676134e139aef14de5c0d1d8ab482ba629ecef28"
   dependencies:
     chalk "^2.4.0"
     io-ts "^1.0.5"

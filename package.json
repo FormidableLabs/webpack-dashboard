@@ -40,7 +40,7 @@
     "cross-spawn": "^6.0.5",
     "filesize": "^3.6.1",
     "handlebars": "^4.0.11",
-    "inspectpack": "^3.0.0",
+    "inspectpack": "^3.0.1",
     "most": "^1.7.3",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1"
