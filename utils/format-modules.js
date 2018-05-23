@@ -3,11 +3,39 @@
 /**
  * Modules are the individual files within an asset.
  */
-const { relative, resolve } = require("path");
+const { relative, resolve, sep } = require("path");
 const filesize = require("filesize");
 
 const PERCENT_MULTIPLIER = 100;
 const PERCENT_PRECISION = 3;
+
+// Convert to:
+// - existing source file name
+// - the path leading up to **just** the package (not including subpath).
+function formatFileName(mod) {
+  const { fileName, baseName } = mod;
+
+  // Source file.
+  if (!baseName) {
+    return `./${relative(process.cwd(), resolve(fileName))}`;
+  }
+
+  // Package
+  let parts = fileName.split(sep);
+
+  // Remove starting path.
+  const firstNmIdx = parts.indexOf("node_modules");
+  parts = parts.slice(firstNmIdx);
+
+  // Remove trailing path after package.
+  const lastNmIdx = parts.lastIndexOf("node_modules");
+  const isScoped = (parts[lastNmIdx + 1] || "").startsWith("@");
+  parts = parts.slice(0, lastNmIdx + (isScoped ? 3 : 2)); // eslint-disable-line no-magic-numbers
+
+  return parts
+    .map(part => part === "node_modules" ? "~" : part)
+    .join(sep);
+}
 
 function formatPercentage(modSize, assetSize) {
   const percentage = (modSize / assetSize * PERCENT_MULTIPLIER)
@@ -22,13 +50,32 @@ function formatModules(mods) {
   // of the files we're counting here.
   const assetSize = mods.reduce((count, mod) => count + mod.size.full, 0);
 
+  // First, process the modules into a map to normalize file paths.
+  const modsMap = mods.reduce((memo, mod) => {
+    // File name collapses to packages for dependencies.
+    // Aggregate into object.
+    const fileName = formatFileName(mod);
+
+    // Add in information.
+    memo[fileName] = memo[fileName] || { fileName,
+      num: 0,
+      size: 0 };
+    memo[fileName].num += 1;
+    memo[fileName].size += mod.size.full;
+
+    return memo;
+  }, {});
+
   return [].concat(
     [["Name", "Size", "Percent"]],
-    mods.map(mod => [
-      mod.baseName || `./${relative(process.cwd(), resolve(mod.fileName))}`,
-      filesize(mod.size.full),
-      formatPercentage(mod.size.full, assetSize)
-    ])
+    Object.keys(modsMap)
+      .map(fileName => modsMap[fileName])
+      .sort((a, b) => a.size < b.size) // sort largest first
+      .map(mod => [
+        `${mod.fileName} ${mod.num > 1 ? `(${mod.num})` : ""}`,
+        filesize(mod.size),
+        formatPercentage(mod.size, assetSize)
+      ])
   );
 }
 

@@ -6,7 +6,7 @@ const Handlebars = require("handlebars");
 // From inspectpack.
 const pkgNamePath = pkgParts => pkgParts.reduce(
   (m, part) => `${m}${m ? " -> " : ""}${part.name}@${part.version}`,
-  "",
+  ""
 );
 
 Handlebars.registerHelper("skew", function (options) {

@@ -169,8 +169,7 @@ class Dashboard {
 
     // Then split modules across assets.
     const previousSelection = this.modulesMenu.selected;
-    const modulesItems = Object.keys(assets).reduce((memo, name) => ({
-      ...memo,
+    const modulesItems = Object.keys(assets).reduce((memo, name) => Object.assign({}, memo, {
       [name]: () => {
         this.moduleTable.setData(formatModules(assets[name].files));
         this.screen.render();
@@ -200,8 +199,7 @@ class Dashboard {
     const assetNames = Object.keys(duplicates.assets);
 
     const previousSelection = this.problemsMenu.selected;
-    const problemsItems = assetNames.reduce((memo, name) => ({
-      ...memo,
+    const problemsItems = assetNames.reduce((memo, name) => Object.assign({}, memo, {
       [name]: () => {
         this.problems.setContent(formatProblems({
           duplicates: duplicates.assets[name],
@@ -329,7 +327,8 @@ class Dashboard {
           left: 1
         },
         align: "left",
-        data: [["Name", "Size", "Percent"]]
+        data: [["Name", "Size", "Percent"]],
+        fullUnicode: true
       })
     );
 

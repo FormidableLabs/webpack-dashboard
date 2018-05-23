@@ -225,8 +225,7 @@ class DashboardPlugin {
       ))
       .then(datas => ({
         type: INSPECTPACK_PROBLEM_TYPE,
-        value: INSPECTPACK_PROBLEM_ACTIONS.reduce((memo, action, i) => ({
-          ...memo,
+        value: INSPECTPACK_PROBLEM_ACTIONS.reduce((memo, action, i) => Object.assign({}, memo, {
           [action]: datas[i]
         }), {})
       }))
