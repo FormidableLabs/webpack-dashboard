@@ -1,11 +1,10 @@
 "use strict";
 
-const chalk = require("chalk");
 const Handlebars = require("handlebars");
 
 // From inspectpack.
 const pkgNamePath = pkgParts => pkgParts.reduce(
-  (m, part) => `${m}${m ? " -> " : ""}${part.name}@${part.version}`,
+  (m, part) => `${m}${m ? " -> " : ""}{cyan-fg}${part.name}{/}@${part.version}`,
   ""
 );
 
@@ -15,12 +14,12 @@ Handlebars.registerHelper("skew", function (options) {
 });
 
 const template = Handlebars.compile(
-  `${chalk.yellow(chalk.underline("Version skews"))}
+  `{yellow-fg}{underline}Version skews{/}
 
 {{#each packages}}
-${chalk.cyan("{{@key}}")}:
+{yellow-fg}{bold}{{@key}}{/}
   {{#each this}}
-  ${chalk.yellow("{{@key}}")}
+  {green-fg}{{@key}}{/}
     {{#each this}}
       {{#each skews}}
     {{#skew}}{{{this}}}{{/skew}}

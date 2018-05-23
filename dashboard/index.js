@@ -413,7 +413,8 @@ class Dashboard {
           border: {
             fg: this.color
           }
-        }
+        },
+        tags: true
       })
     );
 

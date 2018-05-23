@@ -3,7 +3,6 @@
 /**
  * Problem: Duplicate files (same path name) in a bundle.
  */
-const chalk = require("chalk");
 const filesize = require("filesize");
 const Handlebars = require("handlebars");
 
@@ -14,10 +13,10 @@ Handlebars.registerHelper("filesize", function (options) {
 
 /* eslint-disable max-len*/
 const template = Handlebars.compile(
-  `${chalk.yellow(chalk.underline("Duplicate files"))}
+  `{yellow-fg}{underline}Duplicate files{/}
 
 {{#each files}}
-- ${chalk.cyan("{{@key}}")}
+- {green-fg}{{@key}}{/}
   (files: {{meta.extraFiles.num}}, sources: {{meta.extraSources.num}}, bytes: {{#filesize}}{{meta.extraSources.bytes}}{{/filesize}})
 {{/each}}
 

@@ -1,6 +1,5 @@
 "use strict";
 
-const chalk = require("chalk");
 const formatDuplicates = require("./format-duplicates");
 const formatVersions = require("./format-versions");
 
@@ -9,13 +8,13 @@ function formatProblems(data) {
   const versions = formatVersions(data.versions);
 
   if (!duplicates && !versions) {
-    return chalk.green("No problems detected!");
+    return "{green-fg}No problems detected!{/}";
   }
   if (duplicates && !versions) {
-    return `${chalk.green("No version skews!\n")}\n${duplicates}`;
+    return `{green-fg}No version skews!{/}\n\n${duplicates}`;
   }
   if (!duplicates && versions) {
-    return `${chalk.green("No duplicate files!")}\n${versions}`;
+    return `{green-fg}No duplicate files!{/}\n\n${versions}`;
   }
 
   return `${duplicates}\n${versions}`;

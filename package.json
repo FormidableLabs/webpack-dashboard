@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "blessed": "^0.1.81",
-    "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "cross-spawn": "^6.0.5",
     "filesize": "^3.6.1",
