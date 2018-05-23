@@ -17,7 +17,7 @@ function formatFileName(mod) {
 
   // Source file.
   if (!baseName) {
-    return `./${relative(process.cwd(), resolve(fileName))}`;
+    return `{green-fg}./${relative(process.cwd(), resolve(fileName))}{/}`;
   }
 
   // Package
@@ -33,7 +33,7 @@ function formatFileName(mod) {
   parts = parts.slice(0, lastNmIdx + (isScoped ? 3 : 2)); // eslint-disable-line no-magic-numbers
 
   return parts
-    .map(part => part === "node_modules" ? "~" : part)
+    .map(part => part === "node_modules" ? "~" : `{yellow-fg}${part}{/}`)
     .join(sep);
 }
 

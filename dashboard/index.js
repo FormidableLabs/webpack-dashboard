@@ -328,7 +328,7 @@ class Dashboard {
         },
         align: "left",
         data: [["Name", "Size", "Percent"]],
-        fullUnicode: true
+        tags: true
       })
     );
 
