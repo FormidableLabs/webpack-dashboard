@@ -151,7 +151,9 @@ class Dashboard {
       this.status.setContent("{red-fg}{bold}Failed{/}");
     }
 
-    this.logText.log(formatOutput(stats));
+    if (!stats.hasWarnings() || stats.hasErrors()) {
+      this.logText.log(formatOutput(stats));
+    }
 
     if (!this.minimal) {
       this.modulesMenu.setLabel(chalk.yellow("Modules (loading...)"));
