@@ -4,6 +4,9 @@
   "description": "a CLI dashboard for webpack dev server",
   "bin": "bin/webpack-dashboard.js",
   "main": "index.js",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "scripts": {
     "test": "mocha 'test/**/*.spec.js'",
     "test-cov": "nyc mocha 'test/**/*.spec.js'",
@@ -31,34 +34,29 @@
     "webpack": "*"
   },
   "dependencies": {
-    "babel-core": "^6.24.0",
-    "babel-traverse": "^6.23.1",
-    "babel-types": "^6.23.0",
-    "babylon": "^6.16.1",
     "blessed": "^0.1.81",
-    "bluebird": "^3.5.0",
-    "chalk": "^1.1.3",
-    "commander": "^2.9.0",
-    "cross-spawn": "^4.0.0",
-    "filesize": "^3.3.0",
-    "handlebars": "^4.0.6",
-    "inspectpack": "^2.0.0",
-    "lodash": "^4.17.4",
-    "most": "^1.6.1",
-    "socket.io": "^1.4.8",
-    "socket.io-client": "^1.4.8"
+    "commander": "^2.15.1",
+    "cross-spawn": "^6.0.5",
+    "filesize": "^3.6.1",
+    "handlebars": "^4.0.11",
+    "inspectpack": "^3.0.1",
+    "most": "^1.7.3",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1"
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.1",
+    "babel-eslint": "^8.2.3",
     "chai": "^4.1.2",
-    "eslint": "^3.18.0",
-    "eslint-config-formidable": "^2.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-formidable": "^4.0.0",
     "eslint-plugin-filenames": "^1.1.0",
-    "eslint-plugin-import": "^2.2.0",
-    "mocha": "^4.0.1",
-    "nyc": "^11.2.1",
-    "sinon": "^4.0.1",
-    "sinon-chai": "^2.14.0",
-    "webpack": "^2.3.2"
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-promise": "^3.7.0",
+    "mocha": "^5.2.0",
+    "nyc": "^11.8.0",
+    "sinon": "^5.0.7",
+    "sinon-chai": "^3.0.0",
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.3"
   }
 }

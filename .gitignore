@@ -3,6 +3,9 @@ node_modules
 
 # misc
 .DS_Store
-npm-debug.log
+npm-debug.log*
 .nyc_output
 .coverage
+.lankrc*
+yarn-error.log
+package-lock.json

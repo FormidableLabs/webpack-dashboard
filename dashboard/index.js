@@ -1,6 +1,5 @@
 "use strict";
 
-const _ = require("lodash/fp");
 const chalk = require("chalk");
 const blessed = require("blessed");
 
@@ -8,7 +7,7 @@ const formatOutput = require("../utils/format-output.js");
 const formatModules = require("../utils/format-modules.js");
 const formatAssets = require("../utils/format-assets.js");
 const formatProblems = require("../utils/format-problems.js");
-const deserializeError = require("../utils/error-serialization").deserializeError;
+const { deserializeError } = require("../utils/error-serialization");
 
 const PERCENT_MULTIPLIER = 100;
 
@@ -26,16 +25,43 @@ const DEFAULT_SCROLL_OPTIONS = {
 };
 
 class Dashboard {
-  constructor(options) {
+  constructor(options) { // eslint-disable-line max-statements
+    // Options, params
     options = options || {};
     const title = options.title || "webpack-dashboard";
 
     this.color = options.color || "green";
     this.minimal = options.minimal || false;
-    this.setData = this.setData.bind(this);
-
     this.stats = null;
 
+    // Data binding, lookup tables.
+    this.setData = this.setData.bind(this);
+    this.actionForMessageType = {
+      progress: this.setProgress.bind(this),
+      operations: this.setOperations.bind(this),
+      status: this.setStatus.bind(this),
+      stats: this.setStats.bind(this),
+      log: this.setLog.bind(this),
+      clear: this.clear.bind(this),
+      sizes: _data => {
+        if (this.minimal) { return; }
+        if (_data.value instanceof Error) {
+          this.setSizesError(_data.value);
+        } else {
+          this.setSizes(_data);
+        }
+      },
+      problems: _data => {
+        if (this.minimal) { return; }
+        if (_data.value instanceof Error) {
+          this.setProblemsError(_data.value);
+        } else {
+          this.setProblems(_data);
+        }
+      }
+    };
+
+    // Start UI stuff.
     this.screen = blessed.screen({
       title,
       smartCSR: true,
@@ -62,42 +88,15 @@ class Dashboard {
   }
 
   setData(dataArray) {
-    const actionForMessageType = data => {
-      const map = {
-        progress: this.setProgress.bind(this),
-        operations: this.setOperations.bind(this),
-        status: this.setStatus.bind(this),
-        stats: this.setStats.bind(this),
-        nodeEnv: this.setNodeEnv.bind(this),
-        log: this.setLog.bind(this),
-        clear: this.clear.bind(this),
-        sizes: _data => {
-          if (this.minimal) { return; }
-          if (_data.value instanceof Error) {
-            this.setSizesError(_data.value);
-          } else {
-            this.setSizes(_data);
-          }
-        },
-        problems: _data => {
-          if (this.minimal) { return; }
-          if (_data.value instanceof Error) {
-            this.setProblemsError(_data.value);
-          } else {
-            this.setProblems(_data);
-          }
-        }
-      };
-      return map[data.type](data);
-    };
-
     dataArray
-      .map(data => data.error ?
-        Object.assign({}, data, {
+      .map(data => data.error
+        ? Object.assign({}, data, {
           value: deserializeError(data.value)
         }) : data
       )
-      .forEach(actionForMessageType);
+      .forEach(data => {
+        this.actionForMessageType[data.type](data);
+      });
 
     this.screen.render();
   }
@@ -122,13 +121,6 @@ class Dashboard {
     this.operations.setContent(data.value);
   }
 
-  setNodeEnv(data) {
-    this.nodeEnv = data.value;
-    if (this.nodeEnv === "production") {
-      this.setProductionConfigurationWarning();
-    }
-  }
-
   setStatus(data) {
     let content;
 
@@ -147,15 +139,9 @@ class Dashboard {
 
   setStats(data) {
     const stats = {
-      hasErrors: () => {
-        return data.value.errors;
-      },
-      hasWarnings: () => {
-        return data.value.warnings;
-      },
-      toJson: () => {
-        return data.value.data;
-      }
+      hasErrors: () => data.value.errors,
+      hasWarnings: () => data.value.warnings,
+      toJson: () => data.value.data
     };
 
     // Save for later when merging inspectpack sizes into the asset list
@@ -175,26 +161,26 @@ class Dashboard {
   }
 
   setSizes(data) {
-    this.modulesMenu.setLabel("Modules");
+    const { assets } = data.value;
+
+    // Start with top-level assets.
     this.assets.setLabel("Assets");
+    this.assetTable.setData(formatAssets(assets));
 
-    const result = _.flow(
-      _.groupBy("path"),
-      _.mapValues(_.reduce((acc, bundle) =>
-        Object.assign({}, acc, bundle), {}
-      )),
-      _.mapValues(bundle => () => {
-        this.moduleTable.setData(formatModules(bundle));
-        this.screen.render();
-      })
-    )(data.value);
-
+    // Then split modules across assets.
     const previousSelection = this.modulesMenu.selected;
-    this.modulesMenu.setItems(result);
+    const modulesItems = Object.keys(assets).reduce((memo, name) => Object.assign({}, memo, {
+      [name]: () => {
+        this.moduleTable.setData(formatModules(assets[name].files));
+        this.screen.render();
+      }
+    }), {});
+
+    this.modulesMenu.setLabel("Modules");
+    this.modulesMenu.setItems(modulesItems);
     this.modulesMenu.selectTab(previousSelection);
 
-    this.assetTable.setData(formatAssets(this.stats, data.value));
-
+    // Final render.
     this.screen.render();
   }
 
@@ -205,36 +191,26 @@ class Dashboard {
     this.logText.log(chalk.red(err));
   }
 
-  setProductionConfigurationWarning() {
-    this.modulesMenu.setLabel(chalk.yellow("Modules (warning)"));
-    this.assets.setLabel(chalk.yellow("Assets (warning)"));
-    this.moduleTable.setData([[
-      // eslint-disable-next-line max-len
-      "It appears you are using a production config. Therefore there are no code sections that could be analyzed. To see more on modules and assets switch to a development configuration."
-    ]]);
-    this.assetTable.setData([[
-      "Unable to list specific asset data."
-    ]]);
-    this.problemsMenu.setLabel(chalk.yellow("Problems (warning)"));
-    this.problems.setContent("Unable to analyze problems.");
-  }
-
   setProblems(data) {
-    this.problemsMenu.setLabel("Problems");
+    const { duplicates, versions } = data.value;
 
-    const result = _.flow(
-      _.groupBy("path"),
-      _.mapValues(_.reduce((acc, bundle) =>
-        Object.assign({}, acc, bundle), {}
-      )),
-      _.mapValues(bundle => () => {
-        this.problems.setContent(formatProblems(bundle));
-        this.screen.render();
-      })
-    )(data.value);
+    // Separate across assets.
+    // Use duplicates as the "canary" to get asset names.
+    const assetNames = Object.keys(duplicates.assets);
 
     const previousSelection = this.problemsMenu.selected;
-    this.problemsMenu.setItems(result);
+    const problemsItems = assetNames.reduce((memo, name) => Object.assign({}, memo, {
+      [name]: () => {
+        this.problems.setContent(formatProblems({
+          duplicates: duplicates.assets[name],
+          versions: versions.assets[name]
+        }));
+        this.screen.render();
+      }
+    }), {});
+
+    this.problemsMenu.setLabel("Problems");
+    this.problemsMenu.setItems(problemsItems);
     this.problemsMenu.selectTab(previousSelection);
 
     this.screen.render();
@@ -351,7 +327,8 @@ class Dashboard {
           left: 1
         },
         align: "left",
-        data: [["Name", "Size", "Percentage"]]
+        data: [["Name", "Size", "Percent"]],
+        tags: true
       })
     );
 
@@ -436,7 +413,8 @@ class Dashboard {
           border: {
             fg: this.color
           }
-        }
+        },
+        tags: true
       })
     );
 

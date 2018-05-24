@@ -31,12 +31,8 @@ function formatOutput(stats) {
   const hasWarnings = stats.hasWarnings();
 
   const json = stats.toJson();
-  let formattedErrors = json.errors.map(message => {
-    return `Error in ${formatMessage(message)}`;
-  });
-  const formattedWarnings = json.warnings.map(message => {
-    return `Warning in ${formatMessage(message)}`;
-  });
+  let formattedErrors = json.errors.map(message => `Error in ${formatMessage(message)}`);
+  const formattedWarnings = json.warnings.map(message => `Warning in ${formatMessage(message)}`);
 
   if (hasErrors) {
     output.push("{red-fg}Failed to compile.{/}");
