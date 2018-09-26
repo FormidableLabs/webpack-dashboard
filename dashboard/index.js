@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-const chalk = require("chalk");
-const blessed = require("blessed");
+const chalk = require('chalk');
+const blessed = require('blessed');
 
-const formatOutput = require("../utils/format-output.js");
-const formatModules = require("../utils/format-modules.js");
-const formatAssets = require("../utils/format-assets.js");
-const formatProblems = require("../utils/format-problems.js");
-const { deserializeError } = require("../utils/error-serialization");
+const formatOutput = require('../utils/format-output.js');
+const formatModules = require('../utils/format-modules.js');
+const formatAssets = require('../utils/format-assets.js');
+const formatProblems = require('../utils/format-problems.js');
+const { deserializeError } = require('../utils/error-serialization');
 
 const PERCENT_MULTIPLIER = 100;
 
@@ -16,7 +16,7 @@ const DEFAULT_SCROLL_OPTIONS = {
   input: true,
   alwaysScroll: true,
   scrollbar: {
-    ch: " ",
+    ch: ' ',
     inverse: true
   },
   keys: true,
@@ -25,12 +25,13 @@ const DEFAULT_SCROLL_OPTIONS = {
 };
 
 class Dashboard {
-  constructor(options) { // eslint-disable-line max-statements
+  constructor(options) {
+    // eslint-disable-line max-statements
     // Options, params
     options = options || {};
-    const title = options.title || "webpack-dashboard";
+    const title = options.title || 'webpack-dashboard';
 
-    this.color = options.color || "green";
+    this.color = options.color || 'green';
     this.minimal = options.minimal || false;
     this.stats = null;
 
@@ -44,7 +45,9 @@ class Dashboard {
       log: this.setLog.bind(this),
       clear: this.clear.bind(this),
       sizes: _data => {
-        if (this.minimal) { return; }
+        if (this.minimal) {
+          return;
+        }
         if (_data.value instanceof Error) {
           this.setSizesError(_data.value);
         } else {
@@ -52,7 +55,9 @@ class Dashboard {
         }
       },
       problems: _data => {
-        if (this.minimal) { return; }
+        if (this.minimal) {
+          return;
+        }
         if (_data.value instanceof Error) {
           this.setProblemsError(_data.value);
         } else {
@@ -79,7 +84,7 @@ class Dashboard {
       this.layoutProblems();
     }
 
-    this.screen.key(["escape", "q", "C-c"], () => {
+    this.screen.key(['escape', 'q', 'C-c'], () => {
       // eslint-disable-next-line no-process-exit
       process.exit(0);
     });
@@ -89,10 +94,13 @@ class Dashboard {
 
   setData(dataArray) {
     dataArray
-      .map(data => data.error
-        ? Object.assign({}, data, {
-          value: deserializeError(data.value)
-        }) : data
+      .map(
+        data =>
+          data.error
+            ? Object.assign({}, data, {
+                value: deserializeError(data.value)
+              })
+            : data
       )
       .forEach(data => {
         this.actionForMessageType[data.type](data);
@@ -125,14 +133,14 @@ class Dashboard {
     let content;
 
     switch (data.value) {
-    case "Success":
-      content = `{green-fg}{bold}${data.value}{/}`;
-      break;
-    case "Failed":
-      content = `{red-fg}{bold}${data.value}{/}`;
-      break;
-    default:
-      content = `{bold}${data.value}{/}`;
+      case 'Success':
+        content = `{green-fg}{bold}${data.value}{/}`;
+        break;
+      case 'Failed':
+        content = `{red-fg}{bold}${data.value}{/}`;
+        break;
+      default:
+        content = `{bold}${data.value}{/}`;
     }
     this.status.setContent(content);
   }
@@ -148,15 +156,15 @@ class Dashboard {
     this.stats = stats;
 
     if (stats.hasErrors()) {
-      this.status.setContent("{red-fg}{bold}Failed{/}");
+      this.status.setContent('{red-fg}{bold}Failed{/}');
     }
 
     this.logText.log(formatOutput(stats));
 
     if (!this.minimal) {
-      this.modulesMenu.setLabel(chalk.yellow("Modules (loading...)"));
-      this.assets.setLabel(chalk.yellow("Assets (loading...)"));
-      this.problemsMenu.setLabel(chalk.yellow("Problems (loading...)"));
+      this.modulesMenu.setLabel(chalk.yellow('Modules (loading...)'));
+      this.assets.setLabel(chalk.yellow('Assets (loading...)'));
+      this.problemsMenu.setLabel(chalk.yellow('Problems (loading...)'));
     }
   }
 
@@ -164,19 +172,23 @@ class Dashboard {
     const { assets } = data.value;
 
     // Start with top-level assets.
-    this.assets.setLabel("Assets");
+    this.assets.setLabel('Assets');
     this.assetTable.setData(formatAssets(assets));
 
     // Then split modules across assets.
     const previousSelection = this.modulesMenu.selected;
-    const modulesItems = Object.keys(assets).reduce((memo, name) => Object.assign({}, memo, {
-      [name]: () => {
-        this.moduleTable.setData(formatModules(assets[name].files));
-        this.screen.render();
-      }
-    }), {});
+    const modulesItems = Object.keys(assets).reduce(
+      (memo, name) =>
+        Object.assign({}, memo, {
+          [name]: () => {
+            this.moduleTable.setData(formatModules(assets[name].files));
+            this.screen.render();
+          }
+        }),
+      {}
+    );
 
-    this.modulesMenu.setLabel("Modules");
+    this.modulesMenu.setLabel('Modules');
     this.modulesMenu.setItems(modulesItems);
     this.modulesMenu.selectTab(previousSelection);
 
@@ -185,9 +197,9 @@ class Dashboard {
   }
 
   setSizesError(err) {
-    this.modulesMenu.setLabel(chalk.red("Modules (error)"));
-    this.assets.setLabel(chalk.red("Assets (error)"));
-    this.logText.log(chalk.red("Could not load module/asset sizes."));
+    this.modulesMenu.setLabel(chalk.red('Modules (error)'));
+    this.assets.setLabel(chalk.red('Assets (error)'));
+    this.logText.log(chalk.red('Could not load module/asset sizes.'));
     this.logText.log(chalk.red(err));
   }
 
@@ -199,17 +211,23 @@ class Dashboard {
     const assetNames = Object.keys(duplicates.assets);
 
     const previousSelection = this.problemsMenu.selected;
-    const problemsItems = assetNames.reduce((memo, name) => Object.assign({}, memo, {
-      [name]: () => {
-        this.problems.setContent(formatProblems({
-          duplicates: duplicates.assets[name],
-          versions: versions.assets[name]
-        }));
-        this.screen.render();
-      }
-    }), {});
+    const problemsItems = assetNames.reduce(
+      (memo, name) =>
+        Object.assign({}, memo, {
+          [name]: () => {
+            this.problems.setContent(
+              formatProblems({
+                duplicates: duplicates.assets[name],
+                versions: versions.assets[name]
+              })
+            );
+            this.screen.render();
+          }
+        }),
+      {}
+    );
 
-    this.problemsMenu.setLabel("Problems");
+    this.problemsMenu.setLabel('Problems');
     this.problemsMenu.setItems(problemsItems);
     this.problemsMenu.selectTab(previousSelection);
 
@@ -217,8 +235,8 @@ class Dashboard {
   }
 
   setProblemsError(err) {
-    this.problemsMenu.setLabel(chalk.red("Problems (error)"));
-    this.logText.log(chalk.red("Could not analyze bundle problems."));
+    this.problemsMenu.setLabel(chalk.red('Problems (error)'));
+    this.logText.log(chalk.red('Could not analyze bundle problems.'));
     this.logText.log(chalk.red(err.stack));
   }
 
@@ -226,23 +244,23 @@ class Dashboard {
     if (this.stats && this.stats.hasErrors()) {
       return;
     }
-    this.logText.log(data.value.replace(/[{}]/g, ""));
+    this.logText.log(data.value.replace(/[{}]/g, ''));
   }
 
   clear() {
-    this.logText.setContent("");
+    this.logText.setContent('');
   }
 
   layoutLog() {
     this.log = blessed.box({
-      label: "Log",
+      label: 'Log',
       padding: 1,
-      width: this.minimal ? "100%" : "75%",
-      height: this.minimal ? "70%" : "36%",
-      left: "0%",
-      top: "0%",
+      width: this.minimal ? '100%' : '75%',
+      height: this.minimal ? '70%' : '36%',
+      left: '0%',
+      top: '0%',
       border: {
-        type: "line"
+        type: 'line'
       },
       style: {
         fg: -1,
@@ -256,7 +274,7 @@ class Dashboard {
       Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
         parent: this.log,
         tags: true,
-        width: "100%-5"
+        width: '100%-5'
       })
     );
 
@@ -265,20 +283,20 @@ class Dashboard {
   }
 
   mapNavigationKeysToScrollLog() {
-    this.screen.key(["pageup"], () => {
+    this.screen.key(['pageup'], () => {
       this.logText.setScrollPerc(0);
       this.logText.screen.render();
     });
-    this.screen.key(["pagedown"], () => {
+    this.screen.key(['pagedown'], () => {
       // eslint-disable-next-line no-magic-numbers
       this.logText.setScrollPerc(100);
       this.logText.screen.render();
     });
-    this.screen.key(["up"], () => {
+    this.screen.key(['up'], () => {
       this.logText.scroll(-1);
       this.logText.screen.render();
     });
-    this.screen.key(["down"], () => {
+    this.screen.key(['down'], () => {
       this.logText.scroll(1);
       this.logText.screen.render();
     });
@@ -286,15 +304,15 @@ class Dashboard {
 
   layoutModules() {
     this.modulesMenu = blessed.listbar({
-      label: "Modules",
+      label: 'Modules',
       mouse: true,
       tags: true,
-      width: "50%",
-      height: "66%",
-      left: "0%",
-      top: "36%",
+      width: '50%',
+      height: '66%',
+      left: '0%',
+      top: '36%',
       border: {
-        type: "line"
+        type: 'line'
       },
       padding: 1,
       style: {
@@ -306,10 +324,10 @@ class Dashboard {
           fg: -1
         },
         item: {
-          fg: "white"
+          fg: 'white'
         },
         selected: {
-          fg: "black",
+          fg: 'black',
           bg: this.color
         }
       },
@@ -319,15 +337,15 @@ class Dashboard {
     this.moduleTable = blessed.table(
       Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
         parent: this.modulesMenu,
-        height: "100%",
-        width: "100%-5",
+        height: '100%',
+        width: '100%-5',
         padding: {
           top: 2,
           right: 1,
           left: 1
         },
-        align: "left",
-        data: [["Name", "Size", "Percent"]],
+        align: 'left',
+        data: [['Name', 'Size', 'Percent']],
         tags: true
       })
     );
@@ -337,15 +355,15 @@ class Dashboard {
 
   layoutAssets() {
     this.assets = blessed.box({
-      label: "Assets",
+      label: 'Assets',
       tags: true,
       padding: 1,
-      width: "50%",
-      height: "28%",
-      left: "50%",
-      top: "36%",
+      width: '50%',
+      height: '28%',
+      left: '50%',
+      top: '36%',
       border: {
-        type: "line"
+        type: 'line'
       },
       style: {
         fg: -1,
@@ -358,11 +376,11 @@ class Dashboard {
     this.assetTable = blessed.table(
       Object.assign({}, DEFAULT_SCROLL_OPTIONS, {
         parent: this.assets,
-        height: "100%",
-        width: "100%-5",
-        align: "left",
+        height: '100%',
+        width: '100%-5',
+        align: 'left',
         padding: 1,
-        data: [["Name", "Size"]]
+        data: [['Name', 'Size']]
       })
     );
 
@@ -371,14 +389,14 @@ class Dashboard {
 
   layoutProblems() {
     this.problemsMenu = blessed.listbar({
-      label: "Problems",
+      label: 'Problems',
       mouse: true,
-      width: "50%",
-      height: "38%",
-      left: "50%",
-      top: "63%",
+      width: '50%',
+      height: '38%',
+      left: '50%',
+      top: '63%',
       border: {
-        type: "line"
+        type: 'line'
       },
       padding: {
         top: 1
@@ -391,10 +409,10 @@ class Dashboard {
           fg: -1
         },
         item: {
-          fg: "white"
+          fg: 'white'
         },
         selected: {
-          fg: "black",
+          fg: 'black',
           bg: this.color
         }
       },
@@ -424,25 +442,25 @@ class Dashboard {
   // eslint-disable-next-line complexity
   layoutStatus() {
     this.wrapper = blessed.layout({
-      width: this.minimal ? "100%" : "25%",
-      height: this.minimal ? "30%" : "36%",
-      top: this.minimal ? "70%" : "0%",
-      left: this.minimal ? "0%" : "75%",
-      layout: "grid"
+      width: this.minimal ? '100%' : '25%',
+      height: this.minimal ? '30%' : '36%',
+      top: this.minimal ? '70%' : '0%',
+      left: this.minimal ? '0%' : '75%',
+      layout: 'grid'
     });
 
     this.status = blessed.box({
       parent: this.wrapper,
-      label: "Status",
+      label: 'Status',
       tags: true,
       padding: {
         left: 1
       },
-      width: this.minimal ? "34%-1" : "100%",
-      height: this.minimal ? "100%" : "34%",
-      valign: "middle",
+      width: this.minimal ? '34%-1' : '100%',
+      height: this.minimal ? '100%' : '34%',
+      valign: 'middle',
       border: {
-        type: "line"
+        type: 'line'
       },
       style: {
         fg: -1,
@@ -454,16 +472,16 @@ class Dashboard {
 
     this.operations = blessed.box({
       parent: this.wrapper,
-      label: "Operation",
+      label: 'Operation',
       tags: true,
       padding: {
         left: 1
       },
-      width: this.minimal ? "34%-1" : "100%",
-      height: this.minimal ? "100%" : "34%",
-      valign: "middle",
+      width: this.minimal ? '34%-1' : '100%',
+      height: this.minimal ? '100%' : '34%',
+      valign: 'middle',
       border: {
-        type: "line"
+        type: 'line'
       },
       style: {
         fg: -1,
@@ -475,16 +493,18 @@ class Dashboard {
 
     this.progress = blessed.box({
       parent: this.wrapper,
-      label: "Progress",
+      label: 'Progress',
       tags: true,
-      padding: this.minimal ? {
-        left: 1
-      } : 1,
-      width: this.minimal ? "33%" : "100%",
-      height: this.minimal ? "100%" : "34%",
-      valign: "middle",
+      padding: this.minimal
+        ? {
+            left: 1
+          }
+        : 1,
+      width: this.minimal ? '33%' : '100%',
+      height: this.minimal ? '100%' : '34%',
+      valign: 'middle',
       border: {
-        type: "line"
+        type: 'line'
       },
       style: {
         fg: -1,
@@ -497,11 +517,11 @@ class Dashboard {
     this.progressbar = new blessed.ProgressBar({
       parent: this.progress,
       height: 1,
-      width: "90%",
-      top: "center",
-      left: "center",
+      width: '90%',
+      top: 'center',
+      left: 'center',
       hidden: this.minimal,
-      orientation: "horizontal",
+      orientation: 'horizontal',
       style: {
         bar: {
           bg: this.color
