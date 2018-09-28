@@ -1,40 +1,45 @@
-'use strict';
+"use strict";
 
-require('../base.spec');
+require("../base.spec");
 
-const Dashboard = require('../../dashboard');
-let dashboard;
-let dashboardWithOptions;
-const options = { color: 'red', minimal: true, title: 'my-title' };
+const Dashboard = require("../../dashboard");
 
-beforeEach(() => {
-  dashboard = new Dashboard();
-  dashboardWithOptions = new Dashboard(options);
-});
+describe("dashboard", () => {
+  let dashboard;
+  let dashboardWithOptions;
+  const options = {
+    color: "red",
+    minimal: true,
+    title: "my-title"
+  };
 
-describe('dashboard', () => {
-  it('can create a new dashboard', () => {
+  beforeEach(() => {
+    dashboard = new Dashboard();
+    dashboardWithOptions = new Dashboard(options);
+  });
+
+  it("can create a new dashboard", () => {
     expect(dashboard).to.be.ok;
   });
 
-  describe('#color', () => {
+  describe("#color", () => {
     it("has default color of 'green'", () => {
-      expect(dashboard.color).to.equal('green');
+      expect(dashboard.color).to.equal("green");
     });
 
-    context('when given option color red', () => {
+    context("when given option color red", () => {
       it("has color set to 'red'", () => {
-        expect(dashboardWithOptions.color).to.equal('red');
+        expect(dashboardWithOptions.color).to.equal("red");
       });
     });
   });
 
-  describe('#minimal', () => {
+  describe("#minimal", () => {
     it("has default minimal set to 'false", () => {
       expect(dashboard.minimal).to.be.false;
     });
 
-    context('when given opiton minimal', () => {
+    context("when given opiton minimal", () => {
       it("has minimal set to 'true'", () => {
         expect(dashboardWithOptions.minimal).to.be.true;
       });
