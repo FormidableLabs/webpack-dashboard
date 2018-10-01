@@ -1,7 +1,5 @@
 "use strict";
 
-const { expect } = require("chai");
-
 const { _getAssetSize, _getTotalSize, _printAssets } = require("../../utils/format-assets");
 
 describe("format-assets.js", () => {

@@ -2,25 +2,19 @@
 
 const friendlySyntaxErrorLabel = "Syntax error:";
 
-function isLikelyASyntaxError(message) {
+function _isLikelyASyntaxError(message) {
   return message.indexOf(friendlySyntaxErrorLabel) !== -1;
 }
 
-function formatMessage(message) {
+function _formatMessage(message) {
   return message
-    .replace(
-      "Module build failed: SyntaxError:",
-      friendlySyntaxErrorLabel
-    )
-    .replace(
-      /Module not found: Error: Cannot resolve 'file' or 'directory'/,
-      "Module not found:"
-    )
+    .replace("Module build failed: SyntaxError:", friendlySyntaxErrorLabel)
+    .replace(/Module not found: Error: Cannot resolve 'file' or 'directory'/, "Module not found:")
     .replace(/^\s*at\s.*:\d+:\d+[\s\)]*\n/gm, "")
     .replace("./~/css-loader!./~/postcss-loader!", "");
 }
 
-function lineJoin(arr) {
+function _lineJoin(arr) {
   return arr.join("\n");
 }
 
@@ -31,20 +25,20 @@ function formatOutput(stats) {
   const hasWarnings = stats.hasWarnings();
 
   const json = stats.toJson();
-  let formattedErrors = json.errors.map(message => `Error in ${formatMessage(message)}`);
-  const formattedWarnings = json.warnings.map(message => `Warning in ${formatMessage(message)}`);
+  let formattedErrors = json.errors.map(message => `Error in ${_formatMessage(message)}`);
+  const formattedWarnings = json.warnings.map(message => `Warning in ${_formatMessage(message)}`);
 
   if (hasErrors) {
     output.push("{red-fg}Failed to compile.{/}");
     output.push("");
-    if (formattedErrors.some(isLikelyASyntaxError)) {
-      formattedErrors = formattedErrors.filter(isLikelyASyntaxError);
+    if (formattedErrors.some(_isLikelyASyntaxError)) {
+      formattedErrors = formattedErrors.filter(_isLikelyASyntaxError);
     }
     formattedErrors.forEach(message => {
       output.push(message);
       output.push("");
     });
-    return lineJoin(output);
+    return _lineJoin(output);
   }
 
   if (hasWarnings) {
@@ -55,13 +49,16 @@ function formatOutput(stats) {
       output.push("");
     });
 
-    return lineJoin(output);
+    return _lineJoin(output);
   }
 
   output.push("{green-fg}Compiled successfully!{/}");
   output.push("");
 
-  return lineJoin(output);
+  return _lineJoin(output);
 }
 
-module.exports = formatOutput;
+module.exports = { formatOutput,
+  _formatMessage,
+  _isLikelyASyntaxError,
+  _lineJoin };
