@@ -5,48 +5,24 @@ require("../base.spec");
 const Dashboard = require("../../dashboard");
 
 describe("dashboard", () => {
-  let dashboard;
-  let dashboardWithOptions;
   const options = {
     color: "red",
     minimal: true,
     title: "my-title"
   };
 
-  beforeEach(() => {
-    dashboard = new Dashboard();
-    dashboardWithOptions = new Dashboard(options);
-  });
-
-  it("can create a new dashboard", () => {
+  it("can create a new no option dashboard", () => {
+    const dashboard = new Dashboard();
     expect(dashboard).to.be.ok;
-  });
-
-  describe("#color", () => {
-    it("has default color of 'green'", () => {
-      expect(dashboard.color).to.equal("green");
-    });
-
-    context("when given option color red", () => {
-      it("has color set to 'red'", () => {
-        expect(dashboardWithOptions.color).to.equal("red");
-      });
-    });
-  });
-
-  describe("#minimal", () => {
-    it("has default minimal set to 'false", () => {
-      expect(dashboard.minimal).to.be.false;
-    });
-
-    context("when given opiton minimal", () => {
-      it("has minimal set to 'true'", () => {
-        expect(dashboardWithOptions.minimal).to.be.true;
-      });
-    });
-  });
-
-  it("has default stats of 'null'", () => {
+    expect(dashboard.color).to.equal("green");
+    expect(dashboard.minimal).to.be.false;
     expect(dashboard.stats).to.be.null;
+  });
+
+  it("can create a new with options dashboard", () => {
+    const dashboardWithOptions = new Dashboard(options);
+    expect(dashboardWithOptions).to.be.ok;
+    expect(dashboardWithOptions.color).to.equal("red");
+    expect(dashboardWithOptions.minimal).to.be.true;
   });
 });

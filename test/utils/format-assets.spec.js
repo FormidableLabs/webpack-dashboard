@@ -34,24 +34,24 @@ describe("format-assets.js", () => {
     it("returns a nested array of assets information", () => {
       const assetList = [
         {
-          name: "assest1",
+          name: "assets1",
           size: 500
         },
         {
-          name: "assest2",
+          name: "assets2",
           size: 0
         },
         {
-          name: "assest2",
+          name: "assets2",
           size: 500
         }
       ];
 
       const output = [
         ["Name", "Size"],
-        ["assest1", "500 B"],
-        ["assest2", "0 B"],
-        ["assest2", "500 B"],
+        ["assets1", "500 B"],
+        ["assets2", "0 B"],
+        ["assets2", "500 B"],
         ["Total", "1000 B"]
       ];
       expect(_printAssets(assetList)).eql(output);

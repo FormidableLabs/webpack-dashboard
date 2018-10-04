@@ -20,9 +20,9 @@ describe("format-output.js", () => {
   });
 
   describe("#_formatMessage", () => {
-    const message1 = "Module build failed: SyntaxError: missing ; before statement";
-    const message2 = "/Module not found: Error: Cannot resolve 'file' or 'directory'/";
     it("returns a readable user friendly message", () => {
+      const message1 = "Module build failed: SyntaxError: missing ; before statement";
+      const message2 = "/Module not found: Error: Cannot resolve 'file' or 'directory'/";
       expect(_formatMessage(message1)).to.equal("Syntax error: missing ; before statement");
       expect(_formatMessage(message2)).to.equal("/Module not found:/");
     });
