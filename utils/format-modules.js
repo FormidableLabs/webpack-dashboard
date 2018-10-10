@@ -12,7 +12,7 @@ const PERCENT_PRECISION = 3;
 // Convert to:
 // - existing source file name
 // - the path leading up to **just** the package (not including subpath).
-function formatFileName(mod) {
+function _formatFileName(mod) {
   const { fileName, baseName } = mod;
 
   // Source file.
@@ -22,7 +22,6 @@ function formatFileName(mod) {
 
   // Package
   let parts = fileName.split(sep);
-
   // Remove starting path.
   const firstNmIdx = parts.indexOf("node_modules");
   parts = parts.slice(firstNmIdx);
@@ -32,14 +31,11 @@ function formatFileName(mod) {
   const isScoped = (parts[lastNmIdx + 1] || "").startsWith("@");
   parts = parts.slice(0, lastNmIdx + (isScoped ? 3 : 2)); // eslint-disable-line no-magic-numbers
 
-  return parts
-    .map(part => part === "node_modules" ? "~" : `{yellow-fg}${part}{/}`)
-    .join(sep);
+  return parts.map(part => part === "node_modules" ? "~" : `{yellow-fg}${part}{/}`).join(sep);
 }
 
-function formatPercentage(modSize, assetSize) {
-  const percentage = (modSize / assetSize * PERCENT_MULTIPLIER)
-    .toPrecision(PERCENT_PRECISION);
+function _formatPercentage(modSize, assetSize) {
+  const percentage = (modSize / assetSize * PERCENT_MULTIPLIER).toPrecision(PERCENT_PRECISION);
 
   return `${percentage}%`;
 }
@@ -54,12 +50,14 @@ function formatModules(mods) {
   const modsMap = mods.reduce((memo, mod) => {
     // File name collapses to packages for dependencies.
     // Aggregate into object.
-    const fileName = formatFileName(mod);
+    const fileName = _formatFileName(mod);
 
     // Add in information.
-    memo[fileName] = memo[fileName] || { fileName,
+    memo[fileName] = memo[fileName] || {
+      fileName,
       num: 0,
-      size: 0 };
+      size: 0
+    };
     memo[fileName].num += 1;
     memo[fileName].size += mod.size.full;
 
@@ -74,9 +72,13 @@ function formatModules(mods) {
       .map(mod => [
         `${mod.fileName} ${mod.num > 1 ? `(${mod.num})` : ""}`,
         filesize(mod.size),
-        formatPercentage(mod.size, assetSize)
+        _formatPercentage(mod.size, assetSize)
       ])
   );
 }
 
-module.exports = formatModules;
+module.exports = {
+  formatModules,
+  _formatFileName,
+  _formatPercentage
+};

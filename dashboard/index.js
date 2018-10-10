@@ -25,7 +25,8 @@ const DEFAULT_SCROLL_OPTIONS = {
 };
 
 class Dashboard {
-  constructor(options) { // eslint-disable-line max-statements
+  // eslint-disable-next-line max-statements
+  constructor(options) {
     // Options, params
     options = options || {};
     const title = options.title || "webpack-dashboard";
@@ -44,7 +45,9 @@ class Dashboard {
       log: this.setLog.bind(this),
       clear: this.clear.bind(this),
       sizes: _data => {
-        if (this.minimal) { return; }
+        if (this.minimal) {
+          return;
+        }
         if (_data.value instanceof Error) {
           this.setSizesError(_data.value);
         } else {
@@ -52,7 +55,9 @@ class Dashboard {
         }
       },
       problems: _data => {
-        if (this.minimal) { return; }
+        if (this.minimal) {
+          return;
+        }
         if (_data.value instanceof Error) {
           this.setProblemsError(_data.value);
         } else {
@@ -89,10 +94,13 @@ class Dashboard {
 
   setData(dataArray) {
     dataArray
-      .map(data => data.error
-        ? Object.assign({}, data, {
-          value: deserializeError(data.value)
-        }) : data
+      .map(
+        data =>
+          data.error
+            ? Object.assign({}, data, {
+              value: deserializeError(data.value)
+            })
+            : data
       )
       .forEach(data => {
         this.actionForMessageType[data.type](data);
@@ -169,12 +177,16 @@ class Dashboard {
 
     // Then split modules across assets.
     const previousSelection = this.modulesMenu.selected;
-    const modulesItems = Object.keys(assets).reduce((memo, name) => Object.assign({}, memo, {
-      [name]: () => {
-        this.moduleTable.setData(formatModules(assets[name].files));
-        this.screen.render();
-      }
-    }), {});
+    const modulesItems = Object.keys(assets).reduce(
+      (memo, name) =>
+        Object.assign({}, memo, {
+          [name]: () => {
+            this.moduleTable.setData(formatModules(assets[name].files));
+            this.screen.render();
+          }
+        }),
+      {}
+    );
 
     this.modulesMenu.setLabel("Modules");
     this.modulesMenu.setItems(modulesItems);
@@ -199,15 +211,21 @@ class Dashboard {
     const assetNames = Object.keys(duplicates.assets);
 
     const previousSelection = this.problemsMenu.selected;
-    const problemsItems = assetNames.reduce((memo, name) => Object.assign({}, memo, {
-      [name]: () => {
-        this.problems.setContent(formatProblems({
-          duplicates: duplicates.assets[name],
-          versions: versions.assets[name]
-        }));
-        this.screen.render();
-      }
-    }), {});
+    const problemsItems = assetNames.reduce(
+      (memo, name) =>
+        Object.assign({}, memo, {
+          [name]: () => {
+            this.problems.setContent(
+              formatProblems({
+                duplicates: duplicates.assets[name],
+                versions: versions.assets[name]
+              })
+            );
+            this.screen.render();
+          }
+        }),
+      {}
+    );
 
     this.problemsMenu.setLabel("Problems");
     this.problemsMenu.setItems(problemsItems);
@@ -477,9 +495,11 @@ class Dashboard {
       parent: this.wrapper,
       label: "Progress",
       tags: true,
-      padding: this.minimal ? {
-        left: 1
-      } : 1,
+      padding: this.minimal
+        ? {
+          left: 1
+        }
+        : 1,
       width: this.minimal ? "33%" : "100%",
       height: this.minimal ? "100%" : "34%",
       valign: "middle",

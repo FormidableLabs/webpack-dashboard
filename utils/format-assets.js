@@ -5,25 +5,18 @@
  */
 const filesize = require("filesize");
 
-function getAssetSize(asset) {
+function _getAssetSize(asset) {
   return filesize(asset.size || 0);
 }
 
-function getTotalSize(assetsList) {
-  return filesize(assetsList.reduce(
-    (total, asset) => total + (asset.size || 0),
-    0
-  ));
+function _getTotalSize(assetsList) {
+  return filesize(assetsList.reduce((total, asset) => total + (asset.size || 0), 0));
 }
 
-function printAssets(assetsList) {
+function _printAssets(assetsList) {
   return [["Name", "Size"]]
-    .concat(assetsList.map(asset =>
-      [asset.name, getAssetSize(asset)]
-    ))
-    .concat(
-      [["Total", getTotalSize(assetsList)]]
-    );
+    .concat(assetsList.map(asset => [asset.name, _getAssetSize(asset)]))
+    .concat([["Total", _getTotalSize(assetsList)]]);
 }
 
 function formatAssets(assets) {
@@ -33,7 +26,10 @@ function formatAssets(assets) {
     size: assets[name].meta.full
   }));
 
-  return printAssets(assetsList);
+  return _printAssets(assetsList);
 }
 
-module.exports = formatAssets;
+module.exports = { formatAssets,
+  _getAssetSize,
+  _getTotalSize,
+  _printAssets };
