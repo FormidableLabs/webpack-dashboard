@@ -25,4 +25,20 @@ describe("dashboard", () => {
     expect(dashboardWithOptions.color).to.equal("red");
     expect(dashboardWithOptions.minimal).to.be.true;
   });
+
+  // TODO: All format functions.
+
+  it("can format problems", () => {
+    const dashboard = new Dashboard(options);
+
+    // TODO: This doesn't work, but starting in right direction.
+    // TODO GOAL: Regression test on the bad format requires.
+    dashboard.setStats({
+      value: {
+        errors: [],
+        warnings: [],
+        data: {}
+      }
+    });
+  });
 });

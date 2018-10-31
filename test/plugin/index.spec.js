@@ -1,5 +1,7 @@
 "use strict";
 
+const base = require("../base.spec");
+
 const Plugin = require("../../plugin");
 
 describe("plugin", () => {
@@ -23,5 +25,63 @@ describe("plugin", () => {
     expect(pluginWithOptions.host).to.equal("111.0.2.3");
     // eslint-disable-next-line no-magic-numbers
     expect(pluginWithOptions.port).to.equal(3000);
+  });
+
+  // TODO: Decide where to put this setup/teardown. Maybe in a nested describe.
+  let stats;
+  let toJson;
+  let compilation;
+  let compiler;
+  beforeEach(() => {
+    stats = {};
+    toJson = base.sandbox.stub().returns(stats);
+    compilation = {
+      errors: [],
+      warnings: [],
+      getStats: () => ({ toJson }),
+      tap: base.sandbox.stub(),
+      tapAsync: base.sandbox.stub() // this is us in webpack-dashboard
+    };
+    compiler = {
+      // TODO: ONLY WEBPACK4, but that's what we have in devDeps
+      hooks: {
+        compilation,
+        emit: {
+          intercept: base.sandbox.stub()
+        },
+        watchRun: {
+          tapAsync: base.sandbox.stub()
+        },
+        run: {
+          tapAsync: base.sandbox.stub()
+        },
+        compile: {
+          tap: base.sandbox.stub()
+        },
+        failed: {
+          tap: base.sandbox.stub()
+        },
+        invalid: {
+          tap: base.sandbox.stub()
+        },
+        done: {
+          tap: base.sandbox.stub()
+        }
+      }
+    };
+  });
+
+  it("can do a basic compilation", () => {
+    const plugin = new Plugin();
+    plugin.apply(compiler);
+
+    // TODO: HERE -- Try to message to observeMetrics
+  });
+
+  it("can do a basic observeMetrics", () => {
+    const plugin = new Plugin();
+    plugin.observeMetrics({ toJson });
+
+    // TODO: HERE -- Add asserts (easy because not the formatting).
   });
 });
