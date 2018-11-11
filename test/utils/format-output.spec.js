@@ -2,7 +2,7 @@
 
 const { _isLikelyASyntaxError, _lineJoin, _formatMessage } = require("../../utils/format-output");
 
-describe("format-output.js", () => {
+describe("format-output", () => {
   describe("#_isLikelyASyntaxError", () => {
     context("when message is a syntax error", () => {
       it("returns true", () => {

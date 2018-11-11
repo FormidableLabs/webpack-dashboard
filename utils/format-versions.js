@@ -4,7 +4,7 @@ const Handlebars = require("handlebars");
 
 // From inspectpack.
 const pkgNamePath = pkgParts => pkgParts.reduce(
-  (m, part) => `${m}${m ? " -> " : ""}{cyan-fg}${part.name}{/}@${part.version}`,
+  (m, part) => `${m}${m ? " -> " : ""}{cyan-fg}${part.name}{/}@${part.range}`,
   ""
 );
 
