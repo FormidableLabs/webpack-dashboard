@@ -16,6 +16,12 @@ That's cool, but it's mostly noise and scrolly and not super helpful. This plugi
 
 `npm install webpack-dashboard --save-dev`
 
+or
+
+`yarn add webpack-dashboard --dev`
+
+_Note: when using yarn make sure to use yarn@1.11+_
+
 ### Use
 
 First, import the plugin and add it to your webpack config, or apply it to your compiler:
@@ -25,19 +31,16 @@ First, import the plugin and add it to your webpack config, or apply it to your 
 var DashboardPlugin = require('webpack-dashboard/plugin');
 
 // If you aren't using express, add it to your webpack configs plugins section:
-plugins: [
-    new DashboardPlugin()
-]
+plugins: [new DashboardPlugin()];
 
 // If you are using an express based dev server, add it with compiler.apply
 compiler.apply(new DashboardPlugin());
 ```
+
 If using a custom port, the port number must be included in the options object here, as well as passed using the -p flag in the call to webpack-dashboard. See how below:
 
 ```js
-plugins: [
-    new DashboardPlugin({ port: 3001 })
-]
+plugins: [new DashboardPlugin({ port: 3001 })];
 ```
 
 In the latest version, you can either run your app, and run `webpack-dashboard` independently (by installing with `npm install webpack-dashboard -g`) or run webpack-dashboard from your `package.json`. So if your dev server start script previously looked like:
@@ -55,6 +58,7 @@ You would change that to:
     "dev": "webpack-dashboard -- node index.js"
 }
 ```
+
 Now you can just run your start script like normal, except now, you are awesome. Not that you weren't before. I'm just saying. More so.
 
 ### Run it
@@ -64,8 +68,9 @@ Finally, start your server using whatever command you have set up. Either you ha
 Then, sit back and pretend you're an astronaut.
 
 ### Supported Operating Systems and Terminals
+
 **macOS →**
-Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like scrolling, in Terminal you will need to ensure *View → Enable Mouse Reporting* is enabled. This is supported in macOS El Capitan, Sierra, and High Sierra. In iTerm 2, to select full rows of text hold the <kbd>⌥ Opt</kbd> key. To select a block of text hold the <kbd>⌥ Opt</kbd> + <kbd>⌘ Cmd</kbd> key combination.
+Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like scrolling, in Terminal you will need to ensure _View → Enable Mouse Reporting_ is enabled. This is supported in macOS El Capitan, Sierra, and High Sierra. In iTerm 2, to select full rows of text hold the <kbd>⌥ Opt</kbd> key. To select a block of text hold the <kbd>⌥ Opt</kbd> + <kbd>⌘ Cmd</kbd> key combination.
 
 **Windows 10 →** Webpack Dashboard works in Command Prompt, PowerShell, and Linux Subsystem for Windows. Mouse events are not supported at this time, as discussed further in the documentation of the underlying terminal library we use [Blessed](https://github.com/chjj/blessed#windows-compatibility). The main log can be scrolled using the <kbd>↑</kbd>, <kbd>↓</kbd>, <kbd>Page Up</kbd>, and <kbd>Page Down</kbd> keys.
 
@@ -74,25 +79,27 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
 ### API
 
 #### webpack-dashboard (CLI)
+
 ##### Options
 
- - `-c, --color [color]` - Custom ANSI color for your dashboard
- - `-m, --minimal` - Runs the dashboard in minimal mode
- - `-t, --title [title]` - Set title of terminal window
- - `-p, --port [port]` - Custom port for socket communication server
+- `-c, --color [color]` - Custom ANSI color for your dashboard
+- `-m, --minimal` - Runs the dashboard in minimal mode
+- `-t, --title [title]` - Set title of terminal window
+- `-p, --port [port]` - Custom port for socket communication server
 
 ##### Arguments
 
 `[command]` - The command you want to run, i.e. `webpack-dashboard -- node index.js`
 
 #### Webpack plugin
+
 #### Options
 
- - `host` - Custom host for connection the socket client
- - `port` - Custom port for connecting the socket client
- - `handler` - Plugin handler method, i.e. `dashboard.setData`
+- `host` - Custom host for connection the socket client
+- `port` - Custom port for connecting the socket client
+- `handler` - Plugin handler method, i.e. `dashboard.setData`
 
-*Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`*
+_Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`_
 
 #### Credits
 
