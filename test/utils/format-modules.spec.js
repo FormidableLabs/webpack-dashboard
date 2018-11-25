@@ -2,7 +2,7 @@
 
 const { _formatFileName, _formatPercentage } = require("../../utils/format-modules");
 
-describe("format-modules.js", () => {
+describe("format-modules", () => {
   describe("#_formatFileName", () => {
     it("returns a blessed green colored file name", () => {
       const mod = {

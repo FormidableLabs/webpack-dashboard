@@ -2,7 +2,7 @@
 
 const { _getAssetSize, _getTotalSize, _printAssets } = require("../../utils/format-assets");
 
-describe("format-assets.js", () => {
+describe("format-assets", () => {
   describe("#_getAssetSize", () => {
     context("when asset size is present", () => {
       it("returns a readable file size as string", () => {

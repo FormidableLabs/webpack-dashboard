@@ -4,7 +4,7 @@
 
 const commander = require("commander");
 const spawn = require("cross-spawn");
-const Dashboard = require("../dashboard/index.js");
+const Dashboard = require("../dashboard/index");
 const SocketIO = require("socket.io");
 
 const DEFAULT_PORT = 9838;

@@ -20,4 +20,4 @@ function formatProblems(data) {
   return `${duplicates}\n${versions}`;
 }
 
-module.exports = formatProblems;
+module.exports = { formatProblems };

@@ -3,10 +3,10 @@
 const chalk = require("chalk");
 const blessed = require("blessed");
 
-const formatOutput = require("../utils/format-output.js");
-const formatModules = require("../utils/format-modules.js");
-const formatAssets = require("../utils/format-assets.js");
-const formatProblems = require("../utils/format-problems.js");
+const { formatOutput } = require("../utils/format-output");
+const { formatModules } = require("../utils/format-modules");
+const { formatAssets } = require("../utils/format-assets");
+const { formatProblems } = require("../utils/format-problems");
 const { deserializeError } = require("../utils/error-serialization");
 
 const PERCENT_MULTIPLIER = 100;
