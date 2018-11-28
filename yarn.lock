@@ -3257,6 +3257,17 @@ inquirer@^5.1.0, inquirer@^5.2.0:
     strip-ansi "^4.0.0"
     through "^2.3.6"
 
+inspectpack@FormidableLabs/inspectpack#v4.0.0:
+  version "4.0.0"
+  resolved "https://codeload.github.com/FormidableLabs/inspectpack/tar.gz/c85dd85e03f31d3ee6a20eeef42f5199ebf6e102"
+  dependencies:
+    chalk "^2.4.0"
+    io-ts "^1.0.5"
+    io-ts-reporters "^0.0.20"
+    pify "^3.0.0"
+    semver-compare "^1.0.0"
+    yargs "^11.0.0"
+
 inspectpack@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-4.0.0.tgz#ac298233d99215f77e890c1d298098abb4b2d894"
@@ -6413,6 +6424,11 @@ webpack-cli@^2.1.3:
     yargs "^11.1.0"
     yeoman-environment "^2.0.0"
     yeoman-generator "^2.0.4"
+
+"webpack-dashboard-test-fixtures@file:test/fixtures":
+  version "0.0.1"
+  dependencies:
+    inspectpack FormidableLabs/inspectpack#v4.0.0
 
 webpack-sources@^1.0.1, webpack-sources@^1.1.0:
   version "1.1.0"

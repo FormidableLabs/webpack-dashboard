@@ -1,0 +1,8 @@
+{
+  "name": "webpack-dashboard-test-fixtures",
+  "version": "0.0.1",
+  "description": "Extra dependencies for building fixture bundles",
+  "dependencies": {
+    "inspectpack": "FormidableLabs/inspectpack#v4.0.0"
+  }
+}

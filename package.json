@@ -57,6 +57,7 @@
     "sinon": "^5.0.7",
     "sinon-chai": "^3.0.0",
     "webpack": "^4.8.3",
+    "webpack-dashboard-test-fixtures": "file:test/fixtures",
     "webpack-cli": "^2.1.3"
   }
 }
