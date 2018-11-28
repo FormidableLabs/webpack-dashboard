@@ -1,6 +1,6 @@
 ## Test Fixtures
 
-Additional `devDependencies` for tests. Mainly, we bring in `inspectpack` from tagged git release to get the `test/fixtures` directory.
+Additional `devDependencies` for tests. Mainly, we bring in `inspectpack` from tagged git release to get the `test/fixtures` directory, which is **in**  git but **not** published to `npm`.
 
 After a root-level:
 
