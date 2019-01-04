@@ -94,6 +94,33 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
 
 *Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`*
 
+### Local Development
+
+We've standardized our local development process for `webpack-dashboard` on using `yarn`. We recommend using `yarn 1.10.x+`, as these versions include the `integrity` checksum. The checksum helps to verify the integrity of an installed package before its code is executed. 🚀
+
+To run this repo locally against our provided examples, take the usual steps.
+
+```sh
+yarn
+yarn dev
+```
+
+We re-use a small handful of the fixtures from [`inspectpack`](https://github.com/FormidableLabs/inspectpack) so that you can work locally on the dashboard while simulating common `node_modules` dependency issues you might face in the wild. These live in `/examples`.
+
+To change the example you're working against, simply alter the `EXAMPLE` env variable in the `dev` script in `package.json` to match the scenario you want to run in `/examples`. For example, if you want to run the `tree-shaking` example, change the `dev` script from this:
+
+```sh
+cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch
+```
+
+to this:
+
+```sh
+cross-env EXAMPLE=tree-shaking node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch
+```
+
+Then just run `yarn dev` to get up and running. PRs are very much appreciated!
+
 #### Credits
 
 Module output deeply inspired by: [https://github.com/robertknight/webpack-bundle-size-analyzer](https://github.com/robertknight/webpack-bundle-size-analyzer)
