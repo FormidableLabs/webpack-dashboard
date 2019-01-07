@@ -1,0 +1,6 @@
+{
+  "name": "simple",
+  "version": "1.2.3",
+  "description": "DUMMY APP",
+  "main": "src/index.js"
+}

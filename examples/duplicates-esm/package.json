@@ -1,0 +1,10 @@
+{
+  "name": "duplicates-esm",
+  "version": "1.2.3",
+  "description": "DUMMY APP",
+  "main": "src/index.js",
+  "dependencies": {
+    "foo": "^1.0.0",
+    "uses-foo": "^1.0.9"
+  }
+}

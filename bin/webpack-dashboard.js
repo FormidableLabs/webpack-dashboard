@@ -13,7 +13,7 @@ const program = new commander.Command("webpack-dashboard");
 const pkg = require("../package.json");
 
 // Wrap up side effects in a script.
-const main = module.exports = opts => { // eslint-disable-line max-statements
+const main = module.exports = opts => { // eslint-disable-line max-statements, complexity
   opts = opts || {};
   const argv = typeof opts.argv === "undefined" ? process.argv : opts.argv;
 
