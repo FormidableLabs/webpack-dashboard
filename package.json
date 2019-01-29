@@ -7,12 +7,14 @@
   "engines": {
     "node": ">=6.0.0"
   },
+  "types": "index.d.ts",
   "scripts": {
     "test": "mocha 'test/**/*.spec.js'",
     "test-cov": "nyc mocha 'test/**/*.spec.js'",
     "lint": "eslint .",
-    "check": "npm run lint && npm run test",
-    "check-ci": "npm run lint && npm run test-cov",
+    "check": "npm run lint && npm run test && npm run check-ts",
+    "check-ci": "npm run lint && npm run test-cov && npm run check-ts",
+    "check-ts": "tsc index.d.ts --noEmit",
     "dev": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch"
   },
   "repository": {
@@ -58,6 +60,7 @@
     "nyc": "^11.8.0",
     "sinon": "^5.0.7",
     "sinon-chai": "^3.0.0",
+    "typescript": "^3.2.4",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3",
     "webpack-stats-plugin": "^0.2.1"
