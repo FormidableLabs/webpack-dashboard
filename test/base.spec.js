@@ -10,11 +10,11 @@
  */
 const sinon = require("sinon");
 
-const blessed = require("blessed");
+const blessed = require("neo-blessed");
 
-const base = module.exports = {
+const base = (module.exports = {
   sandbox: null
-};
+});
 
 beforeEach(() => {
   base.sandbox = sinon.createSandbox({

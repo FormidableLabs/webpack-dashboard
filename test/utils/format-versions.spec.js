@@ -10,12 +10,7 @@ describe("format-versions", () => {
           "1.1.1": [
             {
               skews: {
-                parts: [
-                  { name: "foo-dep",
-                    range: "^1.0.0" },
-                  { name: "bar",
-                    range: "^3.0.2" }
-                ]
+                parts: [{ name: "foo-dep", range: "^1.0.0" }, { name: "bar", range: "^3.0.2" }]
               }
             }
           ]
@@ -24,9 +19,9 @@ describe("format-versions", () => {
     };
 
     it("should return a handlebar compile template", () => {
-      const result
+      const result =
         // eslint-disable-next-line max-len
-        = "{yellow-fg}{underline}Version skews{/}\n\n{yellow-fg}{bold}foo{/}\n  {green-fg}1.1.1{/}\n    {cyan-fg}foo-dep{/}@^1.0.0 -> {cyan-fg}bar{/}@^3.0.2\n";
+        "{yellow-fg}{underline}Version skews{/}\n\n{yellow-fg}{bold}foo{/}\n  {green-fg}1.1.1{/}\n    {cyan-fg}foo-dep{/}@^1.0.0 -> {cyan-fg}bar{/}@^3.0.2\n";
       expect(formatVersions(data)).to.equal(result);
     });
   });

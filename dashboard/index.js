@@ -1,7 +1,7 @@
 "use strict";
 
 const chalk = require("chalk");
-const blessed = require("blessed");
+const blessed = require("neo-blessed");
 
 const { formatOutput } = require("../utils/format-output");
 const { formatModules } = require("../utils/format-modules");
@@ -94,13 +94,12 @@ class Dashboard {
 
   setData(dataArray) {
     dataArray
-      .map(
-        data =>
-          data.error
-            ? Object.assign({}, data, {
+      .map(data =>
+        data.error
+          ? Object.assign({}, data, {
               value: deserializeError(data.value)
             })
-            : data
+          : data
       )
       .forEach(data => {
         this.actionForMessageType[data.type](data);
@@ -133,14 +132,14 @@ class Dashboard {
     let content;
 
     switch (data.value) {
-    case "Success":
-      content = `{green-fg}{bold}${data.value}{/}`;
-      break;
-    case "Failed":
-      content = `{red-fg}{bold}${data.value}{/}`;
-      break;
-    default:
-      content = `{bold}${data.value}{/}`;
+      case "Success":
+        content = `{green-fg}{bold}${data.value}{/}`;
+        break;
+      case "Failed":
+        content = `{red-fg}{bold}${data.value}{/}`;
+        break;
+      default:
+        content = `{bold}${data.value}{/}`;
     }
     this.status.setContent(content);
   }
@@ -497,8 +496,8 @@ class Dashboard {
       tags: true,
       padding: this.minimal
         ? {
-          left: 1
-        }
+            left: 1
+          }
         : 1,
       width: this.minimal ? "33%" : "100%",
       height: this.minimal ? "100%" : "34%",

@@ -58,7 +58,4 @@ function formatOutput(stats) {
   return _lineJoin(output);
 }
 
-module.exports = { formatOutput,
-  _formatMessage,
-  _isLikelyASyntaxError,
-  _lineJoin };
+module.exports = { formatOutput, _formatMessage, _isLikelyASyntaxError, _lineJoin };

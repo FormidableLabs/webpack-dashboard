@@ -13,7 +13,8 @@ const program = new commander.Command("webpack-dashboard");
 const pkg = require("../package.json");
 
 // Wrap up side effects in a script.
-const main = module.exports = opts => { // eslint-disable-line max-statements, complexity
+// eslint-disable-next-line max-statements, complexity
+const main = (module.exports = opts => {
   opts = opts || {};
   const argv = typeof opts.argv === "undefined" ? process.argv : opts.argv;
 
@@ -72,17 +73,21 @@ const main = module.exports = opts => { // eslint-disable-line max-statements, c
     });
 
     child.stdout.on("data", data => {
-      dashboard.setData([{
-        type: "log",
-        value: data.toString("utf8")
-      }]);
+      dashboard.setData([
+        {
+          type: "log",
+          value: data.toString("utf8")
+        }
+      ]);
     });
 
     child.stderr.on("data", data => {
-      dashboard.setData([{
-        type: "log",
-        value: data.toString("utf8")
-      }]);
+      dashboard.setData([
+        {
+          type: "log",
+          value: data.toString("utf8")
+        }
+      ]);
     });
 
     process.on("exit", () => {
@@ -95,7 +100,7 @@ const main = module.exports = opts => { // eslint-disable-line max-statements, c
       });
     });
   }
-};
+});
 
 if (require.main === module) {
   main();

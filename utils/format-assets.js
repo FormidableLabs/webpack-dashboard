@@ -29,7 +29,4 @@ function formatAssets(assets) {
   return _printAssets(assetsList);
 }
 
-module.exports = { formatAssets,
-  _getAssetSize,
-  _getTotalSize,
-  _printAssets };
+module.exports = { formatAssets, _getAssetSize, _getTotalSize, _printAssets };

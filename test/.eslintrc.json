@@ -1,0 +1,3 @@
+{
+  "extends": ["formidable/configurations/es6-node-test", "plugin:prettier/recommended"]
+}

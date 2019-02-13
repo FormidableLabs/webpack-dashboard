@@ -1,4 +1,3 @@
-
 /* eslint-disable no-console*/
 
 const hello = () => "hello world";
