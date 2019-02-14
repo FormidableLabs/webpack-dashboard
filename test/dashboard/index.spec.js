@@ -1,7 +1,7 @@
 "use strict";
 
 const chalk = require("chalk");
-const blessed = require("blessed");
+const blessed = require("neo-blessed");
 
 const base = require("../base.spec");
 const Dashboard = require("../../dashboard");
@@ -50,13 +50,16 @@ describe("dashboard", () => {
     });
 
     describe("setData", () => {
-      const dataArray = [{
-        type: "progress",
-        value: 0.57
-      }, {
-        type: "operations",
-        value: "IDLE"
-      }];
+      const dataArray = [
+        {
+          type: "progress",
+          value: 0.57
+        },
+        {
+          type: "operations",
+          value: "IDLE"
+        }
+      ];
 
       it("can setData", () => {
         expect(() => dashboard.setData(dataArray)).to.not.throw;
@@ -85,8 +88,9 @@ describe("dashboard", () => {
         expect(() => dashboard.setStatus(data)).to.not.throw;
 
         dashboard.setStatus(data);
-        expect(dashboard.status.setContent)
-          .to.have.been.calledWith(`{green-fg}{bold}${data.value}{/}`);
+        expect(dashboard.status.setContent).to.have.been.calledWith(
+          `{green-fg}{bold}${data.value}{/}`
+        );
       });
 
       it("should display a failed status on build failure", () => {
@@ -94,8 +98,9 @@ describe("dashboard", () => {
         expect(() => dashboard.setStatus(data)).to.not.throw;
 
         dashboard.setStatus(data);
-        expect(dashboard.status.setContent)
-          .to.have.been.calledWith(`{red-fg}{bold}${data.value}{/}`);
+        expect(dashboard.status.setContent).to.have.been.calledWith(
+          `{red-fg}{bold}${data.value}{/}`
+        );
       });
 
       it("should display any other status string without coloring", () => {
@@ -103,8 +108,7 @@ describe("dashboard", () => {
         expect(() => dashboard.setStatus(data)).to.not.throw;
 
         dashboard.setStatus(data);
-        expect(dashboard.status.setContent)
-          .to.have.been.calledWith(`{bold}${data.value}{/}`);
+        expect(dashboard.status.setContent).to.have.been.calledWith(`{bold}${data.value}{/}`);
       });
     });
 
@@ -147,12 +151,15 @@ describe("dashboard", () => {
 
         dashboard.setStats(data);
         expect(dashboard.logText.log).to.have.been.called;
-        expect(dashboard.modulesMenu.setLabel)
-          .to.have.been.calledWith(chalk.yellow("Modules (loading...)"));
-        expect(dashboard.assets.setLabel)
-          .to.have.been.calledWith(chalk.yellow("Assets (loading...)"));
-        expect(dashboard.problemsMenu.setLabel)
-          .to.have.been.calledWith(chalk.yellow("Problems (loading...)"));
+        expect(dashboard.modulesMenu.setLabel).to.have.been.calledWith(
+          chalk.yellow("Modules (loading...)")
+        );
+        expect(dashboard.assets.setLabel).to.have.been.calledWith(
+          chalk.yellow("Assets (loading...)")
+        );
+        expect(dashboard.problemsMenu.setLabel).to.have.been.calledWith(
+          chalk.yellow("Problems (loading...)")
+        );
       });
 
       it("should display stats errors if present", () => {
@@ -160,8 +167,7 @@ describe("dashboard", () => {
         expect(() => dashboard.setStats(data)).not.to.throw;
 
         dashboard.setStats(data);
-        expect(dashboard.status.setContent)
-          .to.have.been.calledWith("{red-fg}{bold}Failed{/}");
+        expect(dashboard.status.setContent).to.have.been.calledWith("{red-fg}{bold}Failed{/}");
       });
     });
 
@@ -173,13 +179,15 @@ describe("dashboard", () => {
               meta: {
                 full: 456
               },
-              files: [{
-                size: {
-                  full: 123
-                },
-                fileName: "test.js",
-                baseName: "/home/bar/test.js"
-              }]
+              files: [
+                {
+                  size: {
+                    full: 123
+                  },
+                  fileName: "test.js",
+                  baseName: "/home/bar/test.js"
+                }
+              ]
             },
             bar: {
               meta: {
@@ -206,8 +214,9 @@ describe("dashboard", () => {
         expect(dashboard.assetTable.setData).to.have.been.calledWith(formattedData);
         expect(dashboard.modulesMenu.setLabel).to.have.been.calledWith("Modules");
         expect(dashboard.modulesMenu.setItems).to.have.been.called;
-        expect(dashboard.modulesMenu.selectTab)
-          .to.have.been.calledWith(dashboard.modulesMenu.selected);
+        expect(dashboard.modulesMenu.selectTab).to.have.been.calledWith(
+          dashboard.modulesMenu.selected
+        );
         expect(dashboard.screen.render).to.have.been.called;
       });
 
@@ -227,11 +236,13 @@ describe("dashboard", () => {
         expect(() => dashboard.setSizesError(err)).to.not.throw;
 
         dashboard.setSizesError(err);
-        expect(dashboard.modulesMenu.setLabel)
-          .to.have.been.calledWith(chalk.red("Modules (error)"));
+        expect(dashboard.modulesMenu.setLabel).to.have.been.calledWith(
+          chalk.red("Modules (error)")
+        );
         expect(dashboard.assets.setLabel).to.have.been.calledWith(chalk.red("Assets (error)"));
-        expect(dashboard.logText.log)
-          .to.have.been.calledWith(chalk.red("Could not load module/asset sizes."));
+        expect(dashboard.logText.log).to.have.been.calledWith(
+          chalk.red("Could not load module/asset sizes.")
+        );
         expect(dashboard.logText.log).to.have.been.calledWith(chalk.red(err));
       });
     });
@@ -260,8 +271,9 @@ describe("dashboard", () => {
         dashboard.setProblems(data);
         expect(dashboard.problemsMenu.setLabel).to.have.been.calledWith("Problems");
         expect(dashboard.problemsMenu.setItems).to.have.been.called;
-        expect(dashboard.problemsMenu.selectTab)
-          .to.have.been.calledWith(dashboard.problemsMenu.selected);
+        expect(dashboard.problemsMenu.selectTab).to.have.been.calledWith(
+          dashboard.problemsMenu.selected
+        );
         expect(dashboard.screen.render).to.have.been.called;
       });
 
@@ -282,10 +294,12 @@ describe("dashboard", () => {
         expect(() => dashboard.setProblemsError(err)).to.not.throw;
 
         dashboard.setProblemsError(err);
-        expect(dashboard.problemsMenu.setLabel)
-          .to.have.been.calledWith(chalk.red("Problems (error)"));
-        expect(dashboard.logText.log)
-          .to.have.been.calledWith(chalk.red("Could not analyze bundle problems."));
+        expect(dashboard.problemsMenu.setLabel).to.have.been.calledWith(
+          chalk.red("Problems (error)")
+        );
+        expect(dashboard.logText.log).to.have.been.calledWith(
+          chalk.red("Could not analyze bundle problems.")
+        );
         expect(dashboard.logText.log).to.have.been.calledWith(chalk.red(err.stack));
       });
     });

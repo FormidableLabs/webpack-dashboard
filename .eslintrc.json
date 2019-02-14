@@ -1,5 +1,5 @@
 {
-  "extends": "formidable/configurations/es6-node",
+  "extends": ["formidable/configurations/es6-node", "plugin:prettier/recommended"],
   "rules": {
     "func-style": "off",
     "arrow-parens": ["error", "as-needed"]

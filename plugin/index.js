@@ -159,10 +159,8 @@ class DashboardPlugin {
 
     webpackHook(compiler, "done", stats => {
       const options = stats.compilation.options;
-      const statsOptions
-        = options.devServer && options.devServer.stats
-        || options.stats
-        || { colors: true };
+      const statsOptions = (options.devServer && options.devServer.stats) ||
+        options.stats || { colors: true };
 
       handler([
         {
@@ -207,33 +205,40 @@ class DashboardPlugin {
   observeMetrics(statsObj) {
     const statsToObserve = statsObj.toJson();
 
-    const getSizes = stats => actions("sizes", { stats })
-      .then(instance => instance.getData())
-      .then(data => ({
-        type: "sizes",
-        value: data
-      }))
-      .catch(err => ({
-        type: "sizes",
-        error: true,
-        value: serializeError(err)
-      }));
-
-    const getProblems = stats => Promise
-      .all(INSPECTPACK_PROBLEM_ACTIONS.map(action => actions(action, { stats })
+    const getSizes = stats =>
+      actions("sizes", { stats })
         .then(instance => instance.getData())
-      ))
-      .then(datas => ({
-        type: INSPECTPACK_PROBLEM_TYPE,
-        value: INSPECTPACK_PROBLEM_ACTIONS.reduce((memo, action, i) => Object.assign({}, memo, {
-          [action]: datas[i]
-        }), {})
-      }))
-      .catch(err => ({
-        type: INSPECTPACK_PROBLEM_TYPE,
-        error: true,
-        value: serializeError(err)
-      }));
+        .then(data => ({
+          type: "sizes",
+          value: data
+        }))
+        .catch(err => ({
+          type: "sizes",
+          error: true,
+          value: serializeError(err)
+        }));
+
+    const getProblems = stats =>
+      Promise.all(
+        INSPECTPACK_PROBLEM_ACTIONS.map(action =>
+          actions(action, { stats }).then(instance => instance.getData())
+        )
+      )
+        .then(datas => ({
+          type: INSPECTPACK_PROBLEM_TYPE,
+          value: INSPECTPACK_PROBLEM_ACTIONS.reduce(
+            (memo, action, i) =>
+              Object.assign({}, memo, {
+                [action]: datas[i]
+              }),
+            {}
+          )
+        }))
+        .catch(err => ({
+          type: INSPECTPACK_PROBLEM_TYPE,
+          error: true,
+          value: serializeError(err)
+        }));
 
     const sizesStream = most.of(statsToObserve).map(getSizes);
     const problemsStream = most.of(statsToObserve).map(getProblems);

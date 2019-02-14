@@ -31,11 +31,11 @@ function _formatFileName(mod) {
   const isScoped = (parts[lastNmIdx + 1] || "").startsWith("@");
   parts = parts.slice(0, lastNmIdx + (isScoped ? 3 : 2)); // eslint-disable-line no-magic-numbers
 
-  return parts.map(part => part === "node_modules" ? "~" : `{yellow-fg}${part}{/}`).join(sep);
+  return parts.map(part => (part === "node_modules" ? "~" : `{yellow-fg}${part}{/}`)).join(sep);
 }
 
 function _formatPercentage(modSize, assetSize) {
-  const percentage = (modSize / assetSize * PERCENT_MULTIPLIER).toPrecision(PERCENT_PRECISION);
+  const percentage = ((modSize / assetSize) * PERCENT_MULTIPLIER).toPrecision(PERCENT_PRECISION);
 
   return `${percentage}%`;
 }

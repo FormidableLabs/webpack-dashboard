@@ -6,7 +6,7 @@
 const filesize = require("filesize");
 const Handlebars = require("handlebars");
 
-Handlebars.registerHelper("filesize", function (options) {
+Handlebars.registerHelper("filesize", function(options) {
   // eslint-disable-next-line no-invalid-this
   return filesize(options.fn(this));
 });
@@ -23,7 +23,8 @@ const template = Handlebars.compile(
 Extra duplicate files (unique): {{meta.extraFiles.num}}
 Extra duplicate sources (non-unique): {{meta.extraSources.num}}
 Wasted duplicate bytes (non-unique): {{#filesize}}{{meta.extraSources.bytes}}{{/filesize}}
-`);
+`
+);
 /* eslint-enable max-len*/
 
 function formatDuplicates(duplicates) {

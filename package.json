@@ -12,10 +12,12 @@
     "test": "mocha 'test/**/*.spec.js'",
     "test-cov": "nyc mocha 'test/**/*.spec.js'",
     "lint": "eslint .",
-    "check": "npm run lint && npm run test && npm run check-ts",
-    "check-ci": "npm run lint && npm run test-cov && npm run check-ts",
+    "check": "npm run format-check && npm run lint && npm run test && npm run check-ts",
+    "check-ci": "npm run format-check && npm run lint && npm run test-cov && npm run check-ts",
     "check-ts": "tsc index.d.ts --noEmit",
-    "dev": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch"
+    "dev": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch",
+    "format": "prettier --write './{bin,examples,plugin,test,utils}/**/*.js'",
+    "format-check": "prettier --list-different './{bin,examples,plugin,test,utils}/**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -37,13 +39,13 @@
     "webpack": "*"
   },
   "dependencies": {
-    "blessed": "^0.1.81",
     "commander": "^2.15.1",
     "cross-spawn": "^6.0.5",
     "filesize": "^3.6.1",
     "handlebars": "^4.0.11",
     "inspectpack": "^4.0.0",
     "most": "^1.7.3",
+    "neo-blessed": "^0.2.0",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1"
   },
@@ -53,11 +55,14 @@
     "cross-env": "^5.2.0",
     "eslint": "^4.19.1",
     "eslint-config-formidable": "^4.0.0",
+    "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-filenames": "^1.1.0",
     "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "mocha": "^5.2.0",
     "nyc": "^11.8.0",
+    "prettier": "^1.16.4",
     "sinon": "^5.0.7",
     "sinon-chai": "^3.0.0",
     "typescript": "^3.2.4",
