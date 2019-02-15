@@ -1,5 +1,7 @@
 # webpack-dashboard
 
+![](https://img.shields.io/npm/v/webpack-dashboard.svg?style=flat)
+
 A CLI dashboard for your webpack dev server
 
 ### What's this all about?
@@ -18,7 +20,7 @@ That's cool, but it's mostly noise and scrolly and not super helpful. This plugi
 
 ### Use
 
-**`webpack-dashboard@^2.1.1` requires Node 8 or above.** Previous versions support down to Node 6.
+**`webpack-dashboard@^3.0.0` requires Node 8 or above.** Previous versions support down to Node 6.
 
 First, import the plugin and add it to your webpack config, or apply it to your compiler:
 
