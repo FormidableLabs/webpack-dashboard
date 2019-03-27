@@ -85,8 +85,7 @@ class Dashboard {
     }
 
     this.screen.key(["escape", "q", "C-c"], () => {
-      // eslint-disable-next-line no-process-exit
-      process.exit(0);
+      process.kill(process.pid, "SIGINT");
     });
 
     this.screen.render();

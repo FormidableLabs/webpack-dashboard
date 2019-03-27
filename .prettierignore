@@ -1,0 +1,2 @@
+examples/**/dist-*/*.js
+examples/**/dist-*/*.json
