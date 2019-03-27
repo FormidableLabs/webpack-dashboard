@@ -12,7 +12,7 @@ Every release, along with the migration instructions, is documented on the Githu
 
 ### Migration Instructions
 
-No changes required to start using v3.0.0 🎉. We do recommend adopting this patch as soon as possible to get the security upgrades.
+No changes required to start using v3.0.1 🎉. We do recommend adopting this patch as soon as possible to get the security upgrades.
 
 ## [3.0.0] - 2019-02-14
 
