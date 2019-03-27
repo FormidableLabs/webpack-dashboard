@@ -3,6 +3,32 @@
 This project adheres to [Semantic Versioning](http://semver.org/).  
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## [3.0.1] - 2019-03-26
+
+### Features
+
+- Use `process.kill` with `SIGINT` to gracefully exit the dashboard process. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/277 by @joakimbeng.
+- Update dependencies to address security warnings. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/275 by @stereobooster.
+
+### Migration Instructions
+
+No changes required to start using v3.0.0 🎉. We do recommend adopting this patch as soon as possible to get the security upgrades.
+
+## [3.0.0] - 2019-02-14
+
+### Features
+
+- Migrated from using `blessed` to [`neo-blessed`](https://github.com/embark-framework/neo-blessed) as the underlying terminal renderer. `neo-blessed` is a maintained fork of `blessed` and brings in some nice fixes for us. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/270
+- Added Prettier to the codebase 🎉 Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/270
+
+### Docs
+
+- Added a warning about deprecation of Node 6 support. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/270
+
+### Migration Instructions
+
+With this release we are dropping support for Node 6 altogether. `neo-blessed` requires Node [>= 8.0.0](https://github.com/embark-framework/neo-blessed/blob/master/package.json#L38), meaning all users of the dashboard will need to run it using Node 8 or above. Previous versions of `webpack-dashboard` are still compatible with Node 6.
+
 ## [2.1.0] - 2019-01-29
 
 ### Features
@@ -23,18 +49,3 @@ Every release, along with the migration instructions, is documented on the Githu
 ### Migration Instructions
 
 No changes required to start using v2.1.0 🎉
-
-## [3.0.0] - 2019-02-14
-
-### Features
-
-- Migrated from using `blessed` to [`neo-blessed`](https://github.com/embark-framework/neo-blessed) as the underlying terminal renderer. `neo-blessed` is a maintained fork of `blessed` and brings in some nice fixes for us. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/270
-- Added Prettier to the codebase 🎉 Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/270
-
-### Docs
-
-- Added a warning about deprecation of Node 6 support. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/270
-
-### Migration Instructions
-
-With this release we are dropping support for Node 6 altogether. `neo-blessed` requires Node [>= 8.0.0](https://github.com/embark-framework/neo-blessed/blob/master/package.json#L38), meaning all users of the dashboard will need to run it using Node 8 or above. Previous versions of `webpack-dashboard` are still compatible with Node 6.
