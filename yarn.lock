@@ -2324,10 +2324,10 @@ inquirer@^3.0.6:
     strip-ansi "^4.0.0"
     through "^2.3.6"
 
-inspectpack@^4.0.0:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-4.1.2.tgz#b07dd10f1131c290d2076270470787d61b47097e"
-  integrity sha512-bd0iIr5P2xRMtjQQkPnUYJSNa3mUFYER/2eQOPAoXrWBnZXMeFVAgRt/Dny8XVdSkkFoNKhumPjjV9QgTDcVxQ==
+inspectpack@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/inspectpack/-/inspectpack-4.2.0.tgz#13ff46a4d8258f7b6e79f4db5ed9935d37470a13"
+  integrity sha512-K8GY9cBak4DZg6lJYk22xD1b9i975q5KVqtIv/MNXq8OhuZL3OcXyZcZX/oq7xxFpkR8KW/9KyogE6+zcl48KQ==
   dependencies:
     chalk "^2.4.0"
     io-ts "^1.0.5"
