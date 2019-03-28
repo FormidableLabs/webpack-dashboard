@@ -43,7 +43,7 @@
     "cross-spawn": "^6.0.5",
     "filesize": "^3.6.1",
     "handlebars": "^4.1.0",
-    "inspectpack": "^4.2.0",
+    "inspectpack": "^4.2.1",
     "most": "^1.7.3",
     "neo-blessed": "^0.2.0",
     "socket.io": "^2.1.1",
