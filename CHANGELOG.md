@@ -3,6 +3,16 @@
 This project adheres to [Semantic Versioning](http://semver.org/).  
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## [3.0.2] - 2019-03-28
+
+### Features
+
+- Upgrade `inspectpack` dependency to handle `null` chunks. Original issue: https://github.com/FormidableLabs/inspectpack/issues/110 and upstream fix: https://github.com/FormidableLabs/inspectpack/pull/111
+
+### Migration Instructions
+
+No changes required to start using v3.0.2 🎉.
+
 ## [3.0.1] - 2019-03-26
 
 ### Features
