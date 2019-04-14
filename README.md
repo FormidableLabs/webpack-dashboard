@@ -4,6 +4,10 @@
 
 A CLI dashboard for your webpack dev server
 
+#### Maintenance Status: Active
+
+Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome. 
+
 ### What's this all about?
 
 When using webpack, especially for a dev server, you are probably used to seeing something like this:
