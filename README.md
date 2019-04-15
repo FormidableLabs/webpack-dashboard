@@ -1,6 +1,8 @@
 # webpack-dashboard
 
 ![](https://img.shields.io/npm/v/webpack-dashboard.svg?style=flat)
+[![Maintenance Status][maintenance-image]](#maintenance-status)
+
 
 A CLI dashboard for your webpack dev server
 
@@ -131,3 +133,11 @@ Then just run `yarn dev` to get up and running. PRs are very much appreciated!
 Module output deeply inspired by: [https://github.com/robertknight/webpack-bundle-size-analyzer](https://github.com/robertknight/webpack-bundle-size-analyzer)
 
 Error output deeply inspired by: [https://github.com/facebookincubator/create-react-app](https://github.com/facebookincubator/create-react-app)
+
+#### Maintenance Status
+
+**Active:** Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome. 
+
+[maintenance-image]: https://img.shields.io/badge/maintenance-active-green.svg
+
+
