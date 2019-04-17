@@ -91,7 +91,7 @@ class DashboardPlugin {
       });
       this.socket.on("disconnect", () => {
         // eslint-disable-next-line no-console
-        console.log("Socket.io disconnected. Possibly build data too large?");
+        console.log("Socket.io disconnected.");
       });
     }
 
