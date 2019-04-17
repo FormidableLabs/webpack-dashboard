@@ -72,6 +72,7 @@ class DashboardPlugin {
 
   apply(compiler) {
     let handler = this.handler;
+    let reachedSuccess = false;
     let timer;
 
     if (!handler) {
@@ -90,8 +91,10 @@ class DashboardPlugin {
         console.log(err);
       });
       this.socket.on("disconnect", () => {
-        // eslint-disable-next-line no-console
-        console.log("Socket.io disconnected.");
+        if (!reachedSuccess) {
+          // eslint-disable-next-line no-console
+          console.log("Socket.io disconnected before completing build lifecycle.");
+        }
       });
     }
 
@@ -180,32 +183,37 @@ class DashboardPlugin {
         warnings: true
       };
 
-      handler([
-        {
-          type: "status",
-          value: "Success"
-        },
-        {
-          type: "progress",
-          value: 1
-        },
-        {
-          type: "operations",
-          value: `idle${getTimeMessage(timer)}`
-        },
-        {
-          type: "stats",
-          value: {
-            errors: stats.hasErrors(),
-            warnings: stats.hasWarnings(),
-            data: stats.toJson(statsJsonOptions)
+      handler(
+        [
+          {
+            type: "status",
+            value: "Success"
+          },
+          {
+            type: "progress",
+            value: 1
+          },
+          {
+            type: "operations",
+            value: `idle${getTimeMessage(timer)}`
+          },
+          {
+            type: "stats",
+            value: {
+              errors: stats.hasErrors(),
+              warnings: stats.hasWarnings(),
+              data: stats.toJson(statsJsonOptions)
+            }
+          },
+          {
+            type: "log",
+            value: stats.toString(statsOptions)
           }
-        },
-        {
-          type: "log",
-          value: stats.toString(statsOptions)
+        ],
+        () => {
+          reachedSuccess = true;
         }
-      ]);
+      );
 
       if (!this.minimal) {
         this.observeMetrics(stats).subscribe({

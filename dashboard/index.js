@@ -91,7 +91,7 @@ class Dashboard {
     this.screen.render();
   }
 
-  setData(dataArray) {
+  setData(dataArray, ack) {
     dataArray
       .map(data =>
         data.error
@@ -105,6 +105,11 @@ class Dashboard {
       });
 
     this.screen.render();
+
+    // Send ack back if requested.
+    if (ack) {
+      ack();
+    }
   }
 
   setProgress(data) {

@@ -65,9 +65,9 @@ const main = (module.exports = opts => {
     server.on("connection", socket => {
       socket.emit("mode", { minimal: program.minimal || false });
 
-      socket.on("message", message => {
+      socket.on("message", (message, ack) => {
         if (message.type !== "log") {
-          dashboard.setData(message);
+          dashboard.setData(message, ack);
         }
       });
     });
@@ -95,8 +95,8 @@ const main = (module.exports = opts => {
     });
   } else {
     server.on("connection", socket => {
-      socket.on("message", message => {
-        dashboard.setData(message);
+      socket.on("message", (message, ack) => {
+        dashboard.setData(message, ack);
       });
     });
   }
