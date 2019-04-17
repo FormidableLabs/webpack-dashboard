@@ -71,24 +71,31 @@ class DashboardPlugin {
   }
 
   apply(compiler) {
-    let handler = this.handler;
     let timer;
 
-    if (!handler) {
-      handler = noop;
+    if (!this.handler) {
+      this.handler = noop;
       const port = this.port;
       const host = this.host;
       this.socket = new SocketIOClient(`http://${host}:${port}`);
       this.socket.on("connect", () => {
-        handler = this.socket.emit.bind(this.socket, "message");
+        this.handler = this.socket.emit.bind(this.socket, "message");
       });
       this.socket.once("mode", args => {
         this.minimal = args.minimal;
       });
+      this.socket.on("error", err => {
+        // eslint-disable-next-line no-console
+        console.log(err);
+      });
+      this.socket.on("disconnect", () => {
+        // eslint-disable-next-line no-console
+        console.log("Socket.io disconnected. Possibly build data too large?");
+      });
     }
 
     new webpack.ProgressPlugin((percent, msg) => {
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Compiling"
@@ -116,7 +123,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "compile", () => {
       timer = Date.now();
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Compiling"
@@ -125,7 +132,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "invalid", () => {
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Invalidated"
@@ -145,7 +152,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "failed", () => {
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Failed"
@@ -167,14 +174,14 @@ class DashboardPlugin {
       const statsObj = stats.toJson();
       try {
         if (process.env.TMP_BIG_STATS === "true") {
-          const firstSourceMod = statsObj.modules.filter((mod) => !!mod.source)[0];
+          const firstSourceMod = statsObj.modules.filter(mod => !!mod.source)[0];
 
           // Get starting size of stats object and our extra stuff to augment.
           const startingSize = JSON.stringify(statsObj).length + 7;
 
           // Find the first source module and patch it with a _huge_ string.
           // This value will likely fail on most machines.
-          const largeStringSize  = 115915534; // From issue 279. Definitely hits it.
+          const largeStringSize = 115915534; // From issue 279. Definitely hits it.
 
           // Experimentally observed on one machine.
           const experimentalSizeSucceeds = 99998786;
@@ -182,15 +189,13 @@ class DashboardPlugin {
 
           // Choose a size.
           const pad = largeStringSize;
-          firstSourceMod.source += "\n// " + "".padEnd(pad - startingSize, "*") + "\n";
-
-          console.log("TODO OVERALL SIZE", JSON.stringify(statsObj).length)
+          firstSourceMod.source += `\n// ${"".padEnd(pad - startingSize, "*")}\n`;
         }
       } catch (err) {
         console.error(err);
       }
 
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Success"
@@ -217,11 +222,9 @@ class DashboardPlugin {
         }
       ]);
 
-      // TODO: Error handler() call?
-
       if (!this.minimal) {
         this.observeMetrics(stats).subscribe({
-          next: message => handler([message]),
+          next: message => this.handler([message]),
           error: err => {
             console.log("Error from inspectpack:", err); // eslint-disable-line no-console
             this.cleanup();
