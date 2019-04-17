@@ -1,7 +1,13 @@
 # Change Log
 
-This project adheres to [Semantic Versioning](http://semver.org/).  
+This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
+
+## UNRELEASED
+
+### Bugs
+
+- **Socket.io disconnects / large stats object size**: Dramatically reduce the size of the webpack stats object being sent from client (webpack plugin) to server (CLI). Add client error/disconnect information for better future debugging. Original issue: https://github.com/FormidableLabs/inspectpack/issues/279 and fix: https://github.com/FormidableLabs/inspectpack/pull/281
 
 ## [3.0.2] - 2019-03-28
 

@@ -72,6 +72,7 @@ class DashboardPlugin {
 
   apply(compiler) {
     let handler = this.handler;
+    let reachedSuccess = false;
     let timer;
 
     if (!handler) {
@@ -84,6 +85,16 @@ class DashboardPlugin {
       });
       this.socket.once("mode", args => {
         this.minimal = args.minimal;
+      });
+      this.socket.on("error", err => {
+        // eslint-disable-next-line no-console
+        console.log(err);
+      });
+      this.socket.on("disconnect", () => {
+        if (!reachedSuccess) {
+          // eslint-disable-next-line no-console
+          console.log("Socket.io disconnected before completing build lifecycle.");
+        }
       });
     }
 
@@ -162,32 +173,47 @@ class DashboardPlugin {
       const statsOptions = (options.devServer && options.devServer.stats) ||
         options.stats || { colors: true };
 
-      handler([
-        {
-          type: "status",
-          value: "Success"
-        },
-        {
-          type: "progress",
-          value: 1
-        },
-        {
-          type: "operations",
-          value: `idle${getTimeMessage(timer)}`
-        },
-        {
-          type: "stats",
-          value: {
-            errors: stats.hasErrors(),
-            warnings: stats.hasWarnings(),
-            data: stats.toJson()
+      // We only need errors/warnings for stats information for finishing up.
+      // This allows us to avoid sending a full stats object to the CLI which
+      // can cause socket.io client disconnects for large objects.
+      // See: https://github.com/FormidableLabs/webpack-dashboard/issues/279
+      const statsJsonOptions = {
+        all: false,
+        errors: true,
+        warnings: true
+      };
+
+      handler(
+        [
+          {
+            type: "status",
+            value: "Success"
+          },
+          {
+            type: "progress",
+            value: 1
+          },
+          {
+            type: "operations",
+            value: `idle${getTimeMessage(timer)}`
+          },
+          {
+            type: "stats",
+            value: {
+              errors: stats.hasErrors(),
+              warnings: stats.hasWarnings(),
+              data: stats.toJson(statsJsonOptions)
+            }
+          },
+          {
+            type: "log",
+            value: stats.toString(statsOptions)
           }
-        },
-        {
-          type: "log",
-          value: stats.toString(statsOptions)
+        ],
+        () => {
+          reachedSuccess = true;
         }
-      ]);
+      );
 
       if (!this.minimal) {
         this.observeMetrics(stats).subscribe({
@@ -203,6 +229,7 @@ class DashboardPlugin {
   }
 
   observeMetrics(statsObj) {
+    // Get the **full** stats object here for `inspectpack` analysis.
     const statsToObserve = statsObj.toJson();
 
     const getSizes = stats =>
