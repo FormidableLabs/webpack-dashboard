@@ -71,15 +71,16 @@ class DashboardPlugin {
   }
 
   apply(compiler) {
+    let handler = this.handler;
     let timer;
 
-    if (!this.handler) {
-      this.handler = noop;
+    if (!handler) {
+      handler = noop;
       const port = this.port;
       const host = this.host;
       this.socket = new SocketIOClient(`http://${host}:${port}`);
       this.socket.on("connect", () => {
-        this.handler = this.socket.emit.bind(this.socket, "message");
+        handler = this.socket.emit.bind(this.socket, "message");
       });
       this.socket.once("mode", args => {
         this.minimal = args.minimal;
@@ -95,7 +96,7 @@ class DashboardPlugin {
     }
 
     new webpack.ProgressPlugin((percent, msg) => {
-      this.handler([
+      handler([
         {
           type: "status",
           value: "Compiling"
@@ -123,7 +124,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "compile", () => {
       timer = Date.now();
-      this.handler([
+      handler([
         {
           type: "status",
           value: "Compiling"
@@ -132,7 +133,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "invalid", () => {
-      this.handler([
+      handler([
         {
           type: "status",
           value: "Invalidated"
@@ -152,7 +153,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "failed", () => {
-      this.handler([
+      handler([
         {
           type: "status",
           value: "Failed"
@@ -195,7 +196,7 @@ class DashboardPlugin {
         console.error(err);
       }
 
-      this.handler([
+      handler([
         {
           type: "status",
           value: "Success"
@@ -224,7 +225,7 @@ class DashboardPlugin {
 
       if (!this.minimal) {
         this.observeMetrics(stats).subscribe({
-          next: message => this.handler([message]),
+          next: message => handler([message]),
           error: err => {
             console.log("Error from inspectpack:", err); // eslint-disable-line no-console
             this.cleanup();
