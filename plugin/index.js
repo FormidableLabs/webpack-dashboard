@@ -171,39 +171,14 @@ class DashboardPlugin {
         options.stats || { colors: true };
 
       // We only need errors/warnings for stats information for finishing up.
+      // This allows us to avoid sending a full stats object to the CLI which
+      // can cause socket.io client disconnects for large objects.
+      // See: https://github.com/FormidableLabs/webpack-dashboard/issues/279
       const statsJsonOptions = {
         all: false,
         errors: true,
-        warnings: true,
+        warnings: true
       };
-
-      // TODO(socketio-bug): Remove all temp code here.
-      // https://github.com/FormidableLabs/webpack-dashboard/issues/279
-      const statsObj = stats.toJson(statsJsonOptions);
-      try {
-        if (process.env.TMP_BIG_STATS === "true") {
-          console.log("TODO REMOVE STATS KEYS", Object.keys(statsObj));
-          const firstSourceMod = (statsObj.modules || []).filter(mod => !!mod.source)[0];
-          if (firstSourceMod) {
-            // Get starting size of stats object and our extra stuff to augment.
-            const startingSize = JSON.stringify(statsObj).length + 7;
-
-            // Find the first source module and patch it with a _huge_ string.
-            // This value will likely fail on most machines.
-            const largeStringSize = 115915534; // From issue 279. Definitely hits it.
-
-            // Experimentally observed on one machine.
-            const experimentalSizeSucceeds = 99998786;
-            const experimentalSizeFails = 99998787;
-
-            // Choose a size.
-            const pad = largeStringSize;
-            firstSourceMod.source += `\n// ${"".padEnd(pad - startingSize, "*")}\n`;
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      }
 
       handler([
         {
@@ -223,7 +198,7 @@ class DashboardPlugin {
           value: {
             errors: stats.hasErrors(),
             warnings: stats.hasWarnings(),
-            data: statsObj // TODO: UNWIND
+            data: stats.toJson(statsJsonOptions)
           }
         },
         {
