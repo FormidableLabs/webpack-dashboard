@@ -162,6 +162,34 @@ class DashboardPlugin {
       const statsOptions = (options.devServer && options.devServer.stats) ||
         options.stats || { colors: true };
 
+      // TODO(socketio-bug): Remove all temp code here.
+      // https://github.com/FormidableLabs/webpack-dashboard/issues/279
+      const statsObj = stats.toJson();
+      try {
+        if (process.env.TMP_BIG_STATS === "true") {
+          const firstSourceMod = statsObj.modules.filter((mod) => !!mod.source)[0];
+
+          // Get starting size of stats object and our extra stuff to augment.
+          const startingSize = JSON.stringify(statsObj).length + 7;
+
+          // Find the first source module and patch it with a _huge_ string.
+          // This value will likely fail on most machines.
+          const largeStringSize  = 115915534; // From issue 279. Definitely hits it.
+
+          // Experimentally observed on one machine.
+          const experimentalSizeSucceeds = 99998786;
+          const experimentalSizeFails = 99998787;
+
+          // Choose a size.
+          const pad = largeStringSize;
+          firstSourceMod.source += "\n// " + "".padEnd(pad - startingSize, "*") + "\n";
+
+          console.log("TODO OVERALL SIZE", JSON.stringify(statsObj).length)
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
       handler([
         {
           type: "status",
@@ -180,7 +208,7 @@ class DashboardPlugin {
           value: {
             errors: stats.hasErrors(),
             warnings: stats.hasWarnings(),
-            data: stats.toJson()
+            data: statsObj // TODO: UNWIND
           }
         },
         {
@@ -188,6 +216,8 @@ class DashboardPlugin {
           value: stats.toString(statsOptions)
         }
       ]);
+
+      // TODO: Error handler() call?
 
       if (!this.minimal) {
         this.observeMetrics(stats).subscribe({

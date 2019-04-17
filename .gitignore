@@ -10,3 +10,4 @@ yarn-error.log
 package-lock.json
 dist-*
 .vscode
+.lankrc.js
