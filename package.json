@@ -50,10 +50,10 @@
     "socket.io-client": "^2.1.1"
   },
   "devDependencies": {
-    "babel-eslint": "^8.2.3",
+    "babel-eslint": "^10.0.1",
     "chai": "^4.1.2",
     "cross-env": "^5.2.0",
-    "eslint": "^4.19.1",
+    "eslint": "^5.16.0",
     "eslint-config-formidable": "^4.0.0",
     "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-filenames": "^1.1.0",
@@ -61,7 +61,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.3.0",
+    "nyc": "^14.0.0",
     "prettier": "^1.16.4",
     "sinon": "^5.0.7",
     "sinon-chai": "^3.0.0",
