@@ -2,7 +2,7 @@
   "reporter": [
     "html",
     "lcov",
-    "text-summary"
+    "text"
   ],
   "report-dir": "./.coverage"
 }
