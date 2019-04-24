@@ -1,13 +1,33 @@
-# Change Log
+# Changelog
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
+
+## [3.0.4] - 2019-04-24
+
+### Features
+
+- Use `npm-run-all` as task runner for `package.json` scripts. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/283.
+- Use `test` in lieu of `test-summary` for `nyc` coverage reporting on command line. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/283.
+
+### Security
+
+- Address `handlebars` security vulnerability. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/282 by @juliusl.
+- Address additional security vulnerabilities in `js-yaml`. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/283.
+
+### Migration Instructions
+
+No changes required to start using v3.0.4 🎉.
 
 ## [3.0.3] - 2019-04-18
 
 ### Bugs
 
 - **Socket.io disconnects / large stats object size**: Dramatically reduce the size of the webpack stats object being sent from client (webpack plugin) to server (CLI). Add client error/disconnect information for better future debugging. Original issue: https://github.com/FormidableLabs/inspectpack/issues/279 and fix: https://github.com/FormidableLabs/inspectpack/pull/281
+
+### Migration Instructions
+
+No changes required to start using v3.0.3 🎉.
 
 ## [3.0.2] - 2019-03-28
 

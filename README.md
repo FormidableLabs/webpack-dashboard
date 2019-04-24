@@ -3,7 +3,6 @@
 ![](https://img.shields.io/npm/v/webpack-dashboard.svg?style=flat)
 [![Maintenance Status][maintenance-image]](#maintenance-status)
 
-
 A CLI dashboard for your webpack dev server
 
 ### What's this all about?
@@ -128,6 +127,27 @@ cross-env EXAMPLE=tree-shaking node bin/webpack-dashboard.js -- webpack-cli --co
 
 Then just run `yarn dev` to get up and running. PRs are very much appreciated!
 
+### Publishing
+
+When it comes time to publish a new version of `webpack-dashboard` to `npm`, authorized users can take the following steps:
+
+```sh
+# Ensure build passes all CI checks.
+git pull origin master
+yarn check-ci
+
+# Version the change. We use semantic versioning.
+yarn version --<major | minor | patch>
+
+# Publish to npm.
+yarn publish
+
+# Commit the release tag to source.
+git push && git push --tags
+```
+
+Please also be sure to update `CHANGELOG.md` with release notes and draft the release on GitHub. We loosely follow the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) spec with categories for `Features`, `Bugs`, `Tests`, `Docs`, and `Security`. All releases should also include `Migration Instructions` for adopting the new release.
+
 #### Credits
 
 Module output deeply inspired by: [https://github.com/robertknight/webpack-bundle-size-analyzer](https://github.com/robertknight/webpack-bundle-size-analyzer)
@@ -136,8 +156,6 @@ Error output deeply inspired by: [https://github.com/facebookincubator/create-re
 
 #### Maintenance Status
 
-**Active:** Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome. 
+**Active:** Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome.
 
 [maintenance-image]: https://img.shields.io/badge/maintenance-active-green.svg
-
-
