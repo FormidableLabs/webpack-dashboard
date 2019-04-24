@@ -3,7 +3,7 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
-## [3.0.4] - 2019-04-24
+## [3.0.5] - 2019-04-24
 
 ### Features
 
@@ -18,6 +18,10 @@ Every release, along with the migration instructions, is documented on the Githu
 ### Migration Instructions
 
 No changes required to start using v3.0.4 🎉.
+
+## [3.0.4] - 2019-04-24 [DEPRECATED]
+
+`v3.0.4` was an erroneous publish.
 
 ## [3.0.3] - 2019-04-18
 
