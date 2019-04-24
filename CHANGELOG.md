@@ -17,7 +17,7 @@ Every release, along with the migration instructions, is documented on the Githu
 
 ### Migration Instructions
 
-No changes required to start using v3.0.4 🎉.
+No changes required to start using v3.0.5 🎉.
 
 ## [3.0.4] - 2019-04-24 [DEPRECATED]
 
