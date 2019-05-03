@@ -17,6 +17,7 @@ const pkg = require("../package.json");
 const main = (module.exports = opts => {
   opts = opts || {};
   const argv = typeof opts.argv === "undefined" ? process.argv : opts.argv;
+  const isWindows = process.platform === "win32";
 
   program.version(pkg.version);
   program.option("-c, --color [color]", "Dashboard color");
@@ -43,7 +44,7 @@ const main = (module.exports = opts => {
     child = spawn(command, args, {
       env,
       stdio: [null, null, null, null],
-      detached: true
+      detached: !isWindows
     });
   }
 
@@ -91,7 +92,7 @@ const main = (module.exports = opts => {
     });
 
     process.on("exit", () => {
-      process.kill(process.platform === "win32" ? child.pid : -child.pid);
+      process.kill(isWindows ? child.pid : -child.pid);
     });
   } else {
     server.on("connection", socket => {
