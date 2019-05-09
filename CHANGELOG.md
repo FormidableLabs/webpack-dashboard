@@ -3,6 +3,16 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## [3.0.6] - 2019-05-09
+
+### Features
+
+- Prevent dashboard from spawning its own console for the child process on Windows. Closes #212. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/284 by @snack-able.
+
+### Migration Instructions
+
+No changes required to start using v3.0.6 🎉.
+
 ## [3.0.5] - 2019-04-24
 
 ### Features
