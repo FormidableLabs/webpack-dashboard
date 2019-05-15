@@ -3,9 +3,16 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
-## Unreleased
+## [3.0.7] - 2019-05-15
 
-- Very minor path normalization for windows in displaying modules paths.
+### Features
+
+- Very minor path normalization for displaying modules paths on Windows and Prettier fixes for Windows. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/284 by @ryan-roemer.
+- Add AppVeyor for Windows builds in CI. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/284 by @ryan-roemer.
+
+### Migration Instructions
+
+No changes required to start using v3.0.7 🎉.
 
 ## [3.0.6] - 2019-05-09
 
