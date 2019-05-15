@@ -21,6 +21,10 @@ build: off
 matrix:
   fast_finish: true
 
+branches:
+  only:
+    - master
+
 cache:
  - node_modules
  - "%LOCALAPPDATA%/Yarn"
