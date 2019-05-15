@@ -3,6 +3,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## Unreleased
+
+- Very minor path normalization for windows in displaying modules paths.
+
 ## [3.0.6] - 2019-05-09
 
 ### Features

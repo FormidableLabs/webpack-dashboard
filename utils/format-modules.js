@@ -17,7 +17,7 @@ function _formatFileName(mod) {
 
   // Source file.
   if (!baseName) {
-    return `{green-fg}./${relative(process.cwd(), resolve(fileName))}{/}`;
+    return `{green-fg}.${sep}${relative(process.cwd(), resolve(fileName))}{/}`;
   }
 
   // Package
