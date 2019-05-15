@@ -1,6 +1,8 @@
 # webpack-dashboard
 
-![](https://img.shields.io/npm/v/webpack-dashboard.svg?style=flat)
+[![npm version][npm_img]][npm_site]
+[![Travis Status][trav_img]][trav_site]
+[![AppVeyor Status][appveyor_img]][appveyor_site]
 [![Maintenance Status][maintenance-image]](#maintenance-status)
 
 A CLI dashboard for your webpack dev server
@@ -159,3 +161,9 @@ Error output deeply inspired by: [https://github.com/facebookincubator/create-re
 **Active:** Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome.
 
 [maintenance-image]: https://img.shields.io/badge/maintenance-active-green.svg
+[npm_img]: https://img.shields.io/npm/v/webpack-dashboard.svg?style=flat
+[npm_site]: https://github.com/FormidableLabs/webpack-dashboard/
+[trav_img]: https://api.travis-ci.org/FormidableLabs/webpack-dashboard.svg
+[trav_site]: https://travis-ci.org/FormidableLabs/webpack-dashboard
+[appveyor_img]: https://ci.appveyor.com/api/projects/status/github/formidablelabs/webpack-dashboard?branch=master&svg=true
+[appveyor_site]: https://ci.appveyor.com/project/FormidableLabs/webpack-dashboard
