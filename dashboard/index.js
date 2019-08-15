@@ -34,8 +34,9 @@ class Dashboard {
     this.color = options.color || "green";
     this.minimal = options.minimal || false;
     this.stats = null;
-
+    this.ignore = options.ignore;
     // Data binding, lookup tables.
+    this.applyIgnore = this.applyIgnore.bind(this);
     this.setData = this.setData.bind(this);
     this.actionForMessageType = {
       progress: this.setProgress.bind(this),
@@ -89,6 +90,18 @@ class Dashboard {
     });
 
     this.screen.render();
+  }
+
+  applyIgnore(names) {
+    this.logText.log(chalk.red(this.ignore));
+    if (!this.ignore) {
+      return names;
+    }
+    if (Array.isArray(this.ignore)) {
+      this.ignore.forEach(rule => (names = names.filter(name => name.indexOf(rule) === -1)));
+      return names;
+    }
+    return names.filter(name => name.indexOf(this.ignore) === -1);
   }
 
   setData(dataArray, ack) {
@@ -180,7 +193,8 @@ class Dashboard {
 
     // Then split modules across assets.
     const previousSelection = this.modulesMenu.selected;
-    const modulesItems = Object.keys(assets).reduce(
+    const filteredAssets = this.applyIgnore(Object.keys(assets));
+    const modulesItems = filteredAssets.reduce(
       (memo, name) =>
         Object.assign({}, memo, {
           [name]: () => {
@@ -211,7 +225,7 @@ class Dashboard {
 
     // Separate across assets.
     // Use duplicates as the "canary" to get asset names.
-    const assetNames = Object.keys(duplicates.assets);
+    const assetNames = this.applyIgnore(Object.keys(duplicates.assets));
 
     const previousSelection = this.problemsMenu.selected;
     const problemsItems = assetNames.reduce(

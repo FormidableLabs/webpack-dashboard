@@ -19,10 +19,15 @@ const main = (module.exports = opts => {
   const argv = typeof opts.argv === "undefined" ? process.argv : opts.argv;
   const isWindows = process.platform === "win32";
 
+  function collect(value, previous) {
+    return previous.concat([value]);
+  }
+
   program.version(pkg.version);
   program.option("-c, --color [color]", "Dashboard color");
   program.option("-m, --minimal", "Minimal mode");
   program.option("-t, --title [title]", "Terminal window title");
+  program.option("-i, --ignore [ignore]", "Ignore modules", collect, []);
   program.option("-p, --port [port]", "Socket listener port");
   program.usage("[options] -- [script] [arguments]");
   program.parse(argv);
@@ -51,7 +56,8 @@ const main = (module.exports = opts => {
   const dashboard = new Dashboard({
     color: program.color || "green",
     minimal: program.minimal || false,
-    title: program.title || null
+    title: program.title || null,
+    ignore: program.ignore || null
   });
 
   const port = program.port || DEFAULT_PORT;
