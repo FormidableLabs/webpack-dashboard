@@ -14,7 +14,9 @@ module.exports = {
   devtool: false,
   context: resolve(cwd),
   entry: {
-    bundle: "./src/index.js"
+    bundle: "./src/index.js",
+    // Hard-code path to the "hello world" no-dep entry for 2+ asset testing
+    hello: "../simple/src/index.js"
   },
   output: {
     path: resolve(cwd, "dist-development-4"),

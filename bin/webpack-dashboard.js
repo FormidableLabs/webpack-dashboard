@@ -24,6 +24,7 @@ const main = (module.exports = opts => {
   program.option("-m, --minimal", "Minimal mode");
   program.option("-t, --title [title]", "Terminal window title");
   program.option("-p, --port [port]", "Socket listener port");
+  // TODO: program.option("-a, --include-assets [name1,name2,...]", "Asset names to limit to");
   program.usage("[options] -- [script] [arguments]");
   program.parse(argv);
 
