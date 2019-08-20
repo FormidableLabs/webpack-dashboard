@@ -33,6 +33,8 @@ class Dashboard {
 
     this.color = options.color || "green";
     this.minimal = options.minimal || false;
+    // TODO(ASSETS): How is this set? Search on minimal...
+    this.includeAssets = options.includeAssets || [];
     this.stats = null;
 
     // Data binding, lookup tables.
@@ -173,6 +175,7 @@ class Dashboard {
 
   setSizes(data) {
     const { assets } = data.value;
+    console.log("TODO HERE", this.includeAssets);
 
     // Start with top-level assets.
     this.assets.setLabel("Assets");

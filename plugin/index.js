@@ -55,7 +55,7 @@ class DashboardPlugin {
       options = options || {};
       this.host = options.host || DEFAULT_HOST;
       this.port = options.port || DEFAULT_PORT;
-      // TODO(ASSETS): this.includeAssets = options.includeAssets || [];
+      this.includeAssets = options.includeAssets || [];
       this.handler = options.handler || null;
     }
 
@@ -86,7 +86,8 @@ class DashboardPlugin {
       });
       this.socket.once("mode", args => {
         this.minimal = args.minimal;
-        // TODO(ASSETS): Concat in includeAssets stuff here.
+        // TODO(ASSETS): Concat in includeAssets stuff here from CLI or new event key
+        // that's not `"mode"`.
       });
       this.socket.on("error", err => {
         // eslint-disable-next-line no-console

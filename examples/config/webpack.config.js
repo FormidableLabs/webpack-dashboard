@@ -31,6 +31,8 @@ module.exports = {
       verbose: true,
       emitErrors: false
     }),
-    new Dashboard()
+    new Dashboard({
+      includeAssets: ["bundle"]
+    })
   ]
 };
