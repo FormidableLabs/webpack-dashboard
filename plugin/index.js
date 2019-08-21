@@ -86,8 +86,6 @@ class DashboardPlugin {
       });
       this.socket.once("mode", args => {
         this.minimal = args.minimal;
-        // TODO(ASSETS): Concat in includeAssets stuff here from CLI or new event key
-        // that's not `"mode"`.
       });
       this.socket.on("error", err => {
         // eslint-disable-next-line no-console
@@ -234,6 +232,23 @@ class DashboardPlugin {
   observeMetrics(statsObj) {
     // Get the **full** stats object here for `inspectpack` analysis.
     const statsToObserve = statsObj.toJson();
+
+    // Truncate off non-included assets.
+    const { includeAssets } = this;
+    if (includeAssets.length) {
+      statsToObserve.assets = statsToObserve.assets.filter(({ name }) =>
+        includeAssets.some(pattern => {
+          if (typeof pattern === "string") {
+            return name.startsWith(pattern);
+          } else if (pattern instanceof RegExp) {
+            return pattern.test(name);
+          }
+
+          // Pass through bad options..
+          return false;
+        })
+      );
+    }
 
     const getSizes = stats =>
       actions("sizes", { stats })
