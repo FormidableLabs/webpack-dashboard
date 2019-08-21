@@ -220,42 +220,6 @@ describe("dashboard", () => {
         expect(dashboard.screen.render).to.have.been.called;
       });
 
-      it.skip("applies includeAssets regexes in setSizes", () => {
-        // TODO(ASSETS): Enable
-        dashboard = new Dashboard({
-          includeAssets: [/fo+/]
-        });
-        const formattedData = [
-          ["Name", "Size"],
-          ["foo", "456 B"],
-          ["Total", "579 B"] // TODO(ASSETS): Does this stay the same?
-        ];
-
-        expect(() => dashboard.setSizes(data)).to.not.throw;
-
-        dashboard.setSizes(data);
-        expect(dashboard.assets.setLabel).to.have.been.calledWith("Assets");
-        expect(dashboard.assetTable.setData).to.have.been.calledWith(formattedData);
-      });
-
-      it.skip("applies includeAssets strings in setSizes", () => {
-        // TODO(ASSETS): Enable
-        dashboard = new Dashboard({
-          includeAssets: ["bar"]
-        });
-        const formattedData = [
-          ["Name", "Size"],
-          ["bar", "123 B"],
-          ["Total", "579 B"] // TODO(ASSETS): Does this stay the same?
-        ];
-
-        expect(() => dashboard.setSizes(data)).to.not.throw;
-
-        dashboard.setSizes(data);
-        expect(dashboard.assets.setLabel).to.have.been.calledWith("Assets");
-        expect(dashboard.assetTable.setData).to.have.been.calledWith(formattedData);
-      });
-
       it("should call formatModules", () => {
         // Mock out the call to setItems to force call of formatModules.
         mockSetItems();
@@ -311,30 +275,6 @@ describe("dashboard", () => {
           dashboard.problemsMenu.selected
         );
         expect(dashboard.screen.render).to.have.been.called;
-      });
-
-      it.skip("applies includeAssets regexes in setProblems", () => {
-        // TODO(ASSETS): Enable
-        dashboard = new Dashboard({
-          includeAssets: [/fo+/]
-        });
-
-        expect(() => dashboard.setProblems(data)).to.not.throw;
-
-        dashboard.setProblems(data);
-        // TODO(ASSETS): Add data assert
-      });
-
-      it.skip("applies includeAssets strings in setProblems", () => {
-        // TODO(ASSETS): Enable
-        dashboard = new Dashboard({
-          includeAssets: ["bar"]
-        });
-
-        expect(() => dashboard.setProblems(data)).to.not.throw;
-
-        dashboard.setProblems(data);
-        // TODO(ASSETS): Add data assert
       });
 
       it("should call formatProblems", () => {
