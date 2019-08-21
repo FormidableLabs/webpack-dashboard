@@ -5,9 +5,9 @@
 const most = require("most");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
-const { actions } = require("inspectpack");
+const inspectpack = require("inspectpack");
 
-const { serializeError } = require("../utils/error-serialization");
+const serializer = require("../utils/error-serialization");
 
 const DEFAULT_PORT = 9838;
 const DEFAULT_HOST = "127.0.0.1";
@@ -251,9 +251,17 @@ class DashboardPlugin {
       );
     }
 
+    // Late destructure so that we can stub.
+    const { actions } = inspectpack;
+    const { serializeError } = serializer;
+
     const getSizes = stats =>
       actions("sizes", { stats })
         .then(instance => instance.getData())
+        .then(data => {
+          console.log("TODO GET SIZES", statsToObserve, data);
+          return data;
+        })
         .then(data => ({
           type: "sizes",
           value: data
