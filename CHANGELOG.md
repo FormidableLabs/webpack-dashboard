@@ -8,6 +8,8 @@ Every release, along with the migration instructions, is documented on the Githu
 - Add `DashboardPlugin({ includeAssets: [ "stringPrefix", /regexObj/ ] })` Webpack plugin filtering option.
 - Add `webpack-dashboard --include-assets stringPrefix1 -a stringPrefix1` CLI filtering option.
 - Change `"mode"` SocketIO event to `"options"` as it now passes both `minimal` and `includeAssets` from CLI to the Webpack plugin.
+- Fix unit tests that incorrectly relied on `.complete()` for `most` observables.
+- Add additional `examples` fixture for development.
 
 ## [3.0.7] - 2019-05-15
 

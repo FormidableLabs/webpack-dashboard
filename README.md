@@ -87,6 +87,7 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
 - `-m, --minimal` - Runs the dashboard in minimal mode
 - `-t, --title [title]` - Set title of terminal window
 - `-p, --port [port]` - Custom port for socket communication server
+- `-a, --include-assets [string prefix]` - Limit display to asset names matching string prefix (option can be repeated and is concatenated to `new DashboardPlugin({ includeAssets })` options array)
 
 ##### Arguments
 
@@ -98,6 +99,7 @@ Webpack Dashboard works in Terminal, iTerm 2, and Hyper. For mouse events, like 
 
 - `host` - Custom host for connection the socket client
 - `port` - Custom port for connecting the socket client
+- `includeAssets` - Limit display to asset names matching string prefix or regex (`Array<String | RegExp>`)
 - `handler` - Plugin handler method, i.e. `dashboard.setData`
 
 _Note: you can also just pass a function in as an argument, which then becomes the handler, i.e. `new DashboardPlugin(dashboard.setData)`_
