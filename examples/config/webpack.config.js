@@ -32,7 +32,7 @@ module.exports = {
       emitErrors: false
     }),
     new Dashboard({
-      // // TODO(ASSETS): REMOVE THIS?
+      // Optionally filter which assets to report on by string prefix or regex.
       // includeAssets: ["bundle", /bund/]
     })
   ]
