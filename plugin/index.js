@@ -258,10 +258,6 @@ class DashboardPlugin {
     const getSizes = stats =>
       actions("sizes", { stats })
         .then(instance => instance.getData())
-        .then(data => {
-          console.log("TODO GET SIZES", statsToObserve, data);
-          return data;
-        })
         .then(data => ({
           type: "sizes",
           value: data

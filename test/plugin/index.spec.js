@@ -101,24 +101,31 @@ describe("plugin", () => {
       );
     });
 
-    it.skip("filters assets for ignoreAssets", () => {
+    it("filters assets for includeAssets", () => {
       const actions = base.sandbox.spy(inspectpack, "actions");
 
       stats = {
         assets: [
           {
-            name: "bundle.js",
+            name: "one.js",
             modules: []
           },
           {
-            name: "vendor.js",
+            name: "two.js",
+            modules: []
+          },
+          {
+            name: "three.js",
             modules: []
           }
         ]
       };
 
       plugin = new Plugin({
-        includeAssets: /bun/
+        includeAssets: [
+          "one", // string prefix
+          /tw/ // regex match
+        ]
       });
 
       return (
@@ -127,7 +134,11 @@ describe("plugin", () => {
           .drain()
           // eslint-disable-next-line promise/always-return
           .then(() => {
-            expect(actions).to.have.been.calledWith("sizes", { stats: "foo" });
+            expect(actions).to.have.been.calledWith("sizes", {
+              stats: {
+                assets: [{ modules: [], name: "one.js" }, { modules: [], name: "two.js" }]
+              }
+            });
           })
       );
     });
