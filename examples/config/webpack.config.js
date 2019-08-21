@@ -32,8 +32,8 @@ module.exports = {
       emitErrors: false
     }),
     new Dashboard({
-      // TODO(ASSETS): REMOVE THIS?
-      includeAssets: ["bundle", /bund/]
+      // // TODO(ASSETS): REMOVE THIS?
+      // includeAssets: ["bundle", /bund/]
     })
   ]
 };

@@ -12,6 +12,8 @@ const DEFAULT_PORT = 9838;
 const program = new commander.Command("webpack-dashboard");
 const pkg = require("../package.json");
 
+const collect = (val, prev) => prev.concat([val]);
+
 // Wrap up side effects in a script.
 // eslint-disable-next-line max-statements, complexity
 const main = (module.exports = opts => {
@@ -24,7 +26,7 @@ const main = (module.exports = opts => {
   program.option("-m, --minimal", "Minimal mode");
   program.option("-t, --title [title]", "Terminal window title");
   program.option("-p, --port [port]", "Socket listener port");
-  // TODO: program.option("-a, --include-assets [name1,name2,...]", "Asset names to limit to");
+  program.option("-a, --include-assets [string prefix]", "Asset names to limit to", collect, []);
   program.usage("[options] -- [script] [arguments]");
   program.parse(argv);
 
@@ -65,7 +67,10 @@ const main = (module.exports = opts => {
 
   if (logFromChild) {
     server.on("connection", socket => {
-      socket.emit("mode", { minimal: program.minimal || false });
+      socket.emit("options", {
+        minimal: program.minimal || false,
+        includeAssets: program.includeAssets || []
+      });
 
       socket.on("message", (message, ack) => {
         if (message.type !== "log") {

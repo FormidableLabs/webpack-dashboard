@@ -84,8 +84,9 @@ class DashboardPlugin {
       this.socket.on("connect", () => {
         handler = this.socket.emit.bind(this.socket, "message");
       });
-      this.socket.once("mode", args => {
+      this.socket.once("options", args => {
         this.minimal = args.minimal;
+        this.includeAssets = this.includeAssets.concat(args.includeAssets || []);
       });
       this.socket.on("error", err => {
         // eslint-disable-next-line no-console

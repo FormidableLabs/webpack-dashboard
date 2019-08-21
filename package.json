@@ -16,6 +16,7 @@
     "check-ci": "run-s format-check lint test-cov check-ts",
     "check-ts": "tsc index.d.ts --noEmit",
     "dev": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch",
+    "dev-TODO-REMOVE": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -a h -a e -- webpack-cli --config examples/config/webpack.config.js --watch",
     "format": "prettier --write \"./{bin,examples,plugin,test,utils}/**/*.js\"",
     "format-check": "prettier --list-different \"./{bin,examples,plugin,test,utils}/**/*.js\""
   },
