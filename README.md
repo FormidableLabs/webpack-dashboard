@@ -15,7 +15,7 @@ When using webpack, especially for a dev server, you are probably used to seeing
 
 That's cool, but it's mostly noise and scrolly and not super helpful. This plugin changes that. Now when you run your dev server, you basically work at NASA:
 
-![http://i.imgur.com/eMxex1H.png](http://i.imgur.com/eMxex1H.png)
+![http://i.imgur.com/qL6dXJd.png](http://i.imgur.com/qL6dXJd.png)
 
 ### Install
 
