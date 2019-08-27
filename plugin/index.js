@@ -5,9 +5,9 @@
 const most = require("most");
 const webpack = require("webpack");
 const SocketIOClient = require("socket.io-client");
-const { actions } = require("inspectpack");
+const inspectpack = require("inspectpack");
 
-const { serializeError } = require("../utils/error-serialization");
+const serializer = require("../utils/error-serialization");
 
 const DEFAULT_PORT = 9838;
 const DEFAULT_HOST = "127.0.0.1";
@@ -55,6 +55,7 @@ class DashboardPlugin {
       options = options || {};
       this.host = options.host || DEFAULT_HOST;
       this.port = options.port || DEFAULT_PORT;
+      this.includeAssets = options.includeAssets || [];
       this.handler = options.handler || null;
     }
 
@@ -83,8 +84,9 @@ class DashboardPlugin {
       this.socket.on("connect", () => {
         handler = this.socket.emit.bind(this.socket, "message");
       });
-      this.socket.once("mode", args => {
+      this.socket.once("options", args => {
         this.minimal = args.minimal;
+        this.includeAssets = this.includeAssets.concat(args.includeAssets || []);
       });
       this.socket.on("error", err => {
         // eslint-disable-next-line no-console
@@ -231,6 +233,27 @@ class DashboardPlugin {
   observeMetrics(statsObj) {
     // Get the **full** stats object here for `inspectpack` analysis.
     const statsToObserve = statsObj.toJson();
+
+    // Truncate off non-included assets.
+    const { includeAssets } = this;
+    if (includeAssets.length) {
+      statsToObserve.assets = statsToObserve.assets.filter(({ name }) =>
+        includeAssets.some(pattern => {
+          if (typeof pattern === "string") {
+            return name.startsWith(pattern);
+          } else if (pattern instanceof RegExp) {
+            return pattern.test(name);
+          }
+
+          // Pass through bad options..
+          return false;
+        })
+      );
+    }
+
+    // Late destructure so that we can stub.
+    const { actions } = inspectpack;
+    const { serializeError } = serializer;
 
     const getSizes = stats =>
       actions("sizes", { stats })

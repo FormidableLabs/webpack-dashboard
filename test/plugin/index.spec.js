@@ -1,7 +1,6 @@
 "use strict";
 
 const inspectpack = require("inspectpack");
-const most = require("most");
 
 const base = require("../base.spec");
 const Plugin = require("../../plugin");
@@ -38,8 +37,11 @@ describe("plugin", () => {
     let plugin;
 
     beforeEach(() => {
-      stats = {};
-      toJson = base.sandbox.stub().returns(stats);
+      stats = {
+        modules: [],
+        assets: []
+      };
+      toJson = base.sandbox.stub().callsFake(() => stats);
       compilation = {
         errors: [],
         warnings: [],
@@ -87,31 +89,76 @@ describe("plugin", () => {
 
     it("can do a basic observeMetrics", () => {
       const actions = base.sandbox.spy(inspectpack, "actions");
-      const of = base.sandbox.spy(most, "of");
-      const mergeArray = base.sandbox.spy(most, "mergeArray");
 
-      plugin.observeMetrics({ toJson }).subscribe({
-        next: base.sandbox.spy(),
-        error: base.sandbox.spy(),
-        complete: () => {
-          expect(actions).to.have.been.calledThrice;
-          expect(of).to.have.been.calledTwice;
-          expect(mergeArray).to.have.been.called;
-        }
+      return (
+        plugin
+          .observeMetrics({ toJson })
+          .drain()
+          // eslint-disable-next-line promise/always-return
+          .then(() => {
+            expect(actions).to.have.been.calledThrice;
+          })
+      );
+    });
+
+    it("filters assets for includeAssets", () => {
+      const actions = base.sandbox.spy(inspectpack, "actions");
+
+      stats = {
+        assets: [
+          {
+            name: "one.js",
+            modules: []
+          },
+          {
+            name: "two.js",
+            modules: []
+          },
+          {
+            name: "three.js",
+            modules: []
+          }
+        ]
+      };
+
+      plugin = new Plugin({
+        includeAssets: [
+          "one", // string prefix
+          /tw/ // regex match
+        ]
       });
+
+      return (
+        plugin
+          .observeMetrics({ toJson })
+          .drain()
+          // eslint-disable-next-line promise/always-return
+          .then(() => {
+            expect(actions).to.have.been.calledWith("sizes", {
+              stats: {
+                assets: [{ modules: [], name: "one.js" }, { modules: [], name: "two.js" }]
+              }
+            });
+          })
+      );
     });
 
     it("should serialize errors when encountered", () => {
-      base.sandbox.stub(inspectpack, "actions").rejects();
+      const actions = base.sandbox.stub(inspectpack, "actions").rejects();
       const serializeError = base.sandbox.spy(errorSerializer, "serializeError");
 
-      plugin.observeMetrics({ toJson }).subscribe({
-        next: base.sandbox.spy(),
-        error: base.sandbox.spy(),
-        complete: () => {
-          expect(serializeError).to.have.been.calledThrice;
-        }
-      });
+      return (
+        plugin
+          .observeMetrics({ toJson })
+          .drain()
+          // eslint-disable-next-line promise/always-return
+          .then(() => {
+            // All three actions called.
+            expect(actions).to.have.been.calledThrice;
+            // ... but since two are in Promise.all only get one rejection.
+            expect(serializeError).to.have.been.calledTwice;
+          })
+      );
     });
   });
 });

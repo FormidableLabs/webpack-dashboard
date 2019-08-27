@@ -199,14 +199,14 @@ describe("dashboard", () => {
         }
       };
 
-      const formattedData = [
-        ["Name", "Size"],
-        ["foo", "456 B"],
-        ["bar", "123 B"],
-        ["Total", "579 B"]
-      ];
-
       it("can setSizes", () => {
+        const formattedData = [
+          ["Name", "Size"],
+          ["foo", "456 B"],
+          ["bar", "123 B"],
+          ["Total", "579 B"]
+        ];
+
         expect(() => dashboard.setSizes(data)).to.not.throw;
 
         dashboard.setSizes(data);

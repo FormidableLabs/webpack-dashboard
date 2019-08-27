@@ -14,7 +14,9 @@ module.exports = {
   devtool: false,
   context: resolve(cwd),
   entry: {
-    bundle: "./src/index.js"
+    bundle: "./src/index.js",
+    // Hard-code path to the "hello world" no-dep entry for 2+ asset testing
+    hello: "../simple/src/index.js"
   },
   output: {
     path: resolve(cwd, "dist-development-4"),
@@ -29,6 +31,9 @@ module.exports = {
       verbose: true,
       emitErrors: false
     }),
-    new Dashboard()
+    new Dashboard({
+      // Optionally filter which assets to report on by string prefix or regex.
+      // includeAssets: ["bundle", /bund/]
+    })
   ]
 };
