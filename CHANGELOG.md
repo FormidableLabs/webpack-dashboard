@@ -3,7 +3,7 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
-## UNRELEASED
+## [3.1.0] - 2019-08-27
 
 - Add `DashboardPlugin({ includeAssets: [ "stringPrefix", /regexObj/ ] })` Webpack plugin filtering option.
 - Add `webpack-dashboard --include-assets stringPrefix1 -a stringPrefix2` CLI filtering option.
