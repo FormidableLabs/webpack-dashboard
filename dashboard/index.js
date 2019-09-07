@@ -303,6 +303,20 @@ class Dashboard {
       this.logText.scroll(1);
       this.logText.screen.render();
     });
+    this.screen.key(["left"], () => {
+      const currentIndex = this.modulesMenu.selected;
+      this.modulesMenu.selectTab(currentIndex - 1);
+      this.problemsMenu.selectTab(currentIndex - 1);
+      this.problemsMenu.screen.render();
+      this.modulesMenu.screen.render();
+    });
+    this.screen.key(["right"], () => {
+      const currentIndex = this.modulesMenu.selected;
+      this.modulesMenu.selectTab(currentIndex + 1);
+      this.problemsMenu.selectTab(currentIndex + 1);
+      this.problemsMenu.screen.render();
+      this.modulesMenu.screen.render();
+    });
   }
 
   layoutModules() {
