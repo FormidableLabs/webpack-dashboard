@@ -19,7 +19,13 @@ That's cool, but it's mostly noise and scrolly and not super helpful. This plugi
 
 ### Install
 
-`npm install webpack-dashboard --save-dev`
+```sh
+$ npm install --save-dev webpack-dashboard
+# ... or ...
+$ yarn add --dev webpack-dashboard
+```
+
+> ℹ️ **Note**: You can alternatively globally install the dashboard (e.g. `npm install -g webpack-dashboard`) for use with any project and everything should work the same.
 
 ### Use
 
@@ -38,17 +44,13 @@ plugins: [new DashboardPlugin()];
 compiler.apply(new DashboardPlugin());
 ```
 
-If using a custom port, the port number must be included in the options object here, as well as passed using the -p flag in the call to webpack-dashboard. See how below:
-
-```js
-plugins: [new DashboardPlugin({ port: 3001 })];
-```
-
-In the latest version, you can either run your app, and run `webpack-dashboard` independently (by installing with `npm install webpack-dashboard -g`) or run webpack-dashboard from your `package.json`. So if your dev server start script previously looked like:
+Then, modify your dev server start script previously looked like:
 
 ```js
 "scripts": {
-    "dev": "node index.js"
+    "dev": "node index.js", # OR
+    "dev": "webpack-dev-server", # OR
+    "dev": "webpack",
 }
 ```
 
@@ -56,11 +58,31 @@ You would change that to:
 
 ```js
 "scripts": {
-    "dev": "webpack-dashboard -- node index.js"
+    "dev": "webpack-dashboard -- node index.js", # OR
+    "dev": "webpack-dashboard -- webpack-dev-server", # OR
+    "dev": "webpack-dashboard -- webpack",
 }
 ```
 
 Now you can just run your start script like normal, except now, you are awesome. Not that you weren't before. I'm just saying. More so.
+
+#### Customizations
+
+More configuration customization examples can be found in our [getting started](./docs/getting-started.md) guide.
+
+For example, if you want to use a custom port of `webpack-dashboard` to communicate between its plugin and CLI tool, you would first set the number in the options object in webpack configuration:
+
+```js
+plugins: [new DashboardPlugin({ port: 3001 })];
+```
+
+Then, you would pass it along to the CLI to match:
+
+```sh
+$ webpack-dashboard --port 3001 -- webpack
+```
+
+> ⚠️ **Warning**: When choosing a custom port, you need to find one that is **not** already in use. You should not choose one that is being used by `webpack-dev-server` / `devServer` or any other process. Instead, pick one that is **only** for `webpack-dashboard` and pair that up in the plugin configuration and CLI port flag.
 
 ### Run it
 

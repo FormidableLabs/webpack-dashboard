@@ -2,7 +2,11 @@
 
 ## Install
 
-`npm install webpack-dashboard --save-dev`
+```sh
+$ npm install --save-dev webpack-dashboard
+# ... or ...
+$ yarn add --dev webpack-dashboard
+```
 
 ## Use (The New Way)
 
@@ -141,7 +145,7 @@ new WebpackDevServer(
     quiet: true, // lets WebpackDashboard do its thing
     historyApiFallback: true,
   }
-).listen(
+).listen(/* ... */)
 ```
 
 ### Run it
