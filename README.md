@@ -187,7 +187,7 @@ Error output deeply inspired by: [https://github.com/facebookincubator/create-re
 [maintenance-image]: https://img.shields.io/badge/maintenance-active-green.svg
 [npm_img]: https://img.shields.io/npm/v/webpack-dashboard.svg?style=flat
 [npm_site]: https://www.npmjs.com/package/webpack-dashboard
-[trav_img]: https://api.travis-ci.org/FormidableLabs/webpack-dashboard.svg
-[trav_site]: https://travis-ci.org/FormidableLabs/webpack-dashboard
+[trav_img]: https://api.travis-ci.com/FormidableLabs/webpack-dashboard.svg
+[trav_site]: https://travis-ci.com/FormidableLabs/webpack-dashboard
 [appveyor_img]: https://ci.appveyor.com/api/projects/status/github/formidablelabs/webpack-dashboard?branch=master&svg=true
 [appveyor_site]: https://ci.appveyor.com/project/FormidableLabs/webpack-dashboard
