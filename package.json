@@ -39,6 +39,7 @@
     "webpack": "*"
   },
   "dependencies": {
+    "chalk": "^2.0.0",
     "commander": "^2.15.1",
     "cross-spawn": "^6.0.5",
     "filesize": "^3.6.1",
