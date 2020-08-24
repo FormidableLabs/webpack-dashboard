@@ -3,6 +3,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## [3.2.1] - 2020-08-24
+
+- Add missing dependency on `chalk`. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/309 by @am-a.
+
 ## [3.2.0] - 2019-09-08
 
 - Add left / right navigation keys to assets in Modules and Problems screens. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/288 by @wapgear.
