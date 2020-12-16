@@ -1,9 +1,13 @@
 # webpack-dashboard
 
 [![npm version][npm_img]][npm_site]
-[![Travis Status][trav_img]][trav_site]
-[![AppVeyor Status][appveyor_img]][appveyor_site]
+[![Actions Status][actions_img]][actions_site]
 [![Maintenance Status][maintenance-image]](#maintenance-status)
+<!--
+# TODO(206): Add code coverage
+# https://github.com/FormidableLabs/webpack-dashboard/issues/206
+[![Coverage Status][cov_img]][cov_site]
+-->
 
 A CLI dashboard for your webpack dev server
 
@@ -184,10 +188,10 @@ Error output deeply inspired by: [https://github.com/facebookincubator/create-re
 
 **Active:** Formidable is actively working on this project, and we expect to continue for work for the foreseeable future. Bug reports, feature requests and pull requests are welcome.
 
-[maintenance-image]: https://img.shields.io/badge/maintenance-active-green.svg
+[maintenance-image]: https://img.shields.io/badge/maintenance-active-green.svg?color=brightgreen&style=flat
 [npm_img]: https://img.shields.io/npm/v/webpack-dashboard.svg?style=flat
 [npm_site]: https://www.npmjs.com/package/webpack-dashboard
-[trav_img]: https://api.travis-ci.com/FormidableLabs/webpack-dashboard.svg
-[trav_site]: https://travis-ci.com/FormidableLabs/webpack-dashboard
-[appveyor_img]: https://ci.appveyor.com/api/projects/status/github/formidablelabs/webpack-dashboard?branch=master&svg=true
-[appveyor_site]: https://ci.appveyor.com/project/FormidableLabs/webpack-dashboard
+[actions_img]: https://github.com/FormidableLabs/webpack-dashboard/workflows/CI/badge.svg
+[actions_site]: https://github.com/FormidableLabs/webpack-dashboard/actions
+[cov_img]: https://codecov.io/gh/FormidableLabs/webpack-dashboard/branch/master/graph/badge.svg
+[cov_site]: https://codecov.io/gh/FormidableLabs/webpack-dashboard
