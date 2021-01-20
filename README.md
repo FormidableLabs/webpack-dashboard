@@ -146,13 +146,17 @@ We re-use a small handful of the fixtures from [`inspectpack`](https://github.co
 To change the example you're working against, simply alter the `EXAMPLE` env variable in the `dev` script in `package.json` to match the scenario you want to run in `/examples`. For example, if you want to run the `tree-shaking` example, change the `dev` script from this:
 
 ```sh
-cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch
+$ cross-env EXAMPLE=duplicates-esm \
+  node bin/webpack-dashboard.js -- \
+  webpack-cli --config examples/config/webpack.config.js --watch
 ```
 
 to this:
 
 ```sh
-cross-env EXAMPLE=tree-shaking node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch
+$ cross-env EXAMPLE=tree-shaking WEBPACK_MODE=production \
+  node bin/webpack-dashboard.js -- \
+  webpack-cli --config examples/config/webpack.config.js --watch
 ```
 
 Then just run `yarn dev` to get up and running. PRs are very much appreciated!
