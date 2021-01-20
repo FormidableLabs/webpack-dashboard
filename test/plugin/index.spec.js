@@ -1,6 +1,6 @@
 "use strict";
 
-const inspectpack = require("inspectpack");
+const inspectpackActions = require("inspectpack/lib/actions");
 
 const base = require("../base.spec");
 const Plugin = require("../../plugin");
@@ -88,7 +88,7 @@ describe("plugin", () => {
     });
 
     it("can do a basic observeMetrics", () => {
-      const actions = base.sandbox.spy(inspectpack, "actions");
+      const actions = base.sandbox.spy(inspectpackActions, "actions");
 
       return (
         plugin
@@ -102,7 +102,7 @@ describe("plugin", () => {
     });
 
     it("filters assets for includeAssets", () => {
-      const actions = base.sandbox.spy(inspectpack, "actions");
+      const actions = base.sandbox.spy(inspectpackActions, "actions");
 
       stats = {
         assets: [
@@ -136,7 +136,10 @@ describe("plugin", () => {
           .then(() => {
             expect(actions).to.have.been.calledWith("sizes", {
               stats: {
-                assets: [{ modules: [], name: "one.js" }, { modules: [], name: "two.js" }]
+                assets: [
+                  { modules: [], name: "one.js" },
+                  { modules: [], name: "two.js" }
+                ]
               }
             });
           })
@@ -144,7 +147,7 @@ describe("plugin", () => {
     });
 
     it("should serialize errors when encountered", () => {
-      const actions = base.sandbox.stub(inspectpack, "actions").rejects();
+      const actions = base.sandbox.stub(inspectpackActions, "actions").rejects();
       const serializeError = base.sandbox.spy(errorSerializer, "serializeError");
 
       return (

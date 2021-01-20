@@ -6,7 +6,7 @@
 const filesize = require("filesize");
 const Handlebars = require("handlebars");
 
-Handlebars.registerHelper("filesize", function(options) {
+Handlebars.registerHelper("filesize", function (options) {
   // eslint-disable-next-line no-invalid-this
   return filesize(options.fn(this));
 });
