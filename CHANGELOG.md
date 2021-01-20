@@ -3,6 +3,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## UNRELEASED
+
+- Update various production dependencies.
+
 ## [3.2.1] - 2020-08-24
 
 - Add missing dependency on `chalk`. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/309 by @am-a.
