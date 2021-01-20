@@ -42,7 +42,7 @@
     "chalk": "^4.1.0",
     "commander": "^7.0.0",
     "cross-spawn": "^7.0.3",
-    "filesize": "^3.6.1",
+    "filesize": "^6.1.0",
     "handlebars": "^4.1.2",
     "inspectpack": "^4.6.1",
     "most": "^1.7.3",
