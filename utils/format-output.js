@@ -6,7 +6,10 @@ function _isLikelyASyntaxError(message) {
   return message.indexOf(friendlySyntaxErrorLabel) !== -1;
 }
 
-function _formatMessage(message) {
+function _formatMessage(message = "") {
+  // Handle legacy and modern webpack shapes.
+  message = typeof message.message !== "undefined" ? message.message : message;
+
   return message
     .replace("Module build failed: SyntaxError:", friendlySyntaxErrorLabel)
     .replace(/Module not found: Error: Cannot resolve 'file' or 'directory'/, "Module not found:")
@@ -24,7 +27,9 @@ function formatOutput(stats) {
   const hasErrors = stats.hasErrors();
   const hasWarnings = stats.hasWarnings();
 
-  const json = stats.toJson();
+  const json = stats.toJson({
+    source: true // Needed for webpack5+
+  });
   let formattedErrors = json.errors.map(message => `Error in ${_formatMessage(message)}`);
   const formattedWarnings = json.warnings.map(message => `Warning in ${_formatMessage(message)}`);
 

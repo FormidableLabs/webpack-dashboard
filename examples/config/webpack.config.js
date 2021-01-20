@@ -25,7 +25,10 @@ module.exports = {
   },
   plugins: [
     new StatsWriterPlugin({
-      fields: ["assets", "modules"]
+      fields: ["assets", "modules"],
+      stats: {
+        source: true // Needed for webpack5+
+      }
     }),
     new DuplicatesPlugin({
       verbose: true,
