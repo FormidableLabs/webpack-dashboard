@@ -5,7 +5,7 @@
 const commander = require("commander");
 const spawn = require("cross-spawn");
 const Dashboard = require("../dashboard/index");
-const SocketIO = require("socket.io");
+const io = require("socket.io");
 
 const DEFAULT_PORT = 9838;
 
@@ -57,8 +57,8 @@ const main = (module.exports = opts => {
     title: program.title || null
   });
 
-  const port = program.port || DEFAULT_PORT;
-  const server = opts.server || new SocketIO(port);
+  const port = parseInt(program.port || DEFAULT_PORT, 10);
+  const server = opts.server || io(port);
 
   server.on("error", err => {
     // eslint-disable-next-line no-console

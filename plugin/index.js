@@ -4,7 +4,7 @@
 
 const most = require("most");
 const webpack = require("webpack");
-const SocketIOClient = require("socket.io-client");
+const io = require("socket.io-client");
 const inspectpack = require("inspectpack");
 
 const serializer = require("../utils/error-serialization");
@@ -80,7 +80,7 @@ class DashboardPlugin {
       handler = noop;
       const port = this.port;
       const host = this.host;
-      this.socket = new SocketIOClient(`http://${host}:${port}`);
+      this.socket = io(`http://${host}:${port}`);
       this.socket.on("connect", () => {
         handler = this.socket.emit.bind(this.socket, "message");
       });
