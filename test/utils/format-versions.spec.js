@@ -10,7 +10,10 @@ describe("format-versions", () => {
           "1.1.1": [
             {
               skews: {
-                parts: [{ name: "foo-dep", range: "^1.0.0" }, { name: "bar", range: "^3.0.2" }]
+                parts: [
+                  { name: "foo-dep", range: "^1.0.0" },
+                  { name: "bar", range: "^3.0.2" }
+                ]
               }
             }
           ]

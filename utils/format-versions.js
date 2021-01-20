@@ -6,7 +6,7 @@ const Handlebars = require("handlebars");
 const pkgNamePath = pkgParts =>
   pkgParts.reduce((m, part) => `${m}${m ? " -> " : ""}{cyan-fg}${part.name}{/}@${part.range}`, "");
 
-Handlebars.registerHelper("skew", function(options) {
+Handlebars.registerHelper("skew", function (options) {
   // eslint-disable-next-line no-invalid-this
   return pkgNamePath(options.fn(this));
 });

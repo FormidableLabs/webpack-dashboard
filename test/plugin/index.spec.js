@@ -136,7 +136,10 @@ describe("plugin", () => {
           .then(() => {
             expect(actions).to.have.been.calledWith("sizes", {
               stats: {
-                assets: [{ modules: [], name: "one.js" }, { modules: [], name: "two.js" }]
+                assets: [
+                  { modules: [], name: "one.js" },
+                  { modules: [], name: "two.js" }
+                ]
               }
             });
           })
