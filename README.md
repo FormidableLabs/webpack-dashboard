@@ -35,17 +35,18 @@ $ yarn add --dev webpack-dashboard
 
 **`webpack-dashboard@^3.0.0` requires Node 8 or above.** Previous versions support down to Node 6.
 
-First, import the plugin and add it to your webpack config, or apply it to your compiler:
+First, import the plugin and add it to your webpack config:
 
 ```js
 // Import the plugin:
-var DashboardPlugin = require("webpack-dashboard/plugin");
+const DashboardPlugin = require("webpack-dashboard/plugin");
 
-// If you aren't using express, add it to your webpack configs plugins section:
-plugins: [new DashboardPlugin()];
-
-// If you are using an express based dev server, add it with compiler.apply
-compiler.apply(new DashboardPlugin());
+// Add it to your webpack configuration plugins.
+module.exports = {
+  // ...
+  plugins: [new DashboardPlugin()];
+  // ...
+};
 ```
 
 Then, modify your dev server start script previously looked like:
