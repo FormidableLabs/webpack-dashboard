@@ -232,7 +232,9 @@ class DashboardPlugin {
 
   observeMetrics(statsObj) {
     // Get the **full** stats object here for `inspectpack` analysis.
-    const statsToObserve = statsObj.toJson();
+    const statsToObserve = statsObj.toJson({
+      source: true // Needed for webpack5+
+    });
 
     // Truncate off non-included assets.
     const { includeAssets } = this;

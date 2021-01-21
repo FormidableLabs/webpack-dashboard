@@ -5,6 +5,7 @@ Every release, along with the migration instructions, is documented on the Githu
 
 ## UNRELEASED
 
+- Add webpack5 support.
 - Update various production dependencies.
 
 ## [3.2.1] - 2020-08-24

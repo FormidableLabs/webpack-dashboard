@@ -9,37 +9,40 @@ const io = require("socket.io");
 
 const DEFAULT_PORT = 9838;
 
-const program = new commander.Command("webpack-dashboard");
 const pkg = require("../package.json");
 
 const collect = (val, prev) => prev.concat([val]);
 
 // Wrap up side effects in a script.
 // eslint-disable-next-line max-statements, complexity
-const main = (module.exports = opts => {
+const main = opts => {
   opts = opts || {};
   const argv = typeof opts.argv === "undefined" ? process.argv : opts.argv;
   const isWindows = process.platform === "win32";
 
-  program.version(pkg.version);
-  program.option("-c, --color [color]", "Dashboard color");
-  program.option("-m, --minimal", "Minimal mode");
-  program.option("-t, --title [title]", "Terminal window title");
-  program.option("-p, --port [port]", "Socket listener port");
-  program.option("-a, --include-assets [string prefix]", "Asset names to limit to", collect, []);
-  program.usage("[options] -- [script] [arguments]");
-  program.parse(argv);
+  const program = new commander.Command("webpack-dashboard")
+    .version(pkg.version)
+    .option("-c, --color [color]", "Dashboard color")
+    .option("-m, --minimal", "Minimal mode")
+    .option("-t, --title [title]", "Terminal window title")
+    .option("-p, --port [port]", "Socket listener port")
+    .option("-a, --include-assets [string prefix]", "Asset names to limit to", collect, [])
+    .usage("[options] -- [script] [arguments]")
+    .parse(argv);
+
+  const cliOpts = program.opts();
+  const cliArgs = program.args;
 
   let logFromChild = true;
   let child;
 
-  if (!program.args.length) {
+  if (!cliArgs.length) {
     logFromChild = false;
   }
 
   if (logFromChild) {
-    const command = program.args[0];
-    const args = program.args.slice(1);
+    const command = cliArgs[0];
+    const args = cliArgs.slice(1);
     const env = process.env;
 
     env.FORCE_COLOR = true;
@@ -52,12 +55,12 @@ const main = (module.exports = opts => {
   }
 
   const dashboard = new Dashboard({
-    color: program.color || "green",
-    minimal: program.minimal || false,
-    title: program.title || null
+    color: cliOpts.color || "green",
+    minimal: cliOpts.minimal || false,
+    title: cliOpts.title || null
   });
 
-  const port = parseInt(program.port || DEFAULT_PORT, 10);
+  const port = parseInt(cliOpts.port || DEFAULT_PORT, 10);
   const server = opts.server || io(port);
 
   server.on("error", err => {
@@ -68,8 +71,8 @@ const main = (module.exports = opts => {
   if (logFromChild) {
     server.on("connection", socket => {
       socket.emit("options", {
-        minimal: program.minimal || false,
-        includeAssets: program.includeAssets || []
+        minimal: cliOpts.minimal || false,
+        includeAssets: cliOpts.includeAssets || []
       });
 
       socket.on("message", (message, ack) => {
@@ -107,8 +110,10 @@ const main = (module.exports = opts => {
       });
     });
   }
-});
+};
 
 if (require.main === module) {
   main();
 }
+
+module.exports = main;
