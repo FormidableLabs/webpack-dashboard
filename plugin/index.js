@@ -101,6 +101,10 @@ class DashboardPlugin {
     }
 
     new webpack.ProgressPlugin((percent, msg) => {
+      console.log("TODO webpack.ProgressPlugin", { status: "Compiling", percent, msg });
+      // TODO HERE: Review lifecycle and cap off once get past lifecycle where done is.
+      // TODO: Could track state on `done` and reset when below 0.1 or something.
+      // const status = percent === 1
       handler([
         {
           type: "status",
@@ -129,6 +133,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "compile", () => {
       timer = Date.now();
+      console.log("TODO hook.compile", { status: "Compiling" });
       handler([
         {
           type: "status",
@@ -138,6 +143,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "invalid", () => {
+      console.log("TODO hook.invalid", { status: "Invalidated" });
       handler([
         {
           type: "status",
@@ -158,6 +164,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "failed", () => {
+      console.log("TODO hook.failed", { status: "Failed" });
       handler([
         {
           type: "status",
@@ -171,9 +178,10 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "done", stats => {
-      const options = stats.compilation.options;
+      const { errors, options } = stats.compilation;
       const statsOptions = (options.devServer && options.devServer.stats) ||
         options.stats || { colors: true };
+      const status = !!errors.length  ? "Error" : "Success";
 
       // We only need errors/warnings for stats information for finishing up.
       // This allows us to avoid sending a full stats object to the CLI which
@@ -185,11 +193,12 @@ class DashboardPlugin {
         warnings: true
       };
 
+      console.log("TODO hook.failed", { status });
       handler(
         [
           {
             type: "status",
-            value: "Success"
+            value: status
           },
           {
             type: "progress",
