@@ -60,7 +60,6 @@ class DashboardPlugin {
     }
 
     this.cleanup = this.cleanup.bind(this);
-
     this.watching = false;
   }
 
@@ -73,7 +72,10 @@ class DashboardPlugin {
 
   apply(compiler) {
     let handler = this.handler;
-    let reachedSuccess = false;
+    // Reached compile "done" state.
+    let reachedDone = false;
+    // Compile has finished in "done", "error", "failed" states.
+    let finished = false;
     let timer;
 
     if (!handler) {
@@ -93,7 +95,7 @@ class DashboardPlugin {
         console.log(err);
       });
       this.socket.on("disconnect", () => {
-        if (!reachedSuccess) {
+        if (!reachedDone) {
           // eslint-disable-next-line no-console
           console.log("Socket.io disconnected before completing build lifecycle.");
         }
@@ -101,10 +103,11 @@ class DashboardPlugin {
     }
 
     new webpack.ProgressPlugin((percent, msg) => {
-      console.log("TODO webpack.ProgressPlugin", { status: "Compiling", percent, msg });
-      // TODO HERE: Review lifecycle and cap off once get past lifecycle where done is.
-      // TODO: Could track state on `done` and reset when below 0.1 or something.
-      // const status = percent === 1
+      // Skip reporting once finished.
+      if (finished) {
+        return;
+      }
+
       handler([
         {
           type: "status",
@@ -133,7 +136,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "compile", () => {
       timer = Date.now();
-      console.log("TODO hook.compile", { status: "Compiling" });
+      finished = false;
       handler([
         {
           type: "status",
@@ -143,7 +146,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "invalid", () => {
-      console.log("TODO hook.invalid", { status: "Invalidated" });
+      finished = true;
       handler([
         {
           type: "status",
@@ -164,7 +167,7 @@ class DashboardPlugin {
     });
 
     webpackHook(compiler, "failed", () => {
-      console.log("TODO hook.failed", { status: "Failed" });
+      finished = true;
       handler([
         {
           type: "status",
@@ -181,7 +184,7 @@ class DashboardPlugin {
       const { errors, options } = stats.compilation;
       const statsOptions = (options.devServer && options.devServer.stats) ||
         options.stats || { colors: true };
-      const status = !!errors.length  ? "Error" : "Success";
+      const status = errors.length ? "Error" : "Success";
 
       // We only need errors/warnings for stats information for finishing up.
       // This allows us to avoid sending a full stats object to the CLI which
@@ -193,38 +196,34 @@ class DashboardPlugin {
         warnings: true
       };
 
-      console.log("TODO hook.failed", { status });
-      handler(
-        [
-          {
-            type: "status",
-            value: status
-          },
-          {
-            type: "progress",
-            value: 1
-          },
-          {
-            type: "operations",
-            value: `idle${getTimeMessage(timer)}`
-          },
-          {
-            type: "stats",
-            value: {
-              errors: stats.hasErrors(),
-              warnings: stats.hasWarnings(),
-              data: stats.toJson(statsJsonOptions)
-            }
-          },
-          {
-            type: "log",
-            value: stats.toString(statsOptions)
+      reachedDone = true;
+      finished = true;
+      handler([
+        {
+          type: "status",
+          value: status
+        },
+        {
+          type: "progress",
+          value: 1
+        },
+        {
+          type: "operations",
+          value: `idle${getTimeMessage(timer)}`
+        },
+        {
+          type: "stats",
+          value: {
+            errors: stats.hasErrors(),
+            warnings: stats.hasWarnings(),
+            data: stats.toJson(statsJsonOptions)
           }
-        ],
-        () => {
-          reachedSuccess = true;
+        },
+        {
+          type: "log",
+          value: stats.toString(statsOptions)
         }
-      );
+      ]);
 
       if (!this.minimal) {
         this.observeMetrics(stats).subscribe({
