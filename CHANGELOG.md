@@ -3,7 +3,7 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
-## UNRELEASED
+## [3.3.1] - 2021-01-29
 
 - Bugfix: Ensure `Status` is properly updating and reaches completion. Fixes #321
 
