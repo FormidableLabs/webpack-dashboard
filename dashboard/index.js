@@ -142,6 +142,9 @@ class Dashboard {
       case "Failed":
         content = `{red-fg}{bold}${data.value}{/}`;
         break;
+      case "Error":
+        content = `{red-fg}{bold}${data.value}{/}`;
+        break;
       default:
         content = `{bold}${data.value}{/}`;
     }

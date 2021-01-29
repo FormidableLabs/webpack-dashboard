@@ -3,6 +3,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## UNRELEASED
+
+- Bugfix: Ensure `Status` is properly updating and reaches completion. Fixes #321
+
 ## [3.3.0] - 2021-01-21
 
 - Add `webpack@5` support. Closes #316
