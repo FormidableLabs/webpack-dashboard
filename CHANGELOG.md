@@ -3,9 +3,13 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
-## [3.3.2] - 2021-05-05
+## [3.3.3] - 2021-05-05
 
 - Security: Update `socket.io` version to get rid of vulnerable `xmlhttprequest-ssl` package. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/325 by @texpert.
+
+## [3.3.2] - 2021-05-05
+
+- Empty publish.
 
 ## [3.3.1] - 2021-01-29
 
