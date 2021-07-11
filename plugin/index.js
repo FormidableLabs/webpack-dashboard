@@ -59,13 +59,17 @@ class DashboardPlugin {
     }
 
     this.watching = false;
+    this.openMessages = 0;
   }
 
   cleanup() {
+    // TODO: HERE -- Either do a wait on messages, or do a 1sec/something timer
+    // if open messages...
     // eslint-disable-next-line no-console
     console.log("PLUGIN -- TODO HERE CLEANUP", {
       watching: this.watching,
-      socket: !!this.socket
+      socket: !!this.socket,
+      openMessages: this.openMessages
     });
     if (!this.watching && this.socket) {
       this.handler = null;
@@ -95,7 +99,14 @@ class DashboardPlugin {
       const host = this.host;
       this.socket = io(`http://${host}:${port}`);
       this.socket.on("connect", () => {
-        handler = this.socket.emit.bind(this.socket, "message");
+        // TODO: REFACTOR AND COMMENT
+        const socketMsg = this.socket.emit.bind(this.socket, "message");
+        handler = (...args) => {
+          this.openMessages++;
+          socketMsg(...args, () => {
+            this.openMessages--;
+          });
+        };
       });
       this.socket.once("options", args => {
         this.minimal = args.minimal;
