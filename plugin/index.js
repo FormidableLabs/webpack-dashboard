@@ -101,13 +101,17 @@ class DashboardPlugin {
       const host = this.host;
       this.socket = io(`http://${host}:${port}`);
       this.socket.on("connect", () => {
-        // TODO: REFACTOR AND COMMENT
+        // Manually track messages we send to the dashboard and decrement later.
         const socketMsg = this.socket.emit.bind(this.socket, "message");
         this._handler = (...args) => {
           this.openMessages++;
-          socketMsg(...args, () => {
-            this.openMessages--;
-          });
+          socketMsg(
+            ...args.concat([
+              () => {
+                this.openMessages--;
+              }
+            ])
+          );
         };
       });
       this.socket.once("options", args => {
