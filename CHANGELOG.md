@@ -7,6 +7,7 @@ Every release, along with the migration instructions, is documented on the Githu
 
 - Chore: Refactor internal stats consumption to perform `inspectpack` analysis in the main thread, without using `main` streams.
 - Chore: Refactor internal handler in plugin to always be a wrapped function so that we can't accidentally have asynchronous code call the handler function after it is removed / nulled.
+- Bugfix: Add message counting delayed cleanup in plugin to allow messages to drain in Dashboard. Fixes [#294](https://github.com/FormidableLabs/webpack-dashboard/issues/294).
 
 ## [3.3.3] - 2021-05-05
 

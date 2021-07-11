@@ -100,14 +100,6 @@ class Dashboard {
           : data
       )
       .forEach(data => {
-        if (data.type !== "log") {
-          this.setLog({
-            value: `DASHBOARD -- TODO setData MESSAGE: ${JSON.stringify({
-              type: data.type
-            })}`
-          });
-        }
-
         this.actionForMessageType[data.type](data);
       });
 
