@@ -13,6 +13,8 @@ const DEFAULT_HOST = "127.0.0.1";
 const ONE_SECOND = 1000;
 const INSPECTPACK_PROBLEM_ACTIONS = ["duplicates", "versions"];
 const INSPECTPACK_PROBLEM_TYPE = "problems";
+const CLEANUP_MAX_NUM_TRIES = 3; // Try 3 times to close before giving up.
+const CLEANUP_RETRY_DELAY_MS = 100; // Delay before a retry.
 
 function noop() {}
 
@@ -68,26 +70,21 @@ class DashboardPlugin {
     }
   }
 
-  cleanup() {
-    // TODO: HERE -- Either do a wait on messages, or do a 1sec/something timer
-    // if open messages...
-    // eslint-disable-next-line no-console
-    console.log("PLUGIN -- TODO HERE CLEANUP", {
-      watching: this.watching,
-      socket: !!this.socket,
-      openMessages: this.openMessages
-    });
-    if (!this.watching && this.socket) {
+  cleanup(numTried = 0) {
+    if (!this._cleanedUp && !this.watching && this.socket) {
+      // Clear handler so we don't emit any more messages.
       this._handler = null;
 
-      // TODO: REFACTOR
-      // TODO: Extract wait period and comment why
-      // this.socket.close();
-      setTimeout(() => {
-        // eslint-disable-next-line no-console
-        console.log("PLUGIN -- TODO HERE CLOSE");
-        this.socket.close();
-      }, 1000); // eslint-disable-line no-magic-numbers
+      // Check if we have unhandled dashboard messages.
+      if (this.openMessages > 0 && numTried < CLEANUP_MAX_NUM_TRIES) {
+        // Wait a small interval and try again, up to a maximum.
+        setTimeout(() => this.cleanup(numTried++), CLEANUP_RETRY_DELAY_MS);
+        return;
+      }
+
+      // Close!
+      this._cleanedUp = true;
+      this.socket.close();
     }
   }
 
