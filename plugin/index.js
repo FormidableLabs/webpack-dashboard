@@ -49,17 +49,23 @@ const webpackAsyncHook = _webpackHook.bind(null, "tapAsync");
 class DashboardPlugin {
   constructor(options) {
     if (typeof options === "function") {
-      this.handler = options;
+      this._handler = options;
     } else {
       options = options || {};
       this.host = options.host || DEFAULT_HOST;
       this.port = options.port || DEFAULT_PORT;
       this.includeAssets = options.includeAssets || [];
-      this.handler = options.handler || null;
+      this._handler = options.handler || null;
     }
 
     this.watching = false;
     this.openMessages = 0;
+  }
+
+  handler(...args) {
+    if (this._handler) {
+      this._handler(...args);
+    }
   }
 
   cleanup() {
@@ -72,7 +78,7 @@ class DashboardPlugin {
       openMessages: this.openMessages
     });
     if (!this.watching && this.socket) {
-      this.handler = null;
+      this._handler = null;
 
       // TODO: REFACTOR
       // TODO: Extract wait period and comment why
@@ -86,22 +92,21 @@ class DashboardPlugin {
   }
 
   apply(compiler) {
-    let handler = this.handler;
     // Reached compile "done" state.
     let reachedDone = false;
     // Compile has finished in "done", "error", "failed" states.
     let finished = false;
     let timer;
 
-    if (!handler) {
-      handler = noop;
+    if (!this._handler) {
+      this._handler = noop;
       const port = this.port;
       const host = this.host;
       this.socket = io(`http://${host}:${port}`);
       this.socket.on("connect", () => {
         // TODO: REFACTOR AND COMMENT
         const socketMsg = this.socket.emit.bind(this.socket, "message");
-        handler = (...args) => {
+        this._handler = (...args) => {
           this.openMessages++;
           socketMsg(...args, () => {
             this.openMessages--;
@@ -130,7 +135,7 @@ class DashboardPlugin {
         return;
       }
 
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Compiling"
@@ -159,7 +164,7 @@ class DashboardPlugin {
     webpackHook(compiler, "compile", () => {
       timer = Date.now();
       finished = false;
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Compiling"
@@ -169,7 +174,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "invalid", () => {
       finished = true;
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Invalidated"
@@ -190,7 +195,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "failed", () => {
       finished = true;
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Failed"
@@ -220,7 +225,7 @@ class DashboardPlugin {
 
       reachedDone = true;
       finished = true;
-      handler([
+      this.handler([
         {
           type: "status",
           value: status
@@ -252,7 +257,7 @@ class DashboardPlugin {
 
       // eslint-disable-next-line promise/catch-or-return
       getMetrics()
-        .then(datas => handler(datas))
+        .then(datas => this.handler(datas))
         .catch(err => {
           console.log("Error from inspectpack:", err); // eslint-disable-line no-console
         })

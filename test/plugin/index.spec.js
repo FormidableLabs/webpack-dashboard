@@ -18,7 +18,7 @@ describe("plugin", () => {
     expect(plugin.host).to.equal("127.0.0.1");
     // eslint-disable-next-line no-magic-numbers
     expect(plugin.port).to.equal(9838);
-    expect(plugin.handler).to.be.null;
+    expect(plugin._handler).to.be.null;
     expect(plugin.watching).to.be.false;
   });
 
