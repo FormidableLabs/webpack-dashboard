@@ -62,17 +62,22 @@ class DashboardPlugin {
   }
 
   cleanup() {
+    // eslint-disable-next-line no-console
     console.log("PLUGIN -- TODO HERE CLEANUP", {
       watching: this.watching,
       socket: !!this.socket
     });
     if (!this.watching && this.socket) {
       this.handler = null;
-      this.socket.close();
-      // setTimeout(() => {
-      //   console.log("PLUGIN -- TODO HERE CLOSE")
-      //   this.socket.close();
-      // }, 1000);
+
+      // TODO: REFACTOR
+      // TODO: Extract wait period and comment why
+      // this.socket.close();
+      setTimeout(() => {
+        // eslint-disable-next-line no-console
+        console.log("PLUGIN -- TODO HERE CLOSE");
+        this.socket.close();
+      }, 1000); // eslint-disable-line no-magic-numbers
     }
   }
 
