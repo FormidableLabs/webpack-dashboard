@@ -2,7 +2,6 @@
 
 "use strict";
 
-const most = require("most");
 const webpack = require("webpack");
 const io = require("socket.io-client");
 const inspectpack = require("inspectpack");
@@ -59,14 +58,21 @@ class DashboardPlugin {
       this.handler = options.handler || null;
     }
 
-    this.cleanup = this.cleanup.bind(this);
     this.watching = false;
   }
 
   cleanup() {
+    console.log("PLUGIN -- TODO HERE CLEANUP", {
+      watching: this.watching,
+      socket: !!this.socket
+    });
     if (!this.watching && this.socket) {
       this.handler = null;
       this.socket.close();
+      // setTimeout(() => {
+      //   console.log("PLUGIN -- TODO HERE CLOSE")
+      //   this.socket.close();
+      // }, 1000);
     }
   }
 
@@ -180,7 +186,7 @@ class DashboardPlugin {
       ]);
     });
 
-    webpackHook(compiler, "done", stats => {
+    webpackAsyncHook(compiler, "done", (stats, done) => {
       const { errors, options } = stats.compilation;
       const statsOptions = (options.devServer && options.devServer.stats) ||
         options.stats || { colors: true };
@@ -225,29 +231,33 @@ class DashboardPlugin {
         }
       ]);
 
-      if (!this.minimal) {
-        this.observeMetrics(stats).subscribe({
-          next: message => handler([message]),
-          error: err => {
-            console.log("Error from inspectpack:", err); // eslint-disable-line no-console
-            this.cleanup();
-          },
-          complete: this.cleanup
+      // Skip metrics in minimal mode.
+      const getMetrics = () => (this.minimal ? Promise.resolve() : this.getMetrics(stats));
+
+      // eslint-disable-next-line promise/catch-or-return
+      getMetrics()
+        .then(datas => handler(datas))
+        .catch(err => {
+          console.log("Error from inspectpack:", err); // eslint-disable-line no-console
+        })
+        // eslint-disable-next-line promise/always-return
+        .then(() => {
+          this.cleanup();
+          done(); // eslint-disable-line promise/no-callback-in-promise
         });
-      }
     });
   }
 
-  observeMetrics(statsObj) {
+  getMetrics(statsObj) {
     // Get the **full** stats object here for `inspectpack` analysis.
-    const statsToObserve = statsObj.toJson({
+    const stats = statsObj.toJson({
       source: true // Needed for webpack5+
     });
 
     // Truncate off non-included assets.
     const { includeAssets } = this;
     if (includeAssets.length) {
-      statsToObserve.assets = statsToObserve.assets.filter(({ name }) =>
+      stats.assets = stats.assets.filter(({ name }) =>
         includeAssets.some(pattern => {
           if (typeof pattern === "string") {
             return name.startsWith(pattern);
@@ -265,7 +275,7 @@ class DashboardPlugin {
     const { actions } = inspectpack;
     const { serializeError } = serializer;
 
-    const getSizes = stats =>
+    const getSizes = () =>
       actions("sizes", { stats })
         .then(instance => instance.getData())
         .then(data => ({
@@ -278,7 +288,7 @@ class DashboardPlugin {
           value: serializeError(err)
         }));
 
-    const getProblems = stats =>
+    const getProblems = () =>
       Promise.all(
         INSPECTPACK_PROBLEM_ACTIONS.map(action =>
           actions(action, { stats }).then(instance => instance.getData())
@@ -300,10 +310,7 @@ class DashboardPlugin {
           value: serializeError(err)
         }));
 
-    const sizesStream = most.of(statsToObserve).map(getSizes);
-    const problemsStream = most.of(statsToObserve).map(getProblems);
-
-    return most.mergeArray([sizesStream, problemsStream]).chain(most.fromPromise);
+    return Promise.all([getSizes(), getProblems()]);
   }
 }
 

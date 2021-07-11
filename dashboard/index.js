@@ -36,7 +36,6 @@ class Dashboard {
     this.stats = null;
 
     // Data binding, lookup tables.
-    this.setData = this.setData.bind(this);
     this.actionForMessageType = {
       progress: this.setProgress.bind(this),
       operations: this.setOperations.bind(this),
@@ -101,6 +100,14 @@ class Dashboard {
           : data
       )
       .forEach(data => {
+        if (data.type !== "log") {
+          this.setLog({
+            value: `DASHBOARD -- TODO setData MESSAGE: ${JSON.stringify({
+              type: data.type
+            })}`
+          });
+        }
+
         this.actionForMessageType[data.type](data);
       });
 

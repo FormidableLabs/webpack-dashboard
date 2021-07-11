@@ -3,6 +3,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## UNRELEASED
+
+- Chore: Refactor internal stats consumption to perform `inspectpack` analysis in the main thread, without using `main` streams.
+
 ## [3.3.3] - 2021-05-05
 
 - Security: Update `socket.io` version to get rid of vulnerable `xmlhttprequest-ssl` package. Included in: https://github.com/FormidableLabs/webpack-dashboard/pull/325 by @texpert.
