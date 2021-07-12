@@ -3,6 +3,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
+## UNRELEASED
+
+- Chore: Update dependencies.
+
 ## [3.3.4] - 2021-07-12
 
 - Chore: Refactor internal stats consumption to perform `inspectpack` analysis in the main thread, without using `main` streams.
