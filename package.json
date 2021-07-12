@@ -52,6 +52,7 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "chai": "^4.3.4",
+    "codecov": "^3.8.2",
     "cross-env": "^7.0.3",
     "eslint": "^7.30.0",
     "eslint-config-formidable": "^4.0.0",
