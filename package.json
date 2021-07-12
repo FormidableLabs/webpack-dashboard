@@ -46,8 +46,8 @@
     "handlebars": "^4.1.2",
     "inspectpack": "^4.7.1",
     "neo-blessed": "^0.2.0",
-    "socket.io": "^4.0.1",
-    "socket.io-client": "^4.0.1"
+    "socket.io": "^4.1.3",
+    "socket.io-client": "^4.1.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

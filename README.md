@@ -2,8 +2,8 @@
 
 [![npm version][npm_img]][npm_site]
 [![Actions Status][actions_img]][actions_site]
-[![Maintenance Status][maintenance-image]](#maintenance-status)
 [![Coverage Status][cov_img]][cov_site]
+[![Maintenance Status][maintenance-image]](#maintenance-status)
 
 A CLI dashboard for your webpack dev server
 
