@@ -3,7 +3,7 @@
 This project adheres to [Semantic Versioning](http://semver.org/).
 Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/FormidableLabs/webpack-dashboard/releases) page.
 
-## UNRELEASED
+## [3.3.5] - 2021-07-12
 
 - Chore: Update dependencies. [#333](https://github.com/FormidableLabs/webpack-dashboard/issues/333)
 - Coverage: Add CodeCov stats. [#206](https://github.com/FormidableLabs/webpack-dashboard/issues/206)
