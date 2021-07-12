@@ -2,7 +2,6 @@
 
 "use strict";
 
-const most = require("most");
 const webpack = require("webpack");
 const io = require("socket.io-client");
 const inspectpack = require("inspectpack");
@@ -14,6 +13,8 @@ const DEFAULT_HOST = "127.0.0.1";
 const ONE_SECOND = 1000;
 const INSPECTPACK_PROBLEM_ACTIONS = ["duplicates", "versions"];
 const INSPECTPACK_PROBLEM_TYPE = "problems";
+const CLEANUP_MAX_NUM_TRIES = 3; // Try 3 times to close before giving up.
+const CLEANUP_RETRY_DELAY_MS = 100; // Delay before a retry.
 
 function noop() {}
 
@@ -50,41 +51,65 @@ const webpackAsyncHook = _webpackHook.bind(null, "tapAsync");
 class DashboardPlugin {
   constructor(options) {
     if (typeof options === "function") {
-      this.handler = options;
+      this._handler = options;
     } else {
       options = options || {};
       this.host = options.host || DEFAULT_HOST;
       this.port = options.port || DEFAULT_PORT;
       this.includeAssets = options.includeAssets || [];
-      this.handler = options.handler || null;
+      this._handler = options.handler || null;
     }
 
-    this.cleanup = this.cleanup.bind(this);
     this.watching = false;
+    this.openMessages = 0;
   }
 
-  cleanup() {
-    if (!this.watching && this.socket) {
-      this.handler = null;
+  handler(...args) {
+    if (this._handler) {
+      this._handler(...args);
+    }
+  }
+
+  cleanup(numTried = 0) {
+    if (!this._cleanedUp && !this.watching && this.socket) {
+      // Clear handler so we don't emit any more messages.
+      this._handler = null;
+
+      // Check if we have unhandled dashboard messages.
+      if (this.openMessages > 0 && numTried < CLEANUP_MAX_NUM_TRIES) {
+        // Wait a small interval and try again, up to a maximum.
+        setTimeout(() => this.cleanup(numTried++), CLEANUP_RETRY_DELAY_MS);
+        return;
+      }
+
+      // Close!
+      this._cleanedUp = true;
       this.socket.close();
     }
   }
 
   apply(compiler) {
-    let handler = this.handler;
     // Reached compile "done" state.
     let reachedDone = false;
     // Compile has finished in "done", "error", "failed" states.
     let finished = false;
     let timer;
 
-    if (!handler) {
-      handler = noop;
+    if (!this._handler) {
+      this._handler = noop;
       const port = this.port;
       const host = this.host;
       this.socket = io(`http://${host}:${port}`);
       this.socket.on("connect", () => {
-        handler = this.socket.emit.bind(this.socket, "message");
+        // Manually track messages we send to the dashboard and decrement later.
+        const socketMsg = this.socket.emit.bind(this.socket, "message");
+        const ack = () => {
+          this.openMessages--;
+        };
+        this._handler = (...args) => {
+          this.openMessages++;
+          socketMsg(...args, ack);
+        };
       });
       this.socket.once("options", args => {
         this.minimal = args.minimal;
@@ -108,7 +133,7 @@ class DashboardPlugin {
         return;
       }
 
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Compiling"
@@ -137,7 +162,7 @@ class DashboardPlugin {
     webpackHook(compiler, "compile", () => {
       timer = Date.now();
       finished = false;
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Compiling"
@@ -147,7 +172,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "invalid", () => {
       finished = true;
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Invalidated"
@@ -168,7 +193,7 @@ class DashboardPlugin {
 
     webpackHook(compiler, "failed", () => {
       finished = true;
-      handler([
+      this.handler([
         {
           type: "status",
           value: "Failed"
@@ -180,7 +205,7 @@ class DashboardPlugin {
       ]);
     });
 
-    webpackHook(compiler, "done", stats => {
+    webpackAsyncHook(compiler, "done", (stats, done) => {
       const { errors, options } = stats.compilation;
       const statsOptions = (options.devServer && options.devServer.stats) ||
         options.stats || { colors: true };
@@ -198,7 +223,7 @@ class DashboardPlugin {
 
       reachedDone = true;
       finished = true;
-      handler([
+      this.handler([
         {
           type: "status",
           value: status
@@ -225,29 +250,33 @@ class DashboardPlugin {
         }
       ]);
 
-      if (!this.minimal) {
-        this.observeMetrics(stats).subscribe({
-          next: message => handler([message]),
-          error: err => {
-            console.log("Error from inspectpack:", err); // eslint-disable-line no-console
-            this.cleanup();
-          },
-          complete: this.cleanup
+      // Skip metrics in minimal mode.
+      const getMetrics = () => (this.minimal ? Promise.resolve() : this.getMetrics(stats));
+
+      // eslint-disable-next-line promise/catch-or-return
+      getMetrics()
+        .then(datas => this.handler(datas))
+        .catch(err => {
+          console.log("Error from inspectpack:", err); // eslint-disable-line no-console
+        })
+        // eslint-disable-next-line promise/always-return
+        .then(() => {
+          this.cleanup();
+          done(); // eslint-disable-line promise/no-callback-in-promise
         });
-      }
     });
   }
 
-  observeMetrics(statsObj) {
+  getMetrics(statsObj) {
     // Get the **full** stats object here for `inspectpack` analysis.
-    const statsToObserve = statsObj.toJson({
+    const stats = statsObj.toJson({
       source: true // Needed for webpack5+
     });
 
     // Truncate off non-included assets.
     const { includeAssets } = this;
     if (includeAssets.length) {
-      statsToObserve.assets = statsToObserve.assets.filter(({ name }) =>
+      stats.assets = stats.assets.filter(({ name }) =>
         includeAssets.some(pattern => {
           if (typeof pattern === "string") {
             return name.startsWith(pattern);
@@ -265,7 +294,7 @@ class DashboardPlugin {
     const { actions } = inspectpack;
     const { serializeError } = serializer;
 
-    const getSizes = stats =>
+    const getSizes = () =>
       actions("sizes", { stats })
         .then(instance => instance.getData())
         .then(data => ({
@@ -278,7 +307,7 @@ class DashboardPlugin {
           value: serializeError(err)
         }));
 
-    const getProblems = stats =>
+    const getProblems = () =>
       Promise.all(
         INSPECTPACK_PROBLEM_ACTIONS.map(action =>
           actions(action, { stats }).then(instance => instance.getData())
@@ -300,10 +329,7 @@ class DashboardPlugin {
           value: serializeError(err)
         }));
 
-    const sizesStream = most.of(statsToObserve).map(getSizes);
-    const problemsStream = most.of(statsToObserve).map(getProblems);
-
-    return most.mergeArray([sizesStream, problemsStream]).chain(most.fromPromise);
+    return Promise.all([getSizes(), getProblems()]);
   }
 }
 

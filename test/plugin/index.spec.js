@@ -18,7 +18,7 @@ describe("plugin", () => {
     expect(plugin.host).to.equal("127.0.0.1");
     // eslint-disable-next-line no-magic-numbers
     expect(plugin.port).to.equal(9838);
-    expect(plugin.handler).to.be.null;
+    expect(plugin._handler).to.be.null;
     expect(plugin.watching).to.be.false;
   });
 
@@ -83,17 +83,16 @@ describe("plugin", () => {
     it("can do a basic compilation", () => {
       expect(() => plugin.apply(compiler)).to.not.throw;
 
-      // after instantiation, test that we can hit observeMetrics
-      expect(() => plugin.observeMetrics({ toJson })).to.not.throw;
+      // after instantiation, test that we can hit getMetrics
+      expect(() => plugin.getMetrics({ toJson })).to.not.throw;
     });
 
-    it("can do a basic observeMetrics", () => {
+    it("can do a basic getMetrics", () => {
       const actions = base.sandbox.spy(inspectpackActions, "actions");
 
       return (
         plugin
-          .observeMetrics({ toJson })
-          .drain()
+          .getMetrics({ toJson })
           // eslint-disable-next-line promise/always-return
           .then(() => {
             expect(actions).to.have.been.calledThrice;
@@ -130,8 +129,7 @@ describe("plugin", () => {
 
       return (
         plugin
-          .observeMetrics({ toJson })
-          .drain()
+          .getMetrics({ toJson })
           // eslint-disable-next-line promise/always-return
           .then(() => {
             expect(actions).to.have.been.calledWith("sizes", {
@@ -152,8 +150,7 @@ describe("plugin", () => {
 
       return (
         plugin
-          .observeMetrics({ toJson })
-          .drain()
+          .getMetrics({ toJson })
           // eslint-disable-next-line promise/always-return
           .then(() => {
             // All three actions called.
