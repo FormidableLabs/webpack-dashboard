@@ -2,7 +2,7 @@
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## UNRELEASED
+## 3.3.6
 
 - Bug: Allow socket messages to be null. [#335](https://github.com/FormidableLabs/webpack-dashboard/issues/335), [#336](https://github.com/FormidableLabs/webpack-dashboard/issues/336)
 
