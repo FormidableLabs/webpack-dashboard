@@ -76,7 +76,9 @@ const main = opts => {
       });
 
       socket.on("message", (message, ack) => {
-        if (message.type !== "log") {
+        // Note: `message` may be null.
+        // https://github.com/FormidableLabs/webpack-dashboard/issues/335
+        if (message && message.type !== "log") {
           dashboard.setData(message, ack);
         }
       });
