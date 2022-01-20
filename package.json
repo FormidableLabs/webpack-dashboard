@@ -14,7 +14,7 @@
     "lint": "eslint .",
     "check": "run-s format-check lint test check-ts",
     "check-ci": "run-s format-check lint test-cov check-ts",
-    "check-ts": "tsc index.d.ts --noEmit",
+    "check-ts": "tsc plugin/index.d.ts --noEmit",
     "dev": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch",
     "format": "prettier --write \"./{bin,examples,plugin,test,utils}/**/*.js\"",
     "format-check": "prettier --list-different \"./{bin,examples,plugin,test,utils}/**/*.js\""
