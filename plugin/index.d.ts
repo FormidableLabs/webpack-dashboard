@@ -10,6 +10,12 @@ interface IDashboardOptions {
   handler?: (dataArray: IMessage[]) => void;
 }
 
+interface ICompiler {
+  hooks?: any;
+  plugin?: (name: string, callback: () => void) => void;
+}
+
 export default class DashboardPlugin {
   constructor(options?: IDashboardOptions);
+  apply(compiler: ICompiler): void;
 }
