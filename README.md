@@ -11,11 +11,11 @@ A CLI dashboard for your webpack dev server
 
 When using webpack, especially for a dev server, you are probably used to seeing something like this:
 
-![http://i.imgur.com/p1uAqkD.png](http://i.imgur.com/p1uAqkD.png)
+![https://i.imgur.com/p1uAqkD.png](https://i.imgur.com/p1uAqkD.png)
 
 That's cool, but it's mostly noise and scrolly and not super helpful. This plugin changes that. Now when you run your dev server, you basically work at NASA:
 
-![http://i.imgur.com/qL6dXJd.png](http://i.imgur.com/qL6dXJd.png)
+![https://i.imgur.com/qL6dXJd.png](https://i.imgur.com/qL6dXJd.png)
 
 ### Install
 
