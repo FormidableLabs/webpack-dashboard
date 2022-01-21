@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## 3.3.7
 
 - Bug: Move plugin types and update to webpack v5. [#324](https://github.com/FormidableLabs/webpack-dashboard/issues/324)
 
