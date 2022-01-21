@@ -14,8 +14,9 @@
     "lint": "eslint .",
     "check": "run-s format-check lint test check-ts",
     "check-ci": "run-s format-check lint test-cov check-ts",
-    "check-ts": "tsc index.d.ts --noEmit",
+    "check-ts": "tsc plugin/index.d.ts examples/config/webpack.config.ts --noEmit",
     "dev": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.js --watch",
+    "dev-ts": "cross-env EXAMPLE=duplicates-esm node bin/webpack-dashboard.js -- webpack-cli --config examples/config/webpack.config.ts --watch",
     "format": "prettier --write \"./{bin,examples,plugin,test,utils}/**/*.js\"",
     "format-check": "prettier --list-different \"./{bin,examples,plugin,test,utils}/**/*.js\""
   },
@@ -67,6 +68,7 @@
     "prettier": "^2.3.2",
     "sinon": "^11.1.1",
     "sinon-chai": "^3.7.0",
+    "ts-node": "^10.4.0",
     "typescript": "^4.3.5",
     "webpack": "^5.44.0",
     "webpack-cli": "^4.7.2",
