@@ -1,4 +1,4 @@
-[![Webpack Dashboard — Formidable, We build the modern web](./webpack-dashboard-Hero.png)](https://formidable.com/open-source/)
+[![Webpack Dashboard — Formidable, We build the modern web](https://raw.githubusercontent.com/FormidableLabs/webpack-dashboard/master/webpack-dashboard-Hero.png)](https://formidable.com/open-source/)
 
 [![npm version][npm_img]][npm_site]
 [![Actions Status][actions_img]][actions_site]
