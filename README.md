@@ -158,26 +158,9 @@ $ cross-env EXAMPLE=tree-shaking WEBPACK_MODE=production \
 
 Then just run `yarn dev` to get up and running. PRs are very much appreciated!
 
-### Publishing
+## Contributing
 
-When it comes time to publish a new version of `webpack-dashboard` to `npm`, authorized users can take the following steps:
-
-```sh
-# Ensure build passes all CI checks.
-git pull origin master
-yarn check-ci
-
-# Version the change. We use semantic versioning.
-yarn version --<major | minor | patch>
-
-# Publish to npm.
-yarn publish
-
-# Commit the release tag to source.
-git push && git push --tags
-```
-
-Please also be sure to update `CHANGELOG.md` with release notes and draft the release on GitHub. We loosely follow the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) spec with categories for `Features`, `Bugs`, `Tests`, `Docs`, and `Security`. All releases should also include `Migration Instructions` for adopting the new release.
+Please see our [contributing guide](CONTRIBUTING.MD).
 
 #### Credits
 
