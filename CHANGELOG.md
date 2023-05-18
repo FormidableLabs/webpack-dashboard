@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.8
+
+### Patch Changes
+
+- Adding GitHub release workflow ([#354](https://github.com/FormidableLabs/webpack-dashboard/pull/354))
+
 ## 3.3.7
 
 - Bug: Move plugin types and update to webpack v5. [#324](https://github.com/FormidableLabs/webpack-dashboard/issues/324)
