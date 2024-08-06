@@ -35,4 +35,7 @@ jobs:
 
     # CI
     - run: yarn check-ci
+    # Test
+    - run: yarn test
+    # Code coverage
     - run: yarn codecov
