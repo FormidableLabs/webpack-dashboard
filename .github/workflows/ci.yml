@@ -34,4 +34,5 @@ jobs:
 
     # CI
     - run: yarn check-ci
-    - run: yarn codecov
+    - run: yarn codecov --version
+    - run: yarn codecov --upload
