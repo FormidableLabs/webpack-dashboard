@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@svitejs/changesets-changelog-github-compact": "^0.1.1",
+    "@types/node": "^22.1.0",
     "babel-eslint": "^10.1.0",
     "chai": "^4.3.4",
     "codecov": "^3.8.3",
