@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [16.x, 18.x]
+        node-version: [18.x]
 
     steps:
     # Setup
