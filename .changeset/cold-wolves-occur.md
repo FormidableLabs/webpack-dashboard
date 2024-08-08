@@ -2,4 +2,4 @@
 "webpack-dashboard": patch
 ---
 
-'#359 update versions in github actions'
+'#359 update node version to 18 and github actions version'
