@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.9
+
+### Patch Changes
+
+- '#359 update node version to 18 in github actions workflows and github actions versions' ([#359](https://github.com/FormidableLabs/webpack-dashboard/pull/359))
+
 ## 3.3.8
 
 ### Patch Changes
