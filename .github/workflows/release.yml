@@ -16,16 +16,18 @@ jobs:
       packages: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
+          cache: "yarn"
           node-version: 18
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Check CI
         run: yarn check-ci
+      - name: Unit Tests
+        run: yarn test
 
       - name: PR or Publish
         id: changesets

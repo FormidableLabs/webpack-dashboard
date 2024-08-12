@@ -16,14 +16,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [18.x]
 
     steps:
     # Setup
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
+        cache: "yarn"
         node-version: ${{ matrix.node-version }}
 
     # Installation
@@ -34,4 +35,7 @@ jobs:
 
     # CI
     - run: yarn check-ci
+    # Test
+    - run: yarn test
+    # Code coverage
     - run: yarn codecov
